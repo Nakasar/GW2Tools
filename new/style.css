@@ -1,0 +1,43 @@
+html, body, #container {
+  height: 100%;
+  overflow: hidden;
+  width: 100%;
+}
+
+body {
+  padding-top: 50px;
+}
+.navbar {
+  min-height: 50px;
+}
+
+.starter-template {
+  padding: 40px 15px;
+  text-align: center;
+}
+
+#sidebar {
+  float: left;
+  height: 100%;
+  max-width: 100%;
+  width: 0px;
+}
+
+#mapdiv {
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  height: 100%;
+  width: auto;
+}
+
+.sidebar-wrapper {
+  height: 100%;
+  position: relative;
+  width: 100%;
+}
+@media (max-width: 767px) {
+#sidebar {
+  display: none;
+}
+}
+
+.leaflet-container {background: #000;}
