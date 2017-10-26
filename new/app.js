@@ -104,10 +104,10 @@ class PermanentLocation extends Location {
       j_name = json.name,
       j_owner_id = json.owner_id,
       j_site = json.site,
-      j_type = json.type,
+      j_type = json.types,
       j_id = json._id;
 
-      return new PermanentLocation(j_id, j_owner_id, j_name, Point.unpackCoord(j_coord), j_contact, Location.unpackType(j_type), j_description, j_site, j_hours, j_icon);
+      return new PermanentLocation(j_id, j_owner_id, j_name, Point.unpackCoord(j_coord), j_contact, j_type, j_description, j_site, j_hours, j_icon);
   }
 
   createMarker() {
@@ -121,10 +121,29 @@ class PermanentLocation extends Location {
 }
 
 class EventLocation extends Location {
-  constructor(id, owner_id, name, coord, contact, type, description, site, end_date, icon) {
+  constructor(id, owner_id, name, coord, contact, type, description, site, end_date, icon, difficulty) {
     super(id, owner_id, name, coord, contact, type, description, site, icon);
     this.end_date = end_date;
     this.category = "event";
+    this.difficulty = difficulty;
+  }
+
+  static parse(json) {
+    var j_category = json.category,
+      j_contact = json.contact,
+      j_coord = json.coord,
+      j_created_date = json.created_date,
+      j_description = json.description,
+      j_end_date = json.end_date,
+      j_icon = json.icon,
+      j_name = json.name,
+      j_owner_id = json.owner_id,
+      j_site = json.site,
+      j_type = json.types,
+      j_id = json._id,
+      j_difficulty = json.difficulty;
+
+      return new EventLocation(j_id, j_owner_id, j_name, Point.unpackCoord(j_coord), j_contact, j_type, j_description, j_site, j_end_date, j_icon, j_difficulty);
   }
 
   createMarker() {
@@ -200,7 +219,7 @@ const battleIcon = L.icon({
 });
 iconsList.set("combat", battleIcon);
 
-// Conversion de lattitue/longitude en x/y carr�s et vice-versa, override de unproject impl�ment�.
+// Conversion de lattitue/longitude en x/y carrés et vice-versa, override de unproject impl�ment�.
 //   GW2 : NO = [0,0], SE = [continent_xmax,continent_ymax];
 //   Leaflet: NO = [0,0], SE = [-256, 256]
 function unproject(coord) {
@@ -284,19 +303,36 @@ function sidebarDisplayEventLoc(loc) {
 function actionDelete() {
   console.log("You choose to delete : " + thisLoc.id);
 
-  // Request API to add permanent location...
-  $.ajax({
-    method: "DELETE",
-    url: 'http://gw2rp-tools.ovh/api/locations/' + thisLoc.id + "?token=" + thisUser.token,
-    dataType: 'json',
-    success: function(json) {
-      console.log(json);
-      if (json.success) {
-        map.removeLayer(thisLoc.marker);
-        sidebarClose();
+  if (thisLoc.category === "lieu") {
+    // Request API to remove permanent location...
+    $.ajax({
+      method: "DELETE",
+      url: 'http://gw2rp-tools.ovh/api/locations/' + thisLoc.id + "?token=" + thisUser.token,
+      dataType: 'json',
+      success: function(json) {
+        if (json.success) {
+          map.removeLayer(thisLoc.marker);
+          sidebarClose();
+        }
       }
-    }
-  });
+    });
+  } else if (thisLoc.category === "event") {
+    // Request API to remove event location...
+    $.ajax({
+      method: "DELETE",
+      url: 'http://gw2rp-tools.ovh/api/events/' + thisLoc.id + "?token=" + thisUser.token,
+      dataType: 'json',
+      success: function(json) {
+        console.log(json);
+        if (json.success) {
+          map.removeLayer(thisLoc.marker);
+          sidebarClose();
+        }
+      }
+    });
+  }
+
+
 
 }
 
@@ -322,6 +358,14 @@ function showLoginModal() {
   return false;
 }
 
+function validate_event_form() {
+
+}
+
+function validate_perm_form() {
+
+}
+
 $("#perm-form-submit").click(function() {
   // validate inputs ! IMPORTANT TODO
 
@@ -335,11 +379,13 @@ $("#perm-form-submit").click(function() {
     site = $('#perm-form #site').val(),
     category = "location";
 
+
+
   // Request API to add permanent location...
   $.ajax({
     method: "POST",
     url: 'http://gw2rp-tools.ovh/api/locations',
-    data: { name: name, description: description, contact: contact, type: type, coord: coord, icon: icon, category: category, hours: hours, site: site, token: thisUser.token },
+    data: { name: name, description: description, contact: contact, types: type, coord: coord, icon: icon, category: category, hours: hours, site: site, token: thisUser.token },
     dataType: 'json',
     success: function(json) {
       console.log(json);
@@ -347,18 +393,55 @@ $("#perm-form-submit").click(function() {
         var location = json.location;
         var permanentLocation = PermanentLocation.parse(location);
         addMarker(permanentLocation);
+
+        $("#addMarkerModal").modal("hide");
       }
     }
   });
 
-  $("#addMarkerModal").modal("hide");
   return false;
 });
 
 $("#event-form-submit").click(function() {
-  var marker = new EventLocation('0', thisUser.id, $('#event-form #name').val(), new Point(x, y), $('#event-form #contact').val(),  $('#event-form #type').val(),  $('#event-form #description').val(),  $('#event-form #site').val(), $('#event-form #end_date').val(), $('#event-form #icon').val().toLowerCase());
-  marker.createMarker();
-  $("#addMarkerModal").modal("hide");
+  var difficulty_table = new Map();
+  difficulty_table.set("Promenade", "peaceful");
+  difficulty_table.set("Facile", "easy");
+  difficulty_table.set("Normal", "normal");
+  difficulty_table.set("Difficile", "difficult");
+  difficulty_table.set("Epique", "hardcore");
+
+  var name = $('#event-form #name').val(),
+    contact = $('#event-form #contact').val(),
+    description = $('#event-form #description').val(),
+    type = $('#event-form #type').val(),
+    coord = "[" + x + "," + y + "]",
+    icon = $('#event-form #icon').val().toLowerCase(),
+    end_date = $('#event-form #end_date').val(),
+    site = $('#event-form #site').val(),
+    category = "location",
+    difficulty = difficulty_table.get($('#event-form #difficulty').val());
+
+  // Request API to add permanent location...
+  $.ajax({
+    method: "POST",
+    url: 'http://gw2rp-tools.ovh/api/events',
+    data: { name: name, description: description, contact: contact, types: type, coord: coord, icon: icon, category: category, end_date: end_date, site: site, difficulty: difficulty, token: thisUser.token },
+    dataType: 'json',
+    success: function(json) {
+      console.log(json);
+      if (json.success) {
+        var event = json.event;
+        var eventLocation = EventLocation.parse(event);
+        addMarker(eventLocation);
+        
+        $("#addMarkerModal").modal("hide");
+      }
+    },
+    fail: function(json) {
+      console.log(json);
+    }
+  });
+
   return false;
 });
 
@@ -396,7 +479,7 @@ function createMap() {
 
     // Restrict the area which can be panned to
     //  In this case we're using the coordinates for the continent of tyria from "https://api.guildwars2.com/v2/continents/1"
-    var continent_dims = [49152, 49152];
+    var continent_dims = [40960, 40960];
     map.setMaxBounds(new L.LatLngBounds(unproject([0,0]), unproject(continent_dims))); // northwest, southeast
 
     // Set the default viewport position (in this case the midpoint) and zoom (in this case 2)

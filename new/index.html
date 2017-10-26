@@ -31,7 +31,7 @@
           <ul class="nav navbar-nav">
             <li><a href="#" data-toggle="collapse" data-target=".navbar-collapse.in" id="about-btn"><span class="glyphicon glyphicon-question-sign"></span> A Propos</a></li>
             <li class="active"><a href="#"><span class="glyphicon glyphicon-globe"></span> Cartographe</a></li>
-            <li><a href="#" data-toggle="collapse" data-target=".navbar-collapse.in" id="login-btn"><span class="glyphicon glyphicon-user"></span> Se connecter</a></li>
+            <li><a href="#" data-toggle="collapse" data-target=".navbar-collapse.in" id="login-btn"><span class="glyphicon glyphicon-user"></span> <span id="login-btn-text">Se connecter</span></a></li>
           </ul>
         </div><!--/.nav-collapse -->
       </div>
@@ -298,17 +298,27 @@
               </form>
             </div>
             <div class="tab-pane fade" id="addEventLocation">
-              <form id="event-form">
+              <form id="event-form" novalidate>
                 <div class="well well-sm">
                   <div class="row">
                     <div class="col-md-4">
                       <div class="form-group">
                         <label for="name">Nom</label>
-                        <input type="text" class="form-control" id="name" placeholder="Les Masques de Nyarlapeutêtre">
+                        <input type="text" class="form-control :invalid" id="name" placeholder="Les Masques de Nyarlapeutêtre" required>
+                      </div>
+                      <div class="form-group">
+                        <label for="difficulty">Difficulté</label>
+                        <select class="form-control" id="difficulty" required>
+                          <option>Promenade</option>
+                          <option>Facile</option>
+                          <option>Normal</option>
+                          <option>Difficile</option>
+                          <option>Epique</option>
+                        </select>
                       </div>
                       <div class="form-group">
                         <label for="type">Type</label>
-                        <select multiple class="form-control" id="type">
+                        <select multiple class="form-control" id="type" required>
                           <option>Bataille</option>
                           <option>Campement</option>
                           <option>Communautaire</option>
@@ -318,11 +328,11 @@
                       </div>
                       <div class="form-group">
                         <label for="contact">Contact</label>
-                        <input type="text" class="form-control" id="contact" placeholder="nakasar#5192">
+                        <input type="text" class="form-control" id="contact" placeholder="nakasar#5192" required>
                       </div>
                       <div class="form-group">
                         <label for="end_date">Date de fin</label>
-                        <input type="date" class="form-control" id="end_date">
+                        <input type="date" class="form-control" id="end_date" required>
                       </div>
                     </div>
                     <div class="col-md-8">
@@ -336,7 +346,7 @@
                       </div>
                       <div class="form-group">
                         <label for="icon">Icone</label>
-                        <select class="form-control" id="icon">
+                        <select class="form-control" id="icon" required>
                           <option>Générique</option>
                           <option>Communautaire</option>
                           <option>Festivité</option>
@@ -375,13 +385,27 @@
       url: 'http://gw2rp-tools.ovh/api/locations',
       dataType: 'json',
       success: function(json) {
-        console.log(json);
         if (json.success) {
           var locations = json.locations;
-          console.log(locations);
           for (var location_index in locations) {
             var permanentLocation = PermanentLocation.parse(locations[location_index]);
             addMarker(permanentLocation);
+          }
+        }
+      }
+    });
+
+    $.ajax({
+      method: "GET",
+      url: 'http://gw2rp-tools.ovh/api/events',
+      dataType: 'json',
+      success: function(json) {
+        console.log(json);
+        if (json.success) {
+          var events = json.events;
+          for (var event_index in events) {
+            var eventLocation = EventLocation.parse(events[event_index]);
+            addMarker(eventLocation);
           }
         }
       }
@@ -412,6 +436,7 @@
               if (json.success) {
                 // user is logged in.
                 signedIn = true;
+                $('#login-btn-text').text('Mon compte');
                 thisUser = new User(json.user.id, json.user.nick_name, json.user.admin, "", token);
               } else {
                 // Do nothing, token is invalid.
@@ -431,6 +456,7 @@
       $('#disconnect').text("Déconnecté").addClass('disabled');
       $('#disconnect').hide();
       signedIn = false;
+      $('#login-btn-text').text('Se connecter');
 
       if (typeof(Storage) !== "undefined") {
         localStorage.removeItem("user_id");
@@ -472,6 +498,7 @@
       $('#disconnect').show();
       signedIn = true;
       thisUser = new User(json.user.id, json.user.nick_name, json.user.admin, json.user.email, json.token);
+      $('#login-btn-text').text('Mon compte');
 
       // Store user data in web storage.
       if (typeof(Storage) !== "undefined") {
