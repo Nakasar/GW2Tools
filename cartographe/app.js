@@ -1,3 +1,5 @@
+const regex_html = /<(.|\n)*?>/;
+
 var difficulty_table = new Map();
 difficulty_table.set("peaceful", "Promenade");
 difficulty_table.set("easy", "Facile");
@@ -137,7 +139,7 @@ class PermanentLocation extends Location {
 
   createMarker() {
     var loc = this;
-    this.marker = L.marker(unproject([this.coord.x, this.coord.y]), {icon: iconsList.get(this.icon)}).bindPopup('<b>' + this.name + '</b><br>' + this.description + '<br><a href="' + this.site + '">site web</a>');
+    this.marker = L.marker(unproject([this.coord.x, this.coord.y]), {icon: iconsList.get(this.icon)}).bindPopup('<h3>' + this.name + '</h3><br>' + formatText(this.description.replace(regex_html, "").replace(/\\n/g, "<br>")) + '<br><a href="' + this.site + '">site web</a>');
     this.marker.on("click", function(e) {
       sidebarDisplayPermLoc(loc);
     });
@@ -283,6 +285,13 @@ function formatText(text) {
   var formatted = "";
 
   formatted = text.replace(/\[color=(.+)\](.+)\[\/color\]/g, '<span style="color: $1;">$2</span>');
+  formatted = formatted.replace(/\[b\](.+)\[\/b\]/g, '<strong>$1</strong>');
+  formatted = formatted.replace(/\*\*(.+)\*\*/g, '<strong>$1</strong>');
+  formatted = formatted.replace(/\[i\](.+)\[\/i\]/g, '<em>$1</em>');
+  formatted = formatted.replace(/\*(.+)\*/g, '<em>$1</em>');
+  formatted = formatted.replace(/\[u\](.+)\[\/u\]/g, '<u>$1</u>')
+  formatted = formatted.replace(/_(.+)_/g, '<u>$1</u>')
+  formatted = formatted.replace(/\\n/g, '<br>')
 
   return formatted;
 }
@@ -301,10 +310,10 @@ function sidebarDisplayPermLoc(loc) {
   $('.site').text(loc.site).attr('href', loc.site).removeClass("list-group-item-danger").addClass("list-group-item-info");
 
   // Cut description if too long.
-  if (description.length > 800) {
-    $('.description').text(loc.description.split(0, 800) + "...");
+  if (loc.description.length > 800) {
+    $('.description').html(formatText(loc.description.replace(regex_html, "")))
   } else {
-    $('.description').text(loc.description);
+    $('.description').html(formatText(loc.description.replace(regex_html, "")))
   }
 
   displayCommand(loc);
@@ -323,19 +332,20 @@ function sidebarDisplayEventLoc(loc) {
   $('#sidebar h3').text(loc.name);
   $('.contact').text(loc.contact);
 
-  $('#hours-heading').text("Date de Fin");
-  $('.hours').text(loc.end_date);
+  $('#hours-heading').text("Date");
+  var date = new Date(loc.end_date);
+  if (date) {
+      $('.hours').text(date.toLocaleDateString() + " " + date.toLocaleTimeString().substr(0, 5));
+  } else {
+    $('.hours').text("Non renseigné.");
+  }
 
   $('.type').text(loc.typesToString());
 
   $('.site').text(loc.site).attr('href', loc.site).removeClass("list-group-item-info").addClass("list-group-item-danger");
-  
+
   // Cut description if too long.
-  if (description.length > 800) {
-    $('.description').text(loc.description.split(0, 800) + "...");
-  } else {
-    $('.description').text(loc.description);
-  }
+  $('.description').html(formatText(loc.description.replace(regex_html, "")));
 
   displayCommand(loc);
   thisLoc = loc;
@@ -348,6 +358,14 @@ function sidebarDisplayEventLoc(loc) {
 }
 
 /*
+  Set detail modal.
+*/
+$('#permloc-detail-modal').on('show.bs.modal', function (e) {
+  $('#permloc-detail-modal-title').text(thisLoc.name);
+  $('#permloc-detail-modal-description').html(formatText(thisLoc.description.replace(regex_html, "")));
+})
+
+/*
   Called when the user clicked the "modify" locatio button. It opens the location form modal, fills it with current data, and updates the document when user validates.
 */
 function actionModify() {
@@ -355,11 +373,13 @@ function actionModify() {
   sidebarClose();
 
   if (thisLoc.category === "location") {
+
     x = thisLoc.coord.x;
     y = thisLoc.coord.y;
+
     $('#perm-form #name').val(thisLoc.name);
     $('#perm-form #contact').val(thisLoc.contact);
-    $('#perm-form #description').val(thisLoc.description);
+    $('#perm-form #description').val(thisLoc.description.replace(regex_html, ""));
     $('#perm-form #type').val(thisLoc.type);
     $('#perm-form #icon').val(thisLoc.icon);
     $('#perm-form #hours').val(thisLoc.hours);
@@ -367,23 +387,30 @@ function actionModify() {
 
     $('#addLocationTabs a[href="#addPermanentLocationTabContent"]').tab('show');
     $("#addMarkerModal").modal("show");
+
   } else if (thisLoc.category === "event") {
+
     x = thisLoc.coord.x;
     y = thisLoc.coord.y;
+
     $('#event-form #name').val(thisLoc.name);
     $('#event-form #contact').val(thisLoc.contact);
-    $('#event-form #description').val(thisLoc.description);
+    $('#event-form #description').val(thisLoc.description.replace(regex_html, ""));
     $('#event-form #type').val(thisLoc.type);
     $('#event-form #icon').val(thisLoc.icon);
+
     var date = new Date(thisLoc.end_date);
     if (date) {
       $('#event-form #end_date').val(date.toISOString().substr(0, 10));
+      $('#event-form #end_hour').val(date.toLocaleTimeString())
     }
+
     $('#event-form #site').val(thisLoc.site);
     $('#event-form #difficulty').val(thisLoc.difficulty);
 
     $('#addLocationTabs a[href="#addEventLocationTabContent"]').tab('show');
     $("#addMarkerModal").modal("show");
+
   }
 }
 
@@ -450,7 +477,7 @@ $("#perm-form-submit").click(function() {
 
   var name = $('#perm-form #name').val(),
     contact = $('#perm-form #contact').val(),
-    description = $('#perm-form #description').val(),
+    description = $('#perm-form #description').val().replace(regex_html, ""),
     type = $('#perm-form #type').val(),
     coord = "[" + x + "," + y + "]",
     icon = $('#perm-form #icon').val(),
@@ -467,6 +494,7 @@ $("#perm-form-submit").click(function() {
       data: { name: name, description: description, contact: contact, types: type, coord: coord, icon: icon, category: category, hours: hours, site: site, token: thisUser.token },
       dataType: 'json',
       success: function(json) {
+        console.log(json);
         if (json.success) {
           var location = json.location;
           var permanentLocation = PermanentLocation.parse(location);
@@ -507,14 +535,24 @@ $("#event-form-submit").click(function() {
 
   var name = $('#event-form #name').val(),
     contact = $('#event-form #contact').val(),
-    description = $('#event-form #description').val(),
+    description = $('#event-form #description').val().replace(regex_html, ""),
     type = $('#event-form #type').val(),
     coord = "[" + x + "," + y + "]",
     icon = $('#event-form #icon').val().toLowerCase(),
     end_date = $('#event-form #end_date').val(),
+    end_hour = $('#event-form #end_hour').val();
     site = $('#event-form #site').val(),
     category = "location",
     difficulty = $('#event-form #difficulty').val();
+
+  var date = new Date(end_date);
+  if (date) {
+    date.setHours(end_hour.split(':')[0]);
+    date.setMinutes(end_hour.split(':')[1]);
+    end_date = date.toString();
+  } else {
+    return false;
+  }
 
   if (mode === "add") {
     // Request API to add permanent location...
@@ -570,11 +608,11 @@ function onMapRightClick(e) {
   y = point.y;
 
   if(signedIn) {
+    mode = "add";
     $("#addMarkerModal").modal("show");
     $(".navbar-collapse.in").collapse("hide");
   }
   else {
-    mode = "add";
     showLoginModal();
   }
   return false;

@@ -39,5 +39,15 @@ body {
   display: none;
 }
 }
+.sidebar-wrapper .description {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-height: 20vh;
+  white-space: pre-wrap;
+}
+
+#permloc-detail-modal-description {
+  white-space: pre-wrap;
+}
 
 .leaflet-container {background: #000;}
