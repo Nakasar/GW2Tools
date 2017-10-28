@@ -139,7 +139,7 @@ class PermanentLocation extends Location {
 
   createMarker() {
     var loc = this;
-    this.marker = L.marker(unproject([this.coord.x, this.coord.y]), {icon: iconsList.get(this.icon)}).bindPopup('<h3>' + this.name + '</h3><br>' + formatText(this.description.replace(regex_html, "").replace(/\n/g, "<br>")) + '<br><a href="' + this.site + '">site web</a>');
+    this.marker = L.marker(unproject([this.coord.x, this.coord.y]), {icon: iconsList.get(this.icon)}).bindPopup('<h3>' + this.name + '</h3><br>' + formatText(this.description.replace(regex_html, "").replace(/\n/g, "<br>")) + '<br><a target="_blank" href="' + this.site + '">site web</a>');
     this.marker.on("click", function(e) {
       sidebarDisplayPermLoc(loc);
     });
@@ -186,7 +186,7 @@ class EventLocation extends Location {
       formatteddate = formatteddate + "</h4>";
     }
 
-    this.marker = L.marker(unproject([this.coord.x, this.coord.y]), {icon: iconsList.get(this.icon)}).bindPopup('<h2>' + this.name + '</h2>' + formatteddate + '<br>' + formatText(this.description.replace(regex_html, "").replace(/\n/g, "<br>")) + '<br><a href="' + this.site + '">site web</a>');
+    this.marker = L.marker(unproject([this.coord.x, this.coord.y]), {icon: iconsList.get(this.icon)}).bindPopup('<h2>' + this.name + '</h2>' + formatteddate + '<br>' + formatText(this.description.replace(regex_html, "").replace(/\n/g, "<br>")) + '<br><a target="_blank" href="' + this.site + '">site web</a>');
     this.marker.on("click", function(e) {
       sidebarDisplayEventLoc(loc);
     });
@@ -599,7 +599,7 @@ $("#event-form-submit").click(function() {
       success: function(json) {
         if (json.success) {
           map.removeLayer(thisLoc.marker);
-          
+
           var event = json.event;
           var eventLocation = EventLocation.parse(event);
           addMarker(eventLocation);

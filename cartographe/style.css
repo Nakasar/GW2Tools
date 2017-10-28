@@ -45,6 +45,10 @@ body {
   max-height: 20vh;
   white-space: pre-wrap;
 }
+#sidebar .site {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 
 #permloc-detail-modal-description {
   white-space: pre-wrap;
