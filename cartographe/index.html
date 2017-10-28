@@ -67,6 +67,7 @@
               <li class="list-group-item list-group-item-warning">
                 <h4 class="list-group-item-heading">Actions</h4>
                 <button type="button" class="btn btn-danger" onclick="actionDelete();" id="actionDelete">Supprimer</button>
+                <button type="button" class="btn btn-warning" onclick="actionModify();" id="actionModify">Modifier</button>
               </li>
           </ul>
         </div>
@@ -234,13 +235,17 @@
             <h4 class="modal-title">Ajout d'un marqueur.</h4>
           </div>
           <div class="modal-body">
-            <ul class="nav nav-tabs nav-justified" id="aboutTabs">
-              <li class="active"><a href="#addPermanentLocation" data-toggle="tab"><i class="fa fa-question-circle"></i>&nbsp;Lieu permanent</a></li>
-              <li><a href="#addEventLocation" data-toggle="tab"><i class="fa fa-envelope"></i>&nbsp;Evènement</a></li>
+            <ul class="nav nav-tabs nav-justified" id="addLocationTabs">
+              <li class="nav-link active">
+                <a href="#addPermanentLocationTabContent" id="addPermanentLocationTab" data-toggle="tab"><i class="fa fa-question-circle"></i>&nbsp;Lieu permanent</a>
+              </li>
+              <li class="nav-link">
+                <a href="#addEventLocationTabContent" id="addEventLocationTab" data-toggle="tab"><i class="fa fa-envelope"></i>&nbsp;Evènement</a>
+              </li>
             </ul>
           </div>
-          <div class="tab-content" id="aboutTabsContent">
-            <div class="tab-pane fade active in" id="addPermanentLocation">
+          <div class="tab-content" id="addLocationTabsContent">
+            <div class="tab-pane fade active in" id="addPermanentLocationTabContent">
               <form id="perm-form">
                 <div class="well well-sm">
                   <div class="row">
@@ -252,13 +257,13 @@
                       <div class="form-group">
                         <label for="type">Type</label>
                         <select multiple class="form-control" id="type">
-                          <option>Taverne</option>
-                          <option>Commerce</option>
-                          <option>Exploration</option>
-                          <option>Mercenariat</option>
-                          <option>Recherche</option>
-                          <option>Noblesse</option>
-                          <option>Autre</option>
+                          <option value="tavern">Taverne</option>
+                          <option value="trading">Commerce</option>
+                          <option value="exploration">Exploration</option>
+                          <option value="mercenary">Mercenariat</option>
+                          <option value="research">Recherche</option>
+                          <option value="nobility">Noblesse</option>
+                          <option value="other">Autre</option>
                         </select>
                       </div>
                       <div class="form-group">
@@ -282,10 +287,10 @@
                       <div class="form-group">
                         <label for="icon">Icone</label>
                         <select class="form-control" id="icon">
-                          <option>Taverne</option>
-                          <option>Guilde</option>
-                          <option>Commerce</option>
-                          <option>Divers</option>
+                          <option value="tavern">Taverne</option>
+                          <option value="guild">Guilde</option>
+                          <option value="merchant">Commerce</option>
+                          <option value="other">Divers</option>
                         </select>
                       </div>
                     </div>
@@ -298,7 +303,7 @@
                 </div>
               </form>
             </div>
-            <div class="tab-pane fade" id="addEventLocation">
+            <div class="tab-pane fade" id="addEventLocationTabContent">
               <form id="event-form">
                 <div class="well well-sm">
                   <div class="row">
@@ -310,22 +315,22 @@
                       <div class="form-group">
                         <label for="difficulty">Difficulté</label>
                         <select class="form-control" id="difficulty" required>
-                          <option>Promenade</option>
-                          <option>Facile</option>
-                          <option>Normal</option>
-                          <option>Difficile</option>
-                          <option>Epique</option>
+                          <option value="peaceful">Promenade</option>
+                          <option value="easy">Facile</option>
+                          <option value="normal">Normal</option>
+                          <option value="difficult">Difficile</option>
+                          <option value="hardcore">Epique</option>
                         </select>
                       </div>
                       <div class="form-group">
                         <label for="type">Type</label>
                         <select multiple class="form-control" id="type" required>
-                          <option>Bataille</option>
-                          <option>Campement</option>
-                          <option>Communautaire</option>
-                          <option>Dégâts</option>
-                          <option>Zone dangereuse</option>
-                          <option>Autre</option>
+                          <option value="battle">Bataille</option>
+                          <option value="camp">Campement</option>
+                          <option value="communitary">Communautaire</option>
+                          <option value="damages">Dégâts</option>
+                          <option value="danger">Zone dangereuse</option>
+                          <option value="other">Autre</option>
                         </select>
                       </div>
                       <div class="form-group">
@@ -349,10 +354,10 @@
                       <div class="form-group">
                         <label for="icon">Icone</label>
                         <select class="form-control" id="icon" required>
-                          <option>Générique</option>
-                          <option>Communautaire</option>
-                          <option>Festivité</option>
-                          <option>Combat</option>
+                          <option value="generic">Générique</option>
+                          <option value="communitary">Communautaire</option>
+                          <option value="festival">Festivité</option>
+                          <option value="fight">Combat</option>
                         </select>
                       </div>
                     </div>

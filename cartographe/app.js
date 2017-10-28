@@ -1,6 +1,31 @@
-﻿var x;
+var difficulty_table = new Map();
+difficulty_table.set("peaceful", "Promenade");
+difficulty_table.set("easy", "Facile");
+difficulty_table.set("normal", "Normal");
+difficulty_table.set("difficult", "Difficile");
+difficulty_table.set("hardcore", "Epique");
+
+var translate_types = new Map();
+translate_types.set("tavern", "Taverne");
+translate_types.set("trading", "Commerce");
+translate_types.set("exploration", "Exploration");
+translate_types.set("mercenary", "Mercenariat");
+translate_types.set("research", "Recherche");
+translate_types.set("nobility", "Noblesse");
+//
+translate_types.set("battle", "Bataille");
+translate_types.set("camp", "Campement");
+translate_types.set("communitary", "Communautaire");
+translate_types.set("damages", "Dégâts");
+translate_types.set("danger", "Zone dangereuse");
+//
+translate_types.set("other", "Autre");
+
+
+var x;
 var y;
 var thisLoc;
+var mode;
 
 $("#about-btn").click(function() {
   $("#aboutModal").modal("show");
@@ -73,7 +98,7 @@ class Location {
   typesToString() {
     var types = "";
     for(var i = 0; i < this.type.length; i++) {
-      types += this.type[i] + ", ";
+      types += translate_types.get(this.type[i]) + ", ";
     }
     return types;
   }
@@ -168,56 +193,56 @@ const eventIcon = L.icon({
     iconAnchor: [10, 10],
     popupAnchor: [0, -10]
 });
-iconsList.set("générique", eventIcon);
+iconsList.set("generic", eventIcon);
 const tavernIcon = L.icon({
     iconUrl: 'https://wiki.guildwars2.com/images/thumb/4/4f/Belcher%27s_Bluff_%28map_icon%29.png/20px-Belcher%27s_Bluff_%28map_icon%29.png',
     iconSize: [30, 30],
     iconAnchor: [15, 15],
     popupAnchor: [0, -15]
 });
-iconsList.set("taverne", tavernIcon);
+iconsList.set("tavern", tavernIcon);
 const merchantIcon = L.icon({
     iconUrl: 'https://wiki.guildwars2.com/images/thumb/4/44/Merchant_%28map_icon%29.png/27px-Merchant_%28map_icon%29.png',
     iconSize: [40, 40],
     iconAnchor: [20, 20],
     popupAnchor: [0, -20]
 });
-iconsList.set("commerce", merchantIcon);
+iconsList.set("merchant", merchantIcon);
 const genericIcon = L.icon({
     iconUrl: 'https://wiki.guildwars2.com/images/f/fe/Scout_%28map_icon%29.png',
     iconSize: [20, 20],
     iconAnchor: [10, 10],
     popupAnchor: [0, -10]
 });
-iconsList.set("divers", genericIcon);
+iconsList.set("other", genericIcon);
 const festivalIcon = L.icon({
     iconUrl: 'https://wiki.guildwars2.com/images/thumb/2/27/Activity_%28map_icon%29.png/20px-Activity_%28map_icon%29.png',
     iconSize: [30, 30],
     iconAnchor: [15, 15],
     popupAnchor: [0, -15]
 });
-iconsList.set("festivité", festivalIcon);
+iconsList.set("festival", festivalIcon);
 const guildIcon = L.icon({
     iconUrl: 'https://wiki.guildwars2.com/images/thumb/c/c6/Guild_Commendation_Trainer_%28map_icon%29.png/20px-Guild_Commendation_Trainer_%28map_icon%29.png',
     iconSize: [20, 20],
     iconAnchor: [10, 10],
     popupAnchor: [0, -10]
 });
-iconsList.set("guilde", guildIcon);
+iconsList.set("guild", guildIcon);
 const assemblyIcon = L.icon({
     iconUrl: 'https://wiki.guildwars2.com/images/thumb/2/2c/Tournament_Master_%28map_icon%29.png/20px-Tournament_Master_%28map_icon%29.png',
     iconSize: [30, 30],
     iconAnchor: [15, 15],
     popupAnchor: [0, -15]
 });
-iconsList.set("communautaire", assemblyIcon)
+iconsList.set("communitary", assemblyIcon)
 const battleIcon = L.icon({
     iconUrl: 'https://wiki.guildwars2.com/images/6/67/Event_swords_%28map_icon%29.png',
     iconSize: [20, 20],
     iconAnchor: [10, 10],
     popupAnchor: [0, -10]
 });
-iconsList.set("combat", battleIcon);
+iconsList.set("fight", battleIcon);
 
 // Conversion de lattitue/longitude en x/y carrés et vice-versa, override de unproject impl�ment�.
 //   GW2 : NO = [0,0], SE = [continent_xmax,continent_ymax];
@@ -238,16 +263,18 @@ function sidebarClose() {
 function displayCommand(loc) {
   if(signedIn) {
     if(thisUser.admin == 1) {
-      console.log("You can delete this token");
       $('#actionDelete').show();
+      $('#actionModify').show();
     } else if(thisUser.id === loc.owner.id) {
       $('#actionDelete').show();
-      console.log("You can delete this token");
+      $('#actionModify').show();
     } else {
       $('#actionDelete').hide();
+      $('#actionModify').hide();
     }
   } else {
     $('#actionDelete').hide();
+    $('#actionModify').hide();
   }
   return false;
 }
@@ -300,10 +327,48 @@ function sidebarDisplayEventLoc(loc) {
   });
 }
 
-function actionDelete() {
-  console.log("You choose to delete : " + thisLoc.id);
+/*
+  Called when the user clicked the "modify" locatio button. It opens the location form modal, fills it with current data, and updates the document when user validates.
+*/
+function actionModify() {
+  mode = "modify";
+  sidebarClose();
 
-  if (thisLoc.category === "lieu") {
+  if (thisLoc.category === "location") {
+    x = thisLoc.coord.x;
+    y = thisLoc.coord.y;
+    $('#perm-form #name').val(thisLoc.name);
+    $('#perm-form #contact').val(thisLoc.contact);
+    $('#perm-form #description').val(thisLoc.description);
+    $('#perm-form #type').val(thisLoc.type);
+    $('#perm-form #icon').val(thisLoc.icon);
+    $('#perm-form #hours').val(thisLoc.hours);
+    $('#perm-form #site').val(thisLoc.site);
+
+    $('#addLocationTabs a[href="#addPermanentLocationTabContent"]').tab('show');
+    $("#addMarkerModal").modal("show");
+  } else if (thisLoc.category === "event") {
+    x = thisLoc.coord.x;
+    y = thisLoc.coord.y;
+    $('#event-form #name').val(thisLoc.name);
+    $('#event-form #contact').val(thisLoc.contact);
+    $('#event-form #description').val(thisLoc.description);
+    $('#event-form #type').val(thisLoc.type);
+    $('#event-form #icon').val(thisLoc.icon);
+    var date = new Date(thisLoc.end_date);
+    if (date) {
+      $('#event-form #end_date').val(date.toISOString().substr(0, 10));
+    }
+    $('#event-form #site').val(thisLoc.site);
+    $('#event-form #difficulty').val(thisLoc.difficulty);
+
+    $('#addLocationTabs a[href="#addEventLocationTabContent"]').tab('show');
+    $("#addMarkerModal").modal("show");
+  }
+}
+
+function actionDelete() {
+  if (thisLoc.category === "location") {
     // Request API to remove permanent location...
     $.ajax({
       method: "DELETE",
@@ -323,7 +388,6 @@ function actionDelete() {
       url: 'http://gw2rp-tools.ovh/api/events/' + thisLoc.id + "?token=" + thisUser.token,
       dataType: 'json',
       success: function(json) {
-        console.log(json);
         if (json.success) {
           map.removeLayer(thisLoc.marker);
           sidebarClose();
@@ -331,15 +395,10 @@ function actionDelete() {
       }
     });
   }
-
-
-
 }
 
 
-// Lors d'un click gauche, indiquer dans la console les coordon�es (debug)
 function onMapClick(e) {
-  console.log("You clicked the map at " + map.project(e.latlng,map.getMaxZoom()));
   sidebarClose();
   return false;
 }
@@ -374,41 +433,56 @@ $("#perm-form-submit").click(function() {
     description = $('#perm-form #description').val(),
     type = $('#perm-form #type').val(),
     coord = "[" + x + "," + y + "]",
-    icon = $('#perm-form #icon').val().toLowerCase(),
+    icon = $('#perm-form #icon').val(),
     hours = $('#perm-form #hours').val(),
     site = $('#perm-form #site').val(),
     category = "location";
 
 
+  if (mode === "add") {
+    // Request API to add permanent location...
+    $.ajax({
+      method: "POST",
+      url: 'http://gw2rp-tools.ovh/api/locations',
+      data: { name: name, description: description, contact: contact, types: type, coord: coord, icon: icon, category: category, hours: hours, site: site, token: thisUser.token },
+      dataType: 'json',
+      success: function(json) {
+        if (json.success) {
+          var location = json.location;
+          var permanentLocation = PermanentLocation.parse(location);
+          addMarker(permanentLocation);
 
-  // Request API to add permanent location...
-  $.ajax({
-    method: "POST",
-    url: 'http://gw2rp-tools.ovh/api/locations',
-    data: { name: name, description: description, contact: contact, types: type, coord: coord, icon: icon, category: category, hours: hours, site: site, token: thisUser.token },
-    dataType: 'json',
-    success: function(json) {
-      console.log(json);
-      if (json.success) {
-        var location = json.location;
-        var permanentLocation = PermanentLocation.parse(location);
-        addMarker(permanentLocation);
-
-        $("#addMarkerModal").modal("hide");
+          $("#addMarkerModal").modal("hide");
+          sidebarDisplayPermLoc(location);
+        }
       }
-    }
-  });
+    });
+  } else if (mode === "modify") {
+    // Request API to add permanent location...
+    $.ajax({
+      method: "PUT",
+      url: 'http://gw2rp-tools.ovh/api/locations/' + thisLoc.id,
+      data: { name: name, description: description, contact: contact, types: type, coord: coord, icon: icon, category: category, hours: hours, site: site, token: thisUser.token },
+      dataType: 'json',
+      success: function(json) {
+        if (json.success) {
+          map.removeLayer(thisLoc.marker);
+
+          var location = json.location;
+          var permanentLocation = PermanentLocation.parse(location);
+          addMarker(permanentLocation);
+
+          $("#addMarkerModal").modal("hide");
+          sidebarDisplayPermLoc(permanentLocation);
+        }
+      }
+    });
+  }
 
   return false;
 });
 
 $("#event-form-submit").click(function() {
-  var difficulty_table = new Map();
-  difficulty_table.set("Promenade", "peaceful");
-  difficulty_table.set("Facile", "easy");
-  difficulty_table.set("Normal", "normal");
-  difficulty_table.set("Difficile", "difficult");
-  difficulty_table.set("Epique", "hardcore");
 
   var name = $('#event-form #name').val(),
     contact = $('#event-form #contact').val(),
@@ -419,28 +493,52 @@ $("#event-form-submit").click(function() {
     end_date = $('#event-form #end_date').val(),
     site = $('#event-form #site').val(),
     category = "location",
-    difficulty = difficulty_table.get($('#event-form #difficulty').val());
+    difficulty = $('#event-form #difficulty').val();
 
-  // Request API to add permanent location...
-  $.ajax({
-    method: "POST",
-    url: 'http://gw2rp-tools.ovh/api/events',
-    data: { name: name, description: description, contact: contact, types: type, coord: coord, icon: icon, category: category, end_date: end_date, site: site, difficulty: difficulty, token: thisUser.token },
-    dataType: 'json',
-    success: function(json) {
-      console.log(json);
-      if (json.success) {
-        var event = json.event;
-        var eventLocation = EventLocation.parse(event);
-        addMarker(eventLocation);
+  if (mode === "add") {
+    // Request API to add permanent location...
+    $.ajax({
+      method: "POST",
+      url: 'http://gw2rp-tools.ovh/api/events',
+      data: { name: name, description: description, contact: contact, types: type, coord: coord, icon: icon, category: category, end_date: end_date, site: site, difficulty: difficulty, token: thisUser.token },
+      dataType: 'json',
+      success: function(json) {
+        if (json.success) {
+          map.removeLayer(thisLoc.marker);
 
-        $("#addMarkerModal").modal("hide");
+          var event = json.event;
+          var eventLocation = EventLocation.parse(event);
+          addMarker(eventLocation);
+
+          $("#addMarkerModal").modal("hide");
+          sidebarDisplayEventLoc(eventLocation);
+        }
+      },
+      fail: function(json) {
       }
-    },
-    fail: function(json) {
-      console.log(json);
-    }
-  });
+    });
+  } else if (mode === "modify") {
+    // Request API to add permanent location...
+    $.ajax({
+      method: "PUT",
+      url: 'http://gw2rp-tools.ovh/api/events/' + thisLoc.id,
+      data: { name: name, description: description, contact: contact, types: type, coord: coord, icon: icon, category: category, end_date: end_date, site: site, difficulty: difficulty, token: thisUser.token },
+      dataType: 'json',
+      success: function(json) {
+        if (json.success) {
+          var event = json.event;
+          var eventLocation = EventLocation.parse(event);
+          addMarker(eventLocation);
+
+          $("#addMarkerModal").modal("hide");
+          sidebarDisplayEventLoc(eventLocation);
+        }
+      },
+      fail: function(json) {
+      }
+    });
+  }
+
 
   return false;
 });
@@ -455,6 +553,7 @@ function onMapRightClick(e) {
     $(".navbar-collapse.in").collapse("hide");
   }
   else {
+    mode = "add";
     showLoginModal();
   }
   return false;
