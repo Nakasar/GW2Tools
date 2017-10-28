@@ -139,7 +139,7 @@ class PermanentLocation extends Location {
 
   createMarker() {
     var loc = this;
-    this.marker = L.marker(unproject([this.coord.x, this.coord.y]), {icon: iconsList.get(this.icon)}).bindPopup('<h3>' + this.name + '</h3><br>' + formatText(this.description.replace(regex_html, "").replace(/\\n/g, "<br>")) + '<br><a href="' + this.site + '">site web</a>');
+    this.marker = L.marker(unproject([this.coord.x, this.coord.y]), {icon: iconsList.get(this.icon)}).bindPopup('<h3>' + this.name + '</h3><br>' + formatText(this.description.replace(regex_html, "").replace(/\n/g, "<br>")) + '<br><a href="' + this.site + '">site web</a>');
     this.marker.on("click", function(e) {
       sidebarDisplayPermLoc(loc);
     });
@@ -175,7 +175,18 @@ class EventLocation extends Location {
 
   createMarker() {
     var loc = this;
-    this.marker = L.marker(unproject([this.coord.x, this.coord.y]), {icon: iconsList.get(this.icon)}).bindPopup('<b>' + this.name + '</b><br>' + this.description + '<br><a href="' + this.site + '">site web</a>');
+    var date = new Date(loc.end_date);
+    var formatteddate = ""
+    if (date) {
+      formatteddate = "<h4>";
+      formatteddate = formatteddate + date.toLocaleDateString();
+      if (date.getHours() != 0) {
+        formatteddate = formatteddate + " - " + date.toLocaleTimeString().substr(0, 5);
+      }
+      formatteddate = formatteddate + "</h4>";
+    }
+
+    this.marker = L.marker(unproject([this.coord.x, this.coord.y]), {icon: iconsList.get(this.icon)}).bindPopup('<h2>' + this.name + '</h2>' + formatteddate + '<br>' + formatText(this.description.replace(regex_html, "").replace(/\n/g, "<br>")) + '<br><a href="' + this.site + '">site web</a>');
     this.marker.on("click", function(e) {
       sidebarDisplayEventLoc(loc);
     });
@@ -444,7 +455,6 @@ function actionDelete() {
   }
 }
 
-
 function onMapClick(e) {
   sidebarClose();
   return false;
@@ -547,8 +557,13 @@ $("#event-form-submit").click(function() {
 
   var date = new Date(end_date);
   if (date) {
-    date.setHours(end_hour.split(':')[0]);
-    date.setMinutes(end_hour.split(':')[1]);
+    if (end_hour.length > 0) {
+      date.setHours(end_hour.split(':')[0]);
+      date.setMinutes(end_hour.split(':')[1]);
+    } else {
+      date.setHours(0);
+      date.setMinutes(0);
+    }
     end_date = date.toString();
   } else {
     return false;
@@ -563,8 +578,6 @@ $("#event-form-submit").click(function() {
       dataType: 'json',
       success: function(json) {
         if (json.success) {
-          map.removeLayer(thisLoc.marker);
-
           var event = json.event;
           var eventLocation = EventLocation.parse(event);
           addMarker(eventLocation);
@@ -585,6 +598,8 @@ $("#event-form-submit").click(function() {
       dataType: 'json',
       success: function(json) {
         if (json.success) {
+          map.removeLayer(thisLoc.marker);
+          
           var event = json.event;
           var eventLocation = EventLocation.parse(event);
           addMarker(eventLocation);
