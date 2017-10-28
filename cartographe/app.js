@@ -279,6 +279,14 @@ function displayCommand(loc) {
   return false;
 }
 
+function formatText(text) {
+  var formatted = "";
+
+  formatted = text.replace(/\[color=(.+)\](.+)\[\/color\]/g, '<span style="color: $1;">$2</span>');
+
+  return formatted;
+}
+
 // Display info about a Permanent Location
 function sidebarDisplayPermLoc(loc) {
   $('#features').removeClass("panel-default panel-danger").addClass("panel-info");
@@ -291,7 +299,13 @@ function sidebarDisplayPermLoc(loc) {
   $('.type').text(loc.typesToString());
 
   $('.site').text(loc.site).attr('href', loc.site).removeClass("list-group-item-danger").addClass("list-group-item-info");
-  $('.description').text(loc.description);
+
+  // Cut description if too long.
+  if (description.length > 800) {
+    $('.description').text(loc.description.split(0, 800) + "...");
+  } else {
+    $('.description').text(loc.description);
+  }
 
   displayCommand(loc);
 
@@ -315,7 +329,13 @@ function sidebarDisplayEventLoc(loc) {
   $('.type').text(loc.typesToString());
 
   $('.site').text(loc.site).attr('href', loc.site).removeClass("list-group-item-info").addClass("list-group-item-danger");
-  $('.description').text(loc.description);
+  
+  // Cut description if too long.
+  if (description.length > 800) {
+    $('.description').text(loc.description.split(0, 800) + "...");
+  } else {
+    $('.description').text(loc.description);
+  }
 
   displayCommand(loc);
   thisLoc = loc;
@@ -465,6 +485,7 @@ $("#perm-form-submit").click(function() {
       data: { name: name, description: description, contact: contact, types: type, coord: coord, icon: icon, category: category, hours: hours, site: site, token: thisUser.token },
       dataType: 'json',
       success: function(json) {
+        console.log(json);
         if (json.success) {
           map.removeLayer(thisLoc.marker);
 
