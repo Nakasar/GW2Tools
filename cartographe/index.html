@@ -91,6 +91,12 @@
             <ul class="nav nav-tabs nav-justified" id="aboutTabs">
               <li class="active"><a href="#about" data-toggle="tab"><i class="fa fa-question-circle"></i>&nbsp;A propos des outils</a></li>
               <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-globe"></i>&nbsp;Utilisation <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  <li><a href="#tuto-cartopgraphe-tab" data-toggle="tab">Cartographe</a></li>
+                </ul>
+              </li>
+              <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-globe"></i>&nbsp;Sources <b class="caret"></b></a>
                 <ul class="dropdown-menu">
                   <li><a href="#donnees-tab" data-toggle="tab">Cartes & marqueurs</a></li>
@@ -126,6 +132,15 @@
               </div>
               <div class="tab-pane fade" id="theaters-tab">
                 <p>Les events sont des lieux temporaires. Affichés pour une durée maximale de une semaine, ils signalent une activité particulière dans un lieu.</p>
+              </div>
+              <div class="tab-pane fade" id="tuto-cartopgraphe-tab">
+                  <ul class="list-group">
+                    <li class="list-group-item">Vous devez être connecté pour ajouter des marqueurs.</li>
+                    <li class="list-group-item">Cliuer droit sur la carte pour ajouter un nouveau marqueur à cet emplacement.</li>
+                    <li class="list-group-item">Cliquez gauche sur un marqueur de la carte pour afficher des détails à son sujet.</li>
+                    <li class="list-group-item">Après avoir sélectionné un marquer, utilisez le menu latéral gauche pour le supprimer ou le modifier.</li>
+                    <li class="list-group-item">Utilisez le panneau "Mon Compte" pour vous déconnecter.</li>
+                  </ul>
               </div>
             </div>
           </div>
@@ -426,7 +441,7 @@
     <!-- jQuery library -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.js"></script>
     <!-- Latest compiled JavaScript -->
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.js"></script>
     <script src="https://unpkg.com/leaflet@1.0.1/dist/leaflet.js"></script>
     <script src="app.js"></script>
     <script>
