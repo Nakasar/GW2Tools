@@ -90,7 +90,7 @@ class PermanentLocation extends Location {
   constructor(id, owner_id, name, coord, contact, type, description, site, hours, icon) {
     super(id, owner_id, name, coord, contact, type, description, site, icon);
     this.hours = hours;
-    this.category = "lieu";
+    this.category = "location";
   }
 
   static parse (json) {
@@ -433,7 +433,7 @@ $("#event-form-submit").click(function() {
         var event = json.event;
         var eventLocation = EventLocation.parse(event);
         addMarker(eventLocation);
-        
+
         $("#addMarkerModal").modal("hide");
       }
     },
@@ -479,7 +479,7 @@ function createMap() {
 
     // Restrict the area which can be panned to
     //  In this case we're using the coordinates for the continent of tyria from "https://api.guildwars2.com/v2/continents/1"
-    var continent_dims = [40960, 40960];
+    var continent_dims = [49152, 49152];
     map.setMaxBounds(new L.LatLngBounds(unproject([0,0]), unproject(continent_dims))); // northwest, southeast
 
     // Set the default viewport position (in this case the midpoint) and zoom (in this case 2)
