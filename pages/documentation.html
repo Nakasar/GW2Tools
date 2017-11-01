@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <meta name="theme-color" content="#000000">
+  <meta name="description" content="">
+  <meta name="author" content="Kavin 'Nakasar' Thizy">
+
+  <title>Cartographe - Outils RP</title>
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+  <link rel="stylesheet" href="/components/style_global.css">
+
+</head>
+<body>
+  <header>
+    <div id="navigation">
+    </div>
+  </header>
+
+  <div class="container">
+    <article>
+      <h1>Utilisation de l'API</h1>
+      <p>Ipsum</p>
+      <h2>Liste des endpoints</h2>
+      <table class="table">
+        <tr>
+          <th>Endpoint</th>
+          <th>Description</th>
+          <th>Méthodes</th>
+        </tr>
+        <tr>
+          <td>/me</td>
+          <td>Vérifie la validition du token de l'utilisateur courant.</td>
+          <td><span class="badge badge-primary">POST</span></td>
+        </tr>
+        <tr>
+          <td>/signup</td>
+          <td>Ajoute un nouvel utilisateur (le nom d'utilisateur doit être unique).</td>
+          <td><span class="badge badge-primary">POST</span></td>
+        </tr>
+        <tr>
+          <td>/login</td>
+          <td>Authentifie un utilisateur et retourne un token d'une validité d'un jour.</td>
+          <td><span class="badge badge-primary">POST</span></td>
+        </tr>
+        <tr>
+          <td>/users</td>
+          <td>End point des utilisateurs.</td>
+          <td><span class="badge badge-success">GET</span> <span class="badge badge-primary">POST</span> <span class="badge badge-warning">PUT</span> <span class="badge badge-danger">DELETE</span></td>
+        </tr>
+        <tr>
+          <td>/events</td>
+          <td>End point des événements.</td>
+          <td><span class="badge badge-success">GET</span> <span class="badge badge-primary">POST</span> <span class="badge badge-warning">PUT</span> <span class="badge badge-danger">DELETE</span></td>
+        </tr>
+        <tr>
+          <td>/locations</td>
+          <td>End point des lieux permanents.</td>
+          <td><span class="badge badge-success">GET</span> <span class="badge badge-primary">POST</span> <span class="badge badge-warning">PUT</span> <span class="badge badge-danger">DELETE</span></td>
+        </tr>
+      </table>
+      <h2>Détails des endpoints</h2>
+      <p>Toutes les réponses de l'API contiennent le mot-clé <code>{ success: true/false }</code> pour indiquer si la requête a réussi ou non.</p>
+      <p>Les endpoints indiqués <span class="authed badge badge-dark">auth</span> nécessite la présence du token de l'utilisateur dans la requête : <code>{ token: <em>token</em> }</code>.</p>
+      <table class="table">
+        <tr>
+          <th>/me</th>
+        </tr>
+        <tr>
+          <td><span class="badge badge-primary">POST</span></td>
+          <td><code>{ id: <em>id utilisateur</em>, token: <em>token utilisateur</em> }</code></td>
+          <td>Vérifie la validité du token de l'utilisateur et retourne des infos au sujet de l'utilisateur.</td>
+          <td><code>token, user : { nick_name, _id, admin, gw2_account }</code></td>
+        </tr>
+
+        <tr>
+          <th>/signup</th>
+        </tr>
+        <tr>
+          <td><span class="badge badge-primary">POST</span></td>
+          <td><code>{ nick_name, password, gw2_name, gw2_id, email }</code></td>
+          <td>Ajoute un nouvel utilisateur au système.</td>
+          <td><code>user : { nick_name, _id, admin, gw2_account }</code></td>
+        </tr>
+
+        <tr>
+          <th>/login</th>
+        </tr>
+        <tr>
+          <td><span class="badge badge-primary">POST</span></td>
+          <td><code>{ nick_name, password }</code></td>
+          <td>Authentifie un utilisateur.</td>
+          <td><code>user : { nick_name, _id, admin, gw2_account }, token</code></td>
+        </tr>
+
+        <tr>
+          <th>/users</th>
+        </tr>
+        <tr>
+          <td><span class="badge badge-success">GET</span> <span class="authed badge badge-dark">auth</span></td>
+          <td></td>
+          <td>Liste des utilisateur en base.</td>
+          <td><code>users: { _id, nick_name, gw2_account }</code></td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-primary">POST</span> <span class="authed badge badge-dark">auth</span></td>
+          <td><code>{ nick_name, password, gw2_name, gw2_id, email }</code></td>
+          <td>Ajoute un nouvel utilisateur en base.</td>
+          <td><code>user: { _id, nick_name, gw2_account, admin }</code></td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-danger">DELETE</span> <span class="authed badge badge-dark">auth</span> <span class="badge badge-dark">admin</span></td>
+          <td></td>
+          <td>Supprime l'ensemble des utilisateurs en base</td>
+          <td></td>
+        </tr>
+
+        <tr>
+          <th>/users/:userId</th>
+        </tr>
+        <tr>
+          <td><span class="badge badge-success">GET</span> <span class="authed badge badge-dark">auth</span></td>
+          <td></td>
+          <td>Affiche des données supplémentaires sur l'utilisateur indiqué.</td>
+          <td><code>users: { _id, nick_name, gw2_account, email <em>(si le token correspond à cet utilisateur)</em> }</code></td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-warning">PUT</span> <span class="authed badge badge-dark">auth</span></td>
+          <td><code>{ champs à mettre à jour }</code></td>
+          <td>Mets à jour l'utilisateur (si le token appartient à cet utilisateur).</td>
+          <td><code>user: { _id, nick_name, gw2_account, admin }</code></td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-danger">DELETE</span> <span class="authed badge badge-dark">auth</span> <span class="badge badge-dark">admin</span></td>
+          <td></td>
+          <td>Supprime cet utilisateur s'il s'agit de celui du token (ou admin).</td>
+          <td></td>
+        </tr>
+
+        <tr>
+          <th>/events</th>
+        </tr>
+        <tr>
+          <td><span class="badge badge-success">GET</span></td>
+          <td><code>?next=<em>xx</em></code></td>
+          <td>Liste des évents en base.<br><code>next</code> retourne les <code><em>xx</em></code> prochains évents.</td>
+          <td><code>events: [event]</code></td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-primary">POST</span> <span class="authed badge badge-dark">auth</span></td>
+          <td><code>{  }</code></td>
+          <td>Ajoute un nouvel événement qui appartiendra à cet utilisateur.</td>
+          <td><code>event: { _id ...}</code></td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-danger">DELETE</span> <span class="authed badge badge-dark">auth</span> <span class="badge badge-dark">admin</span></td>
+          <td></td>
+          <td>Supprime l'ensemble des événements en base</td>
+          <td></td>
+        </tr>
+
+        <tr>
+          <th>/events/:eventId</th>
+        </tr>
+        <tr>
+          <td><span class="badge badge-success">GET</span></td>
+          <td></td>
+          <td>Retourne les détails de l'évènement indiqué par l'id s'il existe.</td>
+          <td><code>event: { _id ...}</code></td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-warning">PUT</span> <span class="authed badge badge-dark">auth</span></td>
+          <td><code>{  }</code></td>
+          <td>Met à jour l'évènement (s'il appartient à cet utilisateur ).</td>
+          <td><code>event: { _id ...}</code></td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-danger">DELETE</span> <span class="authed badge badge-dark">auth</span> <span class="badge badge-dark">admin</span></td>
+          <td></td>
+          <td>Supprime l'événement indiqué s'il appartient à l'utilisateur du token (ou admin).</td>
+          <td></td>
+        </tr>
+
+        <tr>
+          <th>/locations</th>
+        </tr>
+        <tr>
+          <td><span class="badge badge-success">GET</span></td>
+          <td></td>
+          <td>Liste des lieux permaments en base.</td>
+          <td><code>locations: [location]</code></td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-primary">POST</span> <span class="authed badge badge-dark">auth</span></td>
+          <td><code>{ name, description, contact, types: [string], coord: [x, y], icon, category, hours, site }</code></td>
+          <td>Ajoute un nouveau lieu permanent qui appartiendra à cet utilisateur.</td>
+          <td><code>location: { _id ...}</code></td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-danger">DELETE</span> <span class="authed badge badge-dark">auth</span> <span class="badge badge-dark">admin</span></td>
+          <td></td>
+          <td>Supprime l'ensemble des lieux permanents en base</td>
+          <td></td>
+        </tr>
+
+        <tr>
+          <th>/locations/:locationId</th>
+        </tr>
+        <tr>
+          <td><span class="badge badge-success">GET</span></td>
+          <td></td>
+          <td>Retourne le lieu permament indiqué s'il existe..</td>
+          <td><code>location: { _id ... }</code></td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-warning">PUT</span> <span class="authed badge badge-dark">auth</span></td>
+          <td><code>{  }</code></td>
+          <td>Met à jour le lieu permanent (s'il appartient à cet utilisateur ).</td>
+          <td><code>location: { _id ...}</code></td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-danger">DELETE</span> <span class="authed badge badge-dark">auth</span> <span class="badge badge-dark">admin</span></td>
+          <td></td>
+          <td>Supprime ce lieu permanent s'il appartient à l'utilisateur du token (ou admin).</td>
+          <td></td>
+        </tr>
+      </table>
+    </article>
+  </div>
+
+  <!-- jQuery library -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.js"></script>
+  <!-- Latest compiled JavaScript -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
+
+  <script>
+  $('#navigation').load("/components/header.html", function() {
+    $('#nav-documentation').addClass('active');
+  });
+  </script>
+
+  <script>
+  </script>
+
+</body>
+</html>

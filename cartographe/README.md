@@ -11,3 +11,8 @@ Un ensemble d'application Web pour la communauté de jeu de rôle française sur
 ### Cartographe
 Un clic gauche sur un marqueur ouvre les détails correspondants.
 Un clic droit sur la carte ajoute un marqueur, soit pour un lieu permanent, soit pour un évènement temporaire.
+
+Usage
+-----
+`npm install -g http-server`.  
+`http-serever -c-1`.  

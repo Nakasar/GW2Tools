@@ -1,41 +1,197 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-  <title>GW2RP TOOLS</title>
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+  <meta name="theme-color" content="#000000">
+  <meta name="description" content="">
+  <meta name="author" content="Kavin 'Nakasar' Thizy">
 
-  <style>
-    #maintenance {
-      margin-top: 50vh; /* poussé de la moitié de hauteur de viewport */
-      transform: translateY(-50%); /* tiré de la moitié de sa propre hauteur */
-    }
-  </style>
+  <title>Cartographe - Outils RP</title>
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+  <link rel="stylesheet" href="components/style_global.css">
+  <link rel="stylesheet" href="style.css">
 
 </head>
 <body>
-
-  <div class="container" id="maintenance">
-    <nav style="margin-bottom: 16px;">
-      <a class="btn btn-primary" href="/cartographe" role="button" style="width: 100%;" >Cartographe</a>
-    </nav>
-
-    <div class="alert alert-warning" role="alert">
-      <h4 class="alert-heading">Site en construction</h4>
-      <p>Repassez plus tard ;)<br>Vous pouvez déjà accéder au cartographe pour tester et faire des retours. Attention, les données sur régulièrement modifiées/effacées dans le cadre de changements assez drastiques !</p>
-      <hr>
-      <h4 class="alert-heading">Documentation API</h4>
-      <p>L'accès à l'API commence à <a href="/api">/api</a>.<br/>
-        Suivez le lien <a href="https://github.com/Nakasar/gw2rp-tools_API">github</a> pour lire la documentation !
-      </p>
+  <header>
+    <div id="navigation">
     </div>
-  </div>
+  </header>
 
-  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+  <div class="container">
+    <div class="container" id="maintenance">
+      <div class="alert alert-warning" role="alert">
+        <h4 class="alert-heading">Site en construction</h4>
+        <p>Repassez plus tard ;)<br>Vous pouvez déjà accéder au cartographe pour tester et faire des retours. Attention, les données sur régulièrement modifiées/effacées dans le cadre de changements assez drastiques !</p>
+        <hr>
+        <h4 class="alert-heading">Documentation API</h4>
+        <p>L'accès à l'API commence à <a href="/api">/api</a>.
+          <br/>
+          La documentation est accessible via l'onglet "Documentation".
+        </p>
+      </div>
+
+      <div class="list-group" id="incoming-event-list">
+
+      </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="event-details-modal" tabindex="-1" role="dialog" aria-labelledby="event-details-modal-title" aria-hidden="true">
+      <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="event-details-modal-title">Modal title</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="container">
+              <div class="row">
+                <div class="col-sm">
+                  <label for="event-details-modal-date">Date :</label>
+                  <p id="event-details-modal-date"></p>
+                </div>
+                <div class="col-sm">
+                  <label for="event-details-modal-difficulty">Difficulté :</label>
+                  <p id="event-details-modal-difficulty"></p>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-sm">
+                  <label for="event-details-modal-contact">Contact :</label>
+                  <p id="event-details-modal-contact"></p>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-sm">
+                  <label for="event-details-modal-description">Description :</label>
+                  <p id="event-details-modal-description"></p>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-sm">
+                  <label for="event-details-modal-site">Site :</label>
+                  <p id="event-details-modal-site"></p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div><!-- /.container -->
+
+  <!-- jQuery library -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.js"></script>
+  <!-- Latest compiled JavaScript -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
+
+  <script src="components/load.js"></script>
+
+  <script>
+    var difficulty_table = new Map();
+    difficulty_table.set("peaceful", "Promenade");
+    difficulty_table.set("easy", "Facile");
+    difficulty_table.set("normal", "Normal");
+    difficulty_table.set("difficult", "Difficile");
+    difficulty_table.set("hardcore", "Epique");
+
+    var translate_types = new Map();
+    translate_types.set("tavern", "Taverne");
+    translate_types.set("trading", "Commerce");
+    translate_types.set("exploration", "Exploration");
+    translate_types.set("mercenary", "Mercenariat");
+    translate_types.set("research", "Recherche");
+    translate_types.set("nobility", "Noblesse");
+    //
+    translate_types.set("battle", "Bataille");
+    translate_types.set("camp", "Campement");
+    translate_types.set("communitary", "Communautaire");
+    translate_types.set("damages", "Dégâts");
+    translate_types.set("danger", "Zone dangereuse");
+    //
+    translate_types.set("other", "Autre");
+
+    // retrieves 5 next events and displays them in a list.
+    $.ajax({
+      method: "GET",
+      url: 'http://gw2rp-tools.ovh/api/events?next=5',
+      dataType: 'json',
+      success: function(json) {
+        console.log(json);
+        if (json.success) {
+          var events = json.events;
+          $('#incoming-event-list').html("");
+          for (var event_index in events) {
+            addEventToList('#incoming-event-list', events[event_index]);
+          }
+        }
+      }
+    });
+
+    function formatText(text) {
+      var formatted = "";
+
+      formatted = text.replace(/\[color=(.+)\](.+)\[\/color\]/g, '<span style="color: $1;">$2</span>');
+      formatted = formatted.replace(/\[b\](.+)\[\/b\]/g, '<strong>$1</strong>');
+      formatted = formatted.replace(/\*\*(.+)\*\*/g, '<strong>$1</strong>');
+      formatted = formatted.replace(/\[i\](.+)\[\/i\]/g, '<em>$1</em>');
+      formatted = formatted.replace(/\*(.+)\*/g, '<em>$1</em>');
+      formatted = formatted.replace(/\[u\](.+)\[\/u\]/g, '<u>$1</u>')
+      formatted = formatted.replace(/_(.+)_/g, '<u>$1</u>')
+      formatted = formatted.replace(/\\n/g, '<br>')
+
+      return formatted;
+    }
+
+    function showEventModal(eventId) {
+      console.log(eventId);
+      $.ajax({
+        method: "GET",
+        url: 'http://gw2rp-tools.ovh/api/events/' + eventId,
+        dataType: 'json',
+        success: function(json) {
+          console.log(json);
+          if (json.success) {
+            var event = json.event;
+            $('#event-details-modal-title').text(event.name);
+            $('#event-details-modal-description').html(formatText(event.description));
+            var date = new Date(event.end_date);
+            if (date) {
+              console.log(date);
+              var dateString = date.toLocaleDateString().substr(0, 10);
+              if (date.getHours() > 0) {
+                dateString += " - " + date.toLocaleTimeString().substr(0, 5);
+              }
+              $('#event-details-modal-date').text(dateString);
+            }
+            $('#event-details-modal-difficulty').text(difficulty_table.get(event.difficulty));
+            $('#event-details-modal-contact').text(event.contact);
+            $('#event-details-modal-site').html("<a href='" + event.site + "' target='_blank'>" + event.site + "</a>");
+            $('#event-details-modal').modal('show');
+          }
+        }
+      });
+    }
+
+    function addEventToList(idList, event) {
+      var currentHtml = $('#incoming-event-list').html();
+      var date = new Date(event.end_date);
+      var dateString = date.toLocaleDateString().substr(0, 10);
+      if (date.getHours() > 0) {
+        dateString += " - " + date.toLocaleTimeString().substr(0, 5);
+      }
+      var thisEventHtml = '<div href="#" class="list-group-item flex-column align-items-start"><div class="d-flex w-100 justify-content-between"><h5 class="mb-1">' + event.name + '</h5><small>' + dateString + '</small></div><p class="mb-1" style="white-space: pre-wrap; overflow: hidden; text-overflow: ellipsis; max-height: 100px;">' + formatText(event.description) + '</p><a href="#" onclick="showEventModal(\'' +  event._id + '\')"><small>En lire plus...</small></a></div>';
+      currentHtml += thisEventHtml;
+      $('#incoming-event-list').html(currentHtml);
+    }
+  </script>
 
 </body>
 </html>
