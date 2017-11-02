@@ -11,7 +11,7 @@ function showLoginModal() {
     $('#login-modal-label').text("Connexion");
     $('#disconnect').hide();
   }
-  $('#signUp-Success').hide();
+  $('#signup-success-alert').hide();
   $('#login-alert').hide();
   $('#login-modal').modal('show');
 }
@@ -112,7 +112,7 @@ function onSignInResponse(json) {
 
 function onSignIn(json) {
   $('#login-password').val('');
-  $('#signUp-Success').hide();
+  $('#signup-success-alerts').hide();
   $('#login-form').hide();
   $('#disconnect').text("Se déconnecter").removeClass('disabled');
   $('#disconnect').show();
@@ -135,7 +135,8 @@ function onSignIn(json) {
 }
 
 function displaySignUpAlert(message) {
-
+  $('#signup-alert').text(message);
+  $('#signup-alert').show();
 }
 
 function validateSignUp() {
@@ -194,7 +195,6 @@ function validateEmail(email) {
 
 function signUp() {
   if(validateSignUp()) {
-    console.log("validated");
     var gw2_name = $('#signup-gw2account').val().split(".")[0];
     var gw2_account_id = $('#signup-gw2account').val().split(".")[1];
 
@@ -209,14 +209,11 @@ function signUp() {
 }
 
 function onSignUpResponse(json) {
-  console.log(json);
   if(json.success) {
-    console.log(json);
-    $('#username').val(json.user.nick_name);
-    $('#signUp-Success').show();
-    $('#signUp-Modal').modal('hide')
+    $('#login-username').val(json.user.nick_name);
+    $('#signup-success-alert').show();
+    $('#signup-modal').modal('hide')
   } else {
-    console.log(json);
     if (json.code == "REG-01") {
       displaySignUpAlert("Ce nom d'utilisateur est déjà enregistré.");
     } else {

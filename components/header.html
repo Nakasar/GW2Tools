@@ -18,7 +18,7 @@
     </div>
 </nav>
 
-<!-- Modal -->
+<!-- Login Modal -->
 <div class="modal fade" id="login-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
@@ -30,7 +30,7 @@
       </div>
       <div class="modal-body">
         <form id="login-form">
-          <div class="alert alert-success alert-dismissible" role="alert" id="signUp-Success">
+          <div class="alert alert-success alert-dismissible" role="alert" id="signup-success-alert">
             Votre compte a été créé. Veuillez vous identifier.
             <button type="button" class="close" data-dismiss="alert" aria-label="Fermer">
               <span aria-hidden="true">&times;</span>
@@ -53,9 +53,64 @@
             </button>
           </div>
           <button type="button" class="btn btn-primary" onClick="signIn()">Connexion</button>
-          <button type="button" class="btn btn-success" onClick="askForSignUp()">S'enregistrer</button>
+          <button type="button" class="btn btn-success" data-toggle="modal" data-target="#signup-modal">S'enregistrer</button>
         </form>
         <button type="button" class="btn btn-danger" onclick="askForSignOut()" id="disconnect">Se déconnecter</button>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SignUp Modal -->
+<div class="modal fade" id="signup-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="signup-modal-label">Enregistrement</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Fermer">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form id="signup-form">
+          <fieldset>
+            <div class="form-group">
+              <label for="signup-username">Nom d'utilisateur :</label>
+              <input type="text" class="form-control" id="signup-username" aria-describedby="signup-username-Help">
+              <small id="signup-username-Help" class="form-text text-muted">Nom affiché publiquement.</small>
+            </div>
+            <div class="form-group">
+              <label for="signup-email">Email :</label>
+              <input type="email" class="form-control" id="signup-email" aria-describedby="signup-email-Help">
+              <small id="signup-email-Help" class="form-text text-muted">Votre adresse ne sera pas affichée.</small>
+            </div>
+            <div class="form-group">
+              <label for="signup-password">Mot de passe :</label>
+              <input type="password" class="form-control" id="signup-password">
+            </div>
+            <div class="form-group">
+              <label for="signup-password-confirm">Confirmation :</label>
+              <input type="password" class="form-control" id="signup-password-confirm">
+            </div>
+          </fieldset>
+          <fieldset>
+            <div class="form-group">
+              <label for="signup-gw2account">Nom de compte GW2 (Nakasar.5192) :</label>
+              <input type="text" class="form-control" id="signup-gw2account" aria-describedby="signup-gw2account-help">
+              <small id="signup-gw2account-help" class="form-text text-muted">Votre nom de compte est affiché en haut de la liste de contacts en jeu.</small>
+            </div>
+          </fieldset>
+          <div class="alert alert-danger alert-dismissible" role="alert" id="signup-alert">
+            Vous devez valider l'ensemble des champs.
+            <button type="button" class="close" data-dismiss="alert" aria-label="Fermer">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <button type="button" class="btn btn-success" onClick="askForSignUp()">S'enregistrer</button>
+        </form>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
