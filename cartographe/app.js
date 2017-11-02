@@ -23,6 +23,73 @@ translate_types.set("danger", "Zone dangereuse");
 //
 translate_types.set("other", "Autre");
 
+// Inclusion de la librairie Leaflet
+var map;
+
+var iconsList = new Map();
+const rumourIcon = L.icon({
+  iconUrl: 'https://render.guildwars2.com/file/25B230711176AB5728E86F5FC5F0BFAE48B32F6E/97461.png',
+  iconSize: [20, 20],
+  iconAnchor: [10, 10],
+  popupAnchor: [0, -10]
+});
+iconsList.set("rumour", rumourIcon);
+const eventIcon = L.icon({
+    iconUrl: 'https://wiki.guildwars2.com/images/b/bc/Event_star_%28map_icon%29.png',
+    iconSize: [20, 20],
+    iconAnchor: [10, 10],
+    popupAnchor: [0, -10]
+});
+iconsList.set("generic", eventIcon);
+const tavernIcon = L.icon({
+    iconUrl: 'https://wiki.guildwars2.com/images/thumb/4/4f/Belcher%27s_Bluff_%28map_icon%29.png/20px-Belcher%27s_Bluff_%28map_icon%29.png',
+    iconSize: [30, 30],
+    iconAnchor: [15, 15],
+    popupAnchor: [0, -15]
+});
+iconsList.set("tavern", tavernIcon);
+const merchantIcon = L.icon({
+    iconUrl: 'https://wiki.guildwars2.com/images/thumb/4/44/Merchant_%28map_icon%29.png/27px-Merchant_%28map_icon%29.png',
+    iconSize: [40, 40],
+    iconAnchor: [20, 20],
+    popupAnchor: [0, -20]
+});
+iconsList.set("merchant", merchantIcon);
+const genericIcon = L.icon({
+    iconUrl: 'https://wiki.guildwars2.com/images/f/fe/Scout_%28map_icon%29.png',
+    iconSize: [20, 20],
+    iconAnchor: [10, 10],
+    popupAnchor: [0, -10]
+});
+iconsList.set("other", genericIcon);
+const festivalIcon = L.icon({
+    iconUrl: 'https://wiki.guildwars2.com/images/thumb/2/27/Activity_%28map_icon%29.png/20px-Activity_%28map_icon%29.png',
+    iconSize: [30, 30],
+    iconAnchor: [15, 15],
+    popupAnchor: [0, -15]
+});
+iconsList.set("festival", festivalIcon);
+const guildIcon = L.icon({
+    iconUrl: 'https://wiki.guildwars2.com/images/thumb/f/f6/Guild_Commendation_Trader_%28map_icon%29.png/20px-Guild_Commendation_Trader_%28map_icon%29.png',
+    iconSize: [20, 20],
+    iconAnchor: [10, 10],
+    popupAnchor: [0, -10]
+});
+iconsList.set("guild", guildIcon);
+const assemblyIcon = L.icon({
+    iconUrl: 'https://wiki.guildwars2.com/images/thumb/2/2c/Tournament_Master_%28map_icon%29.png/20px-Tournament_Master_%28map_icon%29.png',
+    iconSize: [30, 30],
+    iconAnchor: [15, 15],
+    popupAnchor: [0, -15]
+});
+iconsList.set("communitary", assemblyIcon)
+const battleIcon = L.icon({
+    iconUrl: 'https://wiki.guildwars2.com/images/6/67/Event_swords_%28map_icon%29.png',
+    iconSize: [20, 20],
+    iconAnchor: [10, 10],
+    popupAnchor: [0, -10]
+});
+iconsList.set("fight", battleIcon);
 
 var x;
 var y;
@@ -73,6 +140,39 @@ class Point {
     var ncoord = coord.slice(1, -1);
     var xy = ncoord.split(',');
     return new Point(xy[0], xy[1]);
+  }
+}
+
+class Rumour {
+  constructor(id, owner_id, name, coord, contact, text, site) {
+    this.is = id;
+    this.owner_id = owner_id;
+    this.name = name;
+    this.coord = coord;
+    this.contact = contact;
+    this.text = text;
+    this.site = site;
+  }
+
+  static parse (json) {
+    var j_id = json._id,
+      j_owner_id = json.owner_id,
+      j_name = json.name,
+      j_coord = json.coord,
+      j_contact = json.contact,
+      j_text = json.text,
+      j_site = json.site;
+
+    return new Rumour(j_id, j_owner_id, j_name, Point.unpackCoord(j_coord), j_contact, j_text, j_site);
+  }
+
+  createMarker() {
+    var loc = this;
+    this.marker = L.marker(unproject([this.coord.x, this.coord.y]), {icon: rumourIcon}).bindPopup('<h3>' + this.name + '</h3><br>' + formatText(this.text.replace(regex_html, "").replace(/\n/g, "<br>")) + '<br><a target="_blank" href="' + this.site + '">site web</a>');
+    this.marker.on("click", function(e) {
+
+    });
+    this.marker.addTo(map);
   }
 }
 
@@ -195,67 +295,6 @@ class EventLocation extends Location {
 }
 
 var permanentLocations = [];
-
-// Inclusion de la librairie Leaflet
-var map;
-
-var iconsList = new Map();
-const eventIcon = L.icon({
-    iconUrl: 'https://wiki.guildwars2.com/images/b/bc/Event_star_%28map_icon%29.png',
-    iconSize: [20, 20],
-    iconAnchor: [10, 10],
-    popupAnchor: [0, -10]
-});
-iconsList.set("generic", eventIcon);
-const tavernIcon = L.icon({
-    iconUrl: 'https://wiki.guildwars2.com/images/thumb/4/4f/Belcher%27s_Bluff_%28map_icon%29.png/20px-Belcher%27s_Bluff_%28map_icon%29.png',
-    iconSize: [30, 30],
-    iconAnchor: [15, 15],
-    popupAnchor: [0, -15]
-});
-iconsList.set("tavern", tavernIcon);
-const merchantIcon = L.icon({
-    iconUrl: 'https://wiki.guildwars2.com/images/thumb/4/44/Merchant_%28map_icon%29.png/27px-Merchant_%28map_icon%29.png',
-    iconSize: [40, 40],
-    iconAnchor: [20, 20],
-    popupAnchor: [0, -20]
-});
-iconsList.set("merchant", merchantIcon);
-const genericIcon = L.icon({
-    iconUrl: 'https://wiki.guildwars2.com/images/f/fe/Scout_%28map_icon%29.png',
-    iconSize: [20, 20],
-    iconAnchor: [10, 10],
-    popupAnchor: [0, -10]
-});
-iconsList.set("other", genericIcon);
-const festivalIcon = L.icon({
-    iconUrl: 'https://wiki.guildwars2.com/images/thumb/2/27/Activity_%28map_icon%29.png/20px-Activity_%28map_icon%29.png',
-    iconSize: [30, 30],
-    iconAnchor: [15, 15],
-    popupAnchor: [0, -15]
-});
-iconsList.set("festival", festivalIcon);
-const guildIcon = L.icon({
-    iconUrl: 'https://wiki.guildwars2.com/images/thumb/c/c6/Guild_Commendation_Trainer_%28map_icon%29.png/20px-Guild_Commendation_Trainer_%28map_icon%29.png',
-    iconSize: [20, 20],
-    iconAnchor: [10, 10],
-    popupAnchor: [0, -10]
-});
-iconsList.set("guild", guildIcon);
-const assemblyIcon = L.icon({
-    iconUrl: 'https://wiki.guildwars2.com/images/thumb/2/2c/Tournament_Master_%28map_icon%29.png/20px-Tournament_Master_%28map_icon%29.png',
-    iconSize: [30, 30],
-    iconAnchor: [15, 15],
-    popupAnchor: [0, -15]
-});
-iconsList.set("communitary", assemblyIcon)
-const battleIcon = L.icon({
-    iconUrl: 'https://wiki.guildwars2.com/images/6/67/Event_swords_%28map_icon%29.png',
-    iconSize: [20, 20],
-    iconAnchor: [10, 10],
-    popupAnchor: [0, -10]
-});
-iconsList.set("fight", battleIcon);
 
 // Conversion de lattitue/longitude en x/y carrés et vice-versa, override de unproject impl�ment�.
 //   GW2 : NO = [0,0], SE = [continent_xmax,continent_ymax];
@@ -475,7 +514,7 @@ function showLoginModal() {
 }
 
 function validate_event_form() {
-  
+
 }
 
 function validate_perm_form() {
