@@ -4,15 +4,62 @@
         <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
           <span class="navbar-toggler-icon"></span>
         </button>
-        <a class="navbar-brand" href="http://gw2rp-tools.ovh">Outils RP</a>
+        <a class="navbar-brand" href="/">Outils RP</a>
       </div>
       <div id="navbar" class="collapse navbar-collapse">
         <ul class="navbar-nav mr-auto">
           <li class="nav-item" id="nav-cartographe"><a href="/cartographe" class="nav-link"><span class="glyphicon glyphicon-globe"></span> Cartographe</a></li>
-          <li class="nav-item" id="nav-documentation"><a href="/pages/documentation.html" class="nav-link">Documentation</a></li>
-          <li class="nav-item" id="nav-connect"><a href="#" class="nav-link">Se connecter</a></li>
+          <li class="nav-item" id="nav-documentation"><a href="/pages/documentation" class="nav-link">Documentation</a></li>
+          <li class="nav-item" id="nav-connect"><a href="#" class="nav-link" onClick="showLoginModal()">Se connecter</a></li>
           <li class="nav-item" id="nav-account"><a href="/pages/account" class="nav-link">Mon Compte</a></li>
+          <li class="nav-item" id="nav-disconnet"><a href="#" class="nav-link" onClick="askForDisconnect()">Se déconnecter</a></li>
         </ul>
       </div><!--/.nav-collapse -->
     </div>
 </nav>
+
+<!-- Modal -->
+<div class="modal fade" id="login-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="login-modal-label">Connexion</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Fermer">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form id="login-form">
+          <div class="alert alert-success alert-dismissible" role="alert" id="signUp-Success">
+            Votre compte a été créé. Veuillez vous identifier.
+            <button type="button" class="close" data-dismiss="alert" aria-label="Fermer">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <fieldset>
+            <div class="form-group">
+              <label for="login-username">Nom d'utilisateur :</label>
+              <input type="text" class="form-control" id="login-username" placeholder="Entrez un nom d'utilisateur">
+            </div>
+            <div class="form-group">
+              <label for="login-password">Mort de passe :</label>
+              <input type="password" class="form-control" id="login-password" placeholder="Mot de passe">
+            </div>
+          </fieldset>
+          <div class="alert alert-danger alert-dismissible" role="alert" id="login-alert">
+            Le nom d'utilisateur et le mot de passe ne correspondent pas.
+            <button type="button" class="close" data-dismiss="alert" aria-label="Fermer">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <button type="button" class="btn btn-primary" onClick="signIn()">Connexion</button>
+          <button type="button" class="btn btn-success" onClick="askForSignUp()">S'enregistrer</button>
+        </form>
+        <button type="button" class="btn btn-danger" onclick="askForSignOut()" id="disconnect">Se déconnecter</button>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+      </div>
+    </div>
+  </div>
+</div>

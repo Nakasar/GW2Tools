@@ -1,9 +1,29 @@
 var signedIn = false;
 var thisUser;
 
+function showLoginModal() {
+  if (signedIn) {
+    $('#disconnect').show();
+    $('#login-form').hide();
+    $('#login-modal-label').text("Déconnexion");
+  } else {
+    $('#login-form').show();
+    $('#login-modal-label').text("Connexion");
+    $('#disconnect').hide();
+  }
+  $('#signUp-Success').hide();
+  $('#login-alert').hide();
+  $('#login-modal').modal('show');
+}
+
+function askForDisconnect() {
+  showLoginModal();
+}
+
 function establishConnection() {
   $('#nav-connect').show();
   $('#nav-account').hide();
+  $('#nav-disconnet').hide();
 
   // Retrive local storage user data if present
   if (typeof(Storage) !== "undefined") {
@@ -26,6 +46,7 @@ function establishConnection() {
               signedIn = true;
               $('#nav-connect').hide();
               $('#nav-account').show();
+              $('#nav-disconnet').show();
               thisUser = new User(json.user.id, json.user.nick_name, json.user.admin, "", token);
             } else {
               // Do nothing, token is invalid.
@@ -37,10 +58,26 @@ function establishConnection() {
   }
 }
 
+function askForSignOut() {
+  signOut();
+}
+
+function askForSignUp() {
+  signUp();
+}
+
 function signOut() {
-  signedIn = false;
   $('#nav-connect').show();
   $('#nav-account').hide();
+  $('#nav-disconnet').hide();
+
+  $('#login-form').show();
+  $('#disconnect').text("Déconnecté").addClass('disabled');
+  $('#disconnect').hide();
+
+  $('#login-modal-label').text("Connexion");
+
+  signedIn = false;
 
   if (typeof(Storage) !== "undefined") {
     localStorage.removeItem("user_id");
@@ -49,15 +86,52 @@ function signOut() {
 }
 
 function signIn() {
-
+  if ($('#login-password').val() != "" && $('#login-username').val() != "") {
+    $.ajax({
+      method: "POST",
+      url: 'http://gw2rp-tools.ovh/api/login',
+      data: { nick_name: $('#login-username').val(), password: $('#login-password').val()},
+      dataType: 'json',
+      success: onSignInResponse
+    });
+  } else {
+    $('#login-form #login-alert').text("Vous devez indiquer votre mot de passe et votre nom d'utilisateur.");
+    $('#login-form #login-alert').show();
+  }
 }
 
 function onSignInResponse(json) {
-
+  if (json.success) {
+    $('#login-form #login-alert').hide();
+    onSignIn(json);
+  } else {
+    $('#login-form #login-alert').text("Le nom d'utilisateur et le mot de passe ne correspondent pas.");
+    $('#login-form #login-alert').show();
+  }
 }
 
 function onSignIn(json) {
+  $('#login-password').val('');
+  $('#signUp-Success').hide();
+  $('#login-form').hide();
+  $('#disconnect').text("Se déconnecter").removeClass('disabled');
+  $('#disconnect').show();
 
+  $('#login-modal-label').text("Déconnexion");
+
+  signedIn = true;
+  thisUser = new User(json.user.id, json.user.nick_name, json.user.admin, json.user.email, json.token);
+
+  $('#nav-connect').hide();
+  $('#nav-account').show();
+  $('#nav-disconnet').show();
+
+  // Store user data in web storage.
+  if (typeof(Storage) !== "undefined") {
+    localStorage.setItem("user_nick_name", thisUser.name);
+    localStorage.setItem("user_id", thisUser.id);
+    localStorage.setItem("user_token", thisUser.token);
+  }
 }
 
 function displaySignUpAlert(message) {

@@ -475,7 +475,7 @@ function showLoginModal() {
 }
 
 function validate_event_form() {
-
+  
 }
 
 function validate_perm_form() {

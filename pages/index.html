@@ -1,32 +1,29 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="utf-8">
+  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-  <meta name="theme-color" content="#000000">
-  <meta name="description" content="">
-  <meta name="author" content="Kevin 'Nakasar' Thizy">
-
-  <title>Cartographe - Outils RP</title>
-
+  <title>GW2RP TOOLS</title>
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
   <link rel="stylesheet" href="/components/style_global.css">
 
 </head>
 <body>
+
   <header>
     <div id="navigation">
     </div>
   </header>
 
-  <div class="container">
-
+  <div class="container" id="maintenance">
+    <div class="alert alert-danger" role="alert">
+      <h4 class="alert-heading">404 : Quaggan n'a pas trouvé ce lieu dans les Brumes :(</h4>
+      <p>Quaggan a beau avoir cherché partout, il n'a pas trouvé de lieux correspondant à l'adresse que vous avez demandé, Fooo.... Quaggan est désolé :'()</p>
+    </div>
   </div>
 
-  <!-- jQuery library -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.js"></script>
-  <!-- Latest compiled JavaScript -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
 
@@ -35,12 +32,8 @@
 
   <script>
   $('#navigation').load("/components/header.html", function() {
-    $('#nav-account').addClass('active');
     establishConnection();
   });
-  </script>
-
-  <script>
   </script>
 
 </body>
