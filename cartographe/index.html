@@ -476,6 +476,22 @@
           }
         }
       });
+
+      $.ajax({
+        method: "GET",
+        url: 'http://gw2rp-tools.ovh/api/rumours',
+        dataType: 'json',
+        success: function(json) {
+          console.log(json);
+          if (json.success) {
+            var rumours = json.rumours;
+            for (var rumour_index in rumours) {
+              var rumour = Rumour.parse(rumours[rumour_index]);
+              addMarker(rumour);
+            }
+          }
+        }
+      });
     });
 
     </script>
