@@ -540,6 +540,20 @@ function actionModify() {
     $('#addLocationTabs a[href="#addEventLocationTabContent"]').tab('show');
     $("#addMarkerModal").modal("show");
 
+  } else if (thisLoc.category === "rumour") {
+
+    x = thisLoc.coord.x;
+    y = thisLoc.coord.y;
+
+    $('#rumour-form #title').val(thisLoc.title);
+    $('#rumour-form #contact').val(thisLoc.contact);
+    $('#rumour-form #text').val(thisLoc.text.replace(regex_html, ""));
+
+
+    $('#event-form #site').val(thisLoc.site);
+
+    $('#addLocationTabs a[href="#addRumourTabContent"]').tab('show');
+    $("#addMarkerModal").modal("show");
   }
 }
 
