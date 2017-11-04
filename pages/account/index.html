@@ -21,7 +21,46 @@
   </header>
 
   <div class="container">
-    
+    <h1>Mon Compte</h1>
+    <h2></h2>
+    <form id="modify-general">
+      <div class="form-group">
+        <label for="name">Nom d'utilisateur</label>
+        <input type="text" class="form-control" id="name">
+      </div>
+      <div class="form-group">
+        <label for="gw2_account">Compte gw2</label>
+        <input type="text" class="form-control" id="gw2_account">
+      </div>
+      <div class="alert alert-danger alert-dismissible fade show" role="alert" id="alert">
+        Erreur inconnue.
+      </div>
+      <div class="alert alert-success alert-dismissible fade show" role="alert" id="success">
+        Informations mises à jour.
+      </div>
+      <button id="general-info-btn" type="submit" class="btn btn-success">Mettre à jour les informations.</button>
+    </form>
+
+    <h2>Modifier le mot de passe</h2>
+    <form id="modify-password">
+      <div class="form-group">
+        <label for="password-old">Mot de passe actuel</label>
+        <input type="password" class="form-control" id="password-old">
+      </div>
+      <div class="form-group">
+        <label for="password-new-1">Nouveau mot de passe.</label>
+        <input type="password" class="form-control" id="password-new-1">
+        <label for="password-new-2">Nouveau mot de passe.</label>
+        <input type="password" class="form-control" id="password-new-2">
+      </div>
+      <div class="alert alert-danger alert-dismissible fade show" role="alert" id="alert">
+        Erreur inconnue.
+      </div>
+      <div class="alert alert-success alert-dismissible fade show" role="alert" id="success">
+        Mot de passe modifié.
+      </div>
+      <button id="password-btn" type="submit" class="btn btn-success">Mettre à jour le mot de passe.</button>
+    </form>
   </div>
 
   <!-- jQuery library -->
@@ -34,10 +73,174 @@
   <script src="/components/connect.js"></script>
 
   <script>
+  $('#modify-general #alert').hide();
+  $('#modify-general #success').hide();
+  $('#modify-password #alert').hide();
+  $('#modify-password #success').hide();
   $('#navigation').load("/components/header.html", function() {
     $('#nav-account').addClass('active');
-    establishConnection();
+    establishConnectionCallback(function(success) {
+      if (signedIn) {
+        $.ajax({
+          method: "GET",
+          url: 'http://gw2rp-tools.ovh/api/users/' + thisUser.id + "?token=" + thisUser.token,
+          dataType: 'json',
+          success: function(json) {
+            if (json.success) {
+              console.log(json);
+              // user is logged in.
+              $('#modify-general #name').val(json.user.nick_name);
+              $('#modify-general #gw2_account').val(json.user.gw2_account + "." + json.user.gw2_id);
+            } else {
+              // Do nothing, token is invalid.
+            }
+          }
+        });
+      }
+    });
   });
+
+  function displayGeneralInfoAlert(message) {
+    $('#modify-general #alert').text(message);
+    $('#modify-general #alert').show();
+  }
+
+  function validateGeneralInfo() {
+    $('#modify-general #alert').hide();
+    $('#modify-general #success').hide();
+
+    // Validate username
+    var username = $('#modify-general #name').val();
+    if(username == "") {
+      displayGeneralInfoAlert("Veuillez renseigner l'ensemble des champs.");
+      return false;
+    }
+    if (username.length > 20) {
+      displayGeneralInfoAlert("Le nom d'utilisateur doit être inférieur à vingt caractères.");
+      return false;
+    }
+
+    // Validate gw2_account
+    var gw2_account = $("#modify-general #gw2_account").val();
+    if (gw2_account === "") {
+      displayGeneralInfoAlert("Veuillez renseigner l'ensemble des champs.");
+      return false;
+    }
+    var gw2_account_regex = /^([a-zA-Z]{1,}\.[0-9]{4})$/;
+    if (!gw2_account_regex.test(gw2_account)) {
+      displayGeneralInfoAlert("Le nom de compte est de la forme Nakasar.5192, il se trouve en haut de votre liste de contacts en jeu.");
+      return false;
+    }
+
+    return true;
+  }
+
+  $('#general-info-btn').click(function() {
+    generalInfoUpdate();
+    return false;
+  })
+
+  function generalInfoUpdate() {
+    $('#modify-password #alert').hide();
+    $('#modify-password #success').hide();
+
+    if (validateGeneralInfo()) {
+      $.ajax({
+        method: "PUT",
+        url: 'http://gw2rp-tools.ovh/api/users/' + thisUser.id + "?general=true&token=" + thisUser.token,
+        data: { nick_name: $('#modify-general #name').val(), gw2_account: $("#modify-general #gw2_account").val() },
+        dataType: 'json',
+        success: function(json) {
+          if (json.success) {
+            $('#modify-general #success').show();
+            // user is logged in.
+          } else {
+            switch (json.code) {
+              case "UPDU-01":
+                displayPasswordAlert("Ce nom d'utilisateur est déjà utilisé.")
+                break;
+              default:
+                displayPasswordAlert('Une erreur inconnue est survenue.')
+                break;
+            }
+          }
+        }
+      });
+    } else {
+
+    }
+
+    return true;
+  }
+
+  $('#password-btn').click(function() {
+    passwordUpdate();
+    return false;
+  })
+
+  function displayPasswordAlert(message) {
+    $('#modify-password #alert').text(message);
+    $('#modify-password #alert').show();
+  }
+
+  function validatePassword() {
+    // Validate password
+    var passwordOld = $("#modify-password #password-old").val();
+    var password1 = $("#modify-password #password-new-1").val();
+    var password2 = $("#modify-password #password-new-2").val();
+
+    if (passwordOld.length == 0) {
+      displayPasswordAlert("Vous devez indiquer votre mot de passe actuel par mesure de sécurité.");
+      return false;
+    }
+
+    if(password1 === "") {
+      displayPasswordAlert("Vous devez indiquer un nouveau mot de passe.");
+      return false;
+    }
+    if (password1 != password2) {
+      displayPasswordAlert("Les deux mots de passe ne correspondent pas.");
+      return false;
+    }
+    var password_regex = (/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/);
+    if (!password_regex.test(password1)) {
+      displayPasswordAlert("Le mot de passe doit contenir au moins 8 caractères dont un chiffre, une majuscule et une minuscule.");
+      return false;
+    }
+
+    return true;
+  }
+
+  function passwordUpdate() {
+    if (validatePassword()) {
+      $.ajax({
+        method: "PUT",
+        url: 'http://gw2rp-tools.ovh/api/users/' + thisUser.id + "?security=true&token=" + thisUser.token,
+        data: { old_password: $('#modify-password #password-old').val(), new_password: $('#modify-password #password-new-1').val()},
+        dataType: 'json',
+        success: function(json) {
+          if (json.success) {
+            $('#modify-password #success').show();
+            // user is logged in.
+          } else {
+            switch (json.code) {
+              case "UPDU-11":
+                displayPasswordAlert('Le mot de passe actuel est incorrect.')
+                break;
+              default:
+                displayPasswordAlert('Une erreur inconnue est survenue.')
+                break;
+            }
+            // Do nothing, token is invalid.
+          }
+        }
+      });
+    } else {
+
+    }
+
+    return true;
+  }
   </script>
 
   <script>

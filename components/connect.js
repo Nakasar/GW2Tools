@@ -20,6 +20,46 @@ function askForDisconnect() {
   showLoginModal();
 }
 
+function establishConnectionCallback(callback) {
+  $('#nav-connect').show();
+  $('#nav-account').hide();
+  $('#nav-disconnet').hide();
+
+  // Retrive local storage user data if present
+  if (typeof(Storage) !== "undefined") {
+    var username = localStorage.getItem("user_nick_name");
+    var token = localStorage.getItem("user_token");
+    var id = localStorage.getItem("user_id");
+
+    if (username) {
+      //$('#username').val(username);
+      if (token && id) {
+        // Request API to check validity of stored token.
+        $.ajax({
+          method: "POST",
+          url: 'http://gw2rp-tools.ovh/api/me',
+          data: { id: id, token: token },
+          dataType: 'json',
+          success: function(json) {
+            if (json.success) {
+              // user is logged in.
+              signedIn = true;
+              $('#nav-connect').hide();
+              $('#nav-account').show();
+              $('#nav-disconnet').show();
+              thisUser = new User(json.user.id, json.user.nick_name, json.user.admin, "", token);
+              callback(true);
+            } else {
+              // Do nothing, token is invalid.
+              callback(false);
+            }
+          }
+        });
+      }
+    }
+  }
+}
+
 function establishConnection() {
   $('#nav-connect').show();
   $('#nav-account').hide();
