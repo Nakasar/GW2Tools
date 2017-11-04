@@ -1,0 +1,51 @@
+html, body, #container {
+  height: 100%;
+  overflow: hidden;
+  width: 100%;
+}
+
+.navbar {
+  min-height: 5rem;
+}
+
+#page {
+  height: 100%;
+  overflow: hidden;
+  width: 100%;
+}
+
+#sidebar {
+  float: left;
+  height: 100%;
+  max-width: 100%;
+  width: 0px;
+}
+
+#mapdiv {
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  height: 100%;
+  width: auto;
+}
+
+.sidebar-wrapper {
+  height: 100%;
+  position: relative;
+  width: 100%;
+}
+
+.sidebar-wrapper .description {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-height: 20vh;
+  white-space: pre-wrap;
+}
+#sidebar .site {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#permloc-detail-modal-description {
+  white-space: pre-wrap;
+}
+
+.leaflet-container {background: #000;}

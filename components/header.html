@@ -8,7 +8,8 @@
       </div>
       <div id="navbar" class="collapse navbar-collapse">
         <ul class="navbar-nav mr-auto">
-          <li class="nav-item" id="nav-cartographe"><a href="/cartographe" class="nav-link"><span class="glyphicon glyphicon-globe"></span> Cartographe</a></li>
+          <li class="nav-item" id="nav-cartographe"><a href="/cartographe2" class="nav-link"><span class="glyphicon glyphicon-globe"></span> Cartographe</a></li>
+          <li class="nav-item" id="nav-about" ><a href="#" class="nav-link" data-toggle="modal" data-target="#about-modal">A propos</a></li>
           <li class="nav-item" id="nav-documentation"><a href="/pages/documentation" class="nav-link">Documentation</a></li>
           <li class="nav-item" id="nav-connect"><a href="#" class="nav-link" onClick="showLoginModal()">Se connecter</a></li>
           <li class="nav-item" id="nav-account"><a href="/pages/account" class="nav-link">Mon Compte</a></li>
@@ -115,6 +116,80 @@
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- About Modal -->
+<div id="about-modal" class="modal fade" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">A propos de la boîte à outils</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Fermer">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <ul class="nav nav-tabs nav-justified" id="aboutTabs">
+          <li class="nav-item"><a class="nav-link active" href="#about" data-toggle="tab">&nbsp;A propos des outils</a></li>
+          <li class="nav-item dropdown">
+            <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">&nbsp;Utilisation <b class="caret"></b></a>
+            <div class="dropdown-menu">
+              <a class="dropdown-item" href="#tuto-cartopgraphe-tab" data-toggle="tab">Cartographe</a>
+            </div>
+          </li>
+          <li class="nav-item dropdown">
+            <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">&nbsp;Sources <b class="caret"></b></a>
+            <div class="dropdown-menu">
+              <a class="dropdown-item" href="#donnees-tab" data-toggle="tab">Cartes & marqueurs</a>
+              <a class="dropdown-item" href="#locations-tab" data-toggle="tab">Lieux RP</a>
+              <a class="dropdown-item" href="#theaters-tab" data-toggle="tab">Events</a>
+            </div>
+          </li>
+        </ul>
+        <div class="tab-content" id="aboutTabsContent">
+          <div class="tab-pane fade show active" id="about">
+            <p>Un ensemble d'outils conçus pour Guild Wars 2 et la pratique du jeu de rôle. L'application utilise Bootstrap pour la mise en page et Leaflet pour la gestion de la carte.
+            <br>
+            Réalisé par Kevin <em>"Nakasar"</em> Thizy (Nakasar.5192). <em>Pour tout commentaire, signalement de bug, je préfère un MP forum GW2RP ou un MP en jeu ;)</em></p>
+            <div class="panel panel-primary">
+              <div class="panel-heading">C'est quoi donc ?</div>
+              <ul class="list-group">
+                <li class="list-group-item">
+                  <h4 class="list-group-item-heading">Le Cartographe</h4>
+                  <p class="list-group-item-text">Recense les lieux de RP réguliers et les énèments en cours.</p>
+                </li>
+                <li class="list-group-item">
+                  <h4 class="list-group-item-heading">Rien</h4>
+                  <p class="list-group-item-text">Si j'ai envie de rajouter un outil, il ira ici, chouette, non ?</p>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div class="tab-pane fade" id="donnees-tab">
+            <p>Les images, icône, et coordonnées sont la propriété d'ArenaNet pour le jeu Guild Wars 2.</p>
+          </div>
+          <div class="tab-pane fade" id="locations-tab">
+            <p>Les lieux sont indiqués en fonction des activités RôlePlay des joueurs de la communauté.</p>
+          </div>
+          <div class="tab-pane fade" id="theaters-tab">
+            <p>Les events sont des lieux temporaires. Affichés pour une durée maximale de une semaine, ils signalent une activité particulière dans un lieu.</p>
+          </div>
+          <div class="tab-pane fade" id="tuto-cartopgraphe-tab">
+              <ul class="list-group">
+                <li class="list-group-item">Vous devez être connecté pour ajouter des marqueurs.</li>
+                <li class="list-group-item">Cliquez droit sur la carte pour ajouter un nouveau marqueur à cet emplacement.</li>
+                <li class="list-group-item">Cliquez gauche sur un marqueur de la carte pour afficher des détails à son sujet.</li>
+                <li class="list-group-item">Après avoir sélectionné un marquer, utilisez le menu latéral gauche pour le supprimer ou le modifier.</li>
+                <li class="list-group-item">Utilisez le panneau "Mon Compte" pour vous déconnecter.</li>
+              </ul>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+    </div>
     </div>
   </div>
 </div>
