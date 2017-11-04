@@ -769,11 +769,10 @@ $("#rumour-form-submit").click(function() {
       data: { name: title, text: text, contact: contact, coord: coord, category: category, site: site, token: thisUser.token },
       dataType: 'json',
       success: function(json) {
-        console.log(json);
         if (json.success) {
           var rumour = json.rumour;
           var rumourLocation = Rumour.parse(rumour);
-          addMarker(rumour);
+          addMarker(rumourLocation);
 
           $("#addMarkerModal").modal("hide");
         }
@@ -795,6 +794,7 @@ $("#rumour-form-submit").click(function() {
 
           var rumour = json.rumour;
           var rumourLocation = Rumour.parse(rumour);
+		  console.log(rumourLocation);
           addMarker(rumourLocation);
 
           $("#addMarkerModal").modal("hide");
