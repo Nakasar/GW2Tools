@@ -788,12 +788,10 @@ function createMap() {
     map.on('contextmenu', onMapRightClick);
 
 }
-function addMarkers(list) {
-  for(i = 0; i < list.length; i++) {
-    list[i].createMarker();
-  }
-}
+
+var locationsById = new Map();
 function addMarker(loc) {
+  locationsById.set(loc.id, loc);
   loc.createMarker();
 }
 createMap();

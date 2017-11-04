@@ -50,8 +50,8 @@
               </li>
               <li class="list-group-item list-group-item-warning">
                 <h5 class="list-group-item-heading">Actions</h5>
-                <button type="button" class="btn btn-danger" onclick="actionDelete();" id="actionDelete">Supprimer</button>
-                <button type="button" class="btn btn-warning" onclick="actionModify();" id="actionModify">Modifier</button>
+                <button type="button" class="btn btn-danger" onclick="actionDelete()" id="actionDelete">Supprimer</button>
+                <button type="button" class="btn btn-warning" onclick="actionModify()" id="actionModify">Modifier</button>
               </li>
           </ul>
         </div>
@@ -289,6 +289,31 @@
   });
   </script>
   <script>
+  function endLoad() {
+    // Remove progress here.
+    // Search for URL parameters (location, coord...)
+    var url = new URL(window.location.href);
+    if (url.searchParams.has("id")) {
+      // Url has a given ID, search for the matching location and zoom to it.
+      var id = url.searchParams.get("id");
+      if (locationsById.has(id)) {
+        //59f3521f243c736551570175
+        var location = locationsById.get(id);
+        map.setView(unproject([location.coord.x, location.coord.y]), 7);
+        sideBarDisplayLocation(location);
+      }
+    }
+  }
+
+  var loadCompleted = 0;
+  const maxLoads = 3;
+  function loadComplete() {
+    loadCompleted += 1;
+    if (loadCompleted >= maxLoads) {
+      endLoad();
+    }
+  }
+
   $(function() {
     $.ajax({
       method: "GET",
@@ -301,6 +326,7 @@
             var permanentLocation = PermanentLocation.parse(locations[location_index]);
             addMarker(permanentLocation);
           }
+          loadComplete();
         }
       }
     });
@@ -317,6 +343,7 @@
             var eventLocation = EventLocation.parse(events[event_index]);
             addMarker(eventLocation);
           }
+          loadComplete();
         }
       }
     });
@@ -333,10 +360,13 @@
             var rumour = Rumour.parse(rumours[rumour_index]);
             addMarker(rumour);
           }
+          loadComplete();
         }
       }
     });
   });
+
+
   </script>
 
 </body>

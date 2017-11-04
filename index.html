@@ -82,6 +82,10 @@
               </div>
             </div>
           </div>
+          <div class="modal-footer">
+            <a id="tomap-btn" class="btn btn-primary" href="/cartographe?id=" role="button">Voir sur la carte</a>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+          </div>
         </div>
       </div>
     </div>
@@ -118,6 +122,10 @@
               </div>
             </div>
           </div>
+        </div>
+        <div class="modal-footer">
+          <a id="tomap-btn" class="btn btn-primary" href="/cartographe?id=" role="button">Voir sur la carte</a>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
         </div>
       </div>
     </div>
@@ -231,6 +239,7 @@
             $('#event-details-modal-difficulty').text(difficulty_table.get(event.difficulty));
             $('#event-details-modal-contact').text(event.contact);
             $('#event-details-modal-site').html("<a href='" + event.site + "' target='_blank'>" + event.site + "</a>");
+            $('#event-details-modal #tomap-btn').attr('href', '/cartographe?id=' + event._id);
             $('#event-details-modal').modal('show');
           }
         }
@@ -244,7 +253,7 @@
       if (date.getHours() > 0) {
         dateString += " - " + date.toLocaleTimeString().substr(0, 5);
       }
-      var thisEventHtml = '<div href="#" class="list-group-item flex-column align-items-start"><div class="d-flex w-100 justify-content-between"><h5 class="mb-1">' + event.name + '</h5><small>' + dateString + '</small></div><p class="mb-1" style="white-space: pre-wrap; overflow: hidden; text-overflow: ellipsis; max-height: 100px;">' + formatText(event.description) + '</p><a href="#" onclick="showEventModal(\'' +  event._id + '\')"><small>En lire plus...</small></a></div>';
+      var thisEventHtml = '<div href="#" class="list-group-item flex-column align-items-start"><div class="d-flex w-100 justify-content-between"><h5 class="mb-1">' + event.name + '</h5><small>' + dateString + '</small></div><p class="mb-1" style="white-space: pre-wrap; overflow: hidden; text-overflow: ellipsis; max-height: 100px;">' + formatText(event.description) + '</p><a href="#" onclick="showEventModal(\'' +  event._id + '\')"><small>En lire plus...</small></a> ou <a href="/cartographe?id=' + event._id + '"><small>Voir sur la carte.</small></a></div>';
       currentHtml += thisEventHtml;
       $(idList).html(currentHtml);
     }
@@ -262,6 +271,7 @@
 
             $('#rumour-details-modal-contact').text(rumour.contact);
             $('#rumour-details-modal-site').html("<a href='" + rumour.site + "' target='_blank'>" + rumour.site + "</a>");
+            $('#rumour-details-modal #tomap-btn').attr('href', '/cartographe?id=' + rumour._id);
             $('#rumour-details-modal').modal('show');
           }
         }
@@ -270,7 +280,7 @@
 
     function addRumourToList(idList, rumour) {
       var currentHtml = $(idList).html();
-      var thisRumourHtml = '<div href="#" class="list-group-item flex-column align-items-start"><div class="d-flex w-100 justify-content-between"><h5 class="mb-1">' + rumour.name + '</h5></div><p class="mb-1" style="white-space: pre-wrap; overflow: hidden; text-overflow: ellipsis; max-height: 100px;">' + formatText(rumour.text) + '</p><a href="#" onclick="showRumourModal(\'' +  rumour._id + '\')"><small>En lire plus...</small></a></div>';
+      var thisRumourHtml = '<div href="#" class="list-group-item flex-column align-items-start"><div class="d-flex w-100 justify-content-between"><h5 class="mb-1">' + rumour.name + '</h5></div><p class="mb-1" style="white-space: pre-wrap; overflow: hidden; text-overflow: ellipsis; max-height: 100px;">' + formatText(rumour.text) + '</p><a href="#" onclick="showRumourModal(\'' +  rumour._id + '\')"><small>En lire plus...</small></a> ou <a href="/cartographe?id=' + rumour._id + '"><small>Voir sur la carte.</small></a></div>';
       currentHtml += thisRumourHtml;
       $(idList).html(currentHtml);
     }
