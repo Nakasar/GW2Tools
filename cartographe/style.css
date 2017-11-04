@@ -4,16 +4,14 @@ html, body, #container {
   width: 100%;
 }
 
-body {
-  padding-top: 50px;
-}
 .navbar {
-  min-height: 50px;
+  min-height: 5rem;
 }
 
-.starter-template {
-  padding: 40px 15px;
-  text-align: center;
+#page {
+  height: 100%;
+  overflow: hidden;
+  width: 100%;
 }
 
 #sidebar {
@@ -34,15 +32,11 @@ body {
   position: relative;
   width: 100%;
 }
-@media (max-width: 767px) {
-#sidebar {
-  display: none;
-}
-}
+
 .sidebar-wrapper .description {
   overflow: hidden;
   text-overflow: ellipsis;
-  max-height: 20vh;
+  max-height: 10vh;
   white-space: pre-wrap;
 }
 #sidebar .site {

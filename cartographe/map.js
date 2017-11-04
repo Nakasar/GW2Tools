@@ -329,11 +329,11 @@ function sideBarDisplayLocation(location) {
   switch (location.category) {
     case "rumour":
 
-      $('#features').removeClass("panel-default panel-info").addClass("panel-success");
-      $('#sidebar h3').text(location.title);
+      $('#sidebar #sidebar-title-box').removeClass('list-group-item-info list-group-item-danger').addClass('list-group-item-success');
+      $('#sidebar #sidebar-title').text(location.title);
       $('.contact').text(location.contact);
 
-      $('.site').text(location.site).attr('href', location.site).removeClass("list-group-item-info ist-group-item-danger").addClass("list-group-item-success");
+      $('.site').text(location.site).attr('href', location.site).removeClass("list-group-item-info list-group-item-danger").addClass("list-group-item-success");
 
       // Cut description if too long.
       $('.description').html(formatText(location.text.replace(regex_html, "")));
@@ -341,8 +341,8 @@ function sideBarDisplayLocation(location) {
       break;
     case "event":
 
-      $('#features').removeClass("panel-default panel-info panel-success").addClass("panel-danger");
-      $('#sidebar h3').text(location.name);
+      $('#sidebar #sidebar-title-box').removeClass('list-group-item-info list-group-item-success').addClass('list-group-item-danger');
+      $('#sidebar #sidebar-title').text(location.name);
       $('.contact').text(location.contact);
 
       $('#hours-heading').text("Date");
@@ -363,8 +363,8 @@ function sideBarDisplayLocation(location) {
       break;
     case "location":
 
-      $('#features').removeClass("panel-default panel-danger panel-success").addClass("panel-info");
-      $('#sidebar h3').text(location.name);
+      $('#sidebar #sidebar-title-box').removeClass("list-group-item-danger list-group-item-success").addClass("list-group-item-info");
+      $('#sidebar #sidebar-title').text(location.name);
       $('.contact').text(location.contact);
 
       $('#hours-heading').text("Horaires");
@@ -389,67 +389,6 @@ function sideBarDisplayLocation(location) {
   displayCommand(location);
 
   thisLoc = location;
-
-  $("#sidebar").animate({
-    width: "300"
-  }, 500, function() {
-    //map.invalidateSize();
-  });
-}
-
-// Display info about a Permanent Location
-function sidebarDisplayPermLoc(loc) {
-  $('#features').removeClass("panel-default panel-danger").addClass("panel-info");
-  $('#sidebar h3').text(loc.name);
-  $('.contact').text(loc.contact);
-
-  $('#hours-heading').text("Horaires");
-  $('.hours').text(loc.hours);
-
-  $('.type').text(loc.typesToString());
-
-  $('.site').text(loc.site).attr('href', loc.site).removeClass("list-group-item-danger").addClass("list-group-item-info");
-
-  // Cut description if too long.
-  if (loc.description.length > 800) {
-    $('.description').html(formatText(loc.description.replace(regex_html, "")))
-  } else {
-    $('.description').html(formatText(loc.description.replace(regex_html, "")))
-  }
-
-  displayCommand(loc);
-
-  thisLoc = loc;
-
-  $("#sidebar").animate({
-    width: "300"
-  }, 500, function() {
-    //map.invalidateSize();
-  });
-}
-// DIsplay Infos abour a Temporary Location
-function sidebarDisplayEventLoc(loc) {
-  $('#features').removeClass("panel-default panel-info").addClass("panel-danger");
-  $('#sidebar h3').text(loc.name);
-  $('.contact').text(loc.contact);
-
-  $('#hours-heading').text("Date");
-  var date = new Date(loc.end_date);
-  if (date) {
-      $('.hours').text(date.toLocaleDateString() + " " + date.toLocaleTimeString().substr(0, 5));
-  } else {
-    $('.hours').text("Non renseigné.");
-  }
-
-  $('.type').text(loc.typesToString());
-
-  $('.site').text(loc.site).attr('href', loc.site).removeClass("list-group-item-info").addClass("list-group-item-danger");
-
-  // Cut description if too long.
-  $('.description').html(formatText(loc.description.replace(regex_html, "")));
-
-  displayCommand(loc);
-  thisLoc = loc;
 
   $("#sidebar").animate({
     width: "300"
@@ -639,7 +578,7 @@ $("#perm-form-submit").click(function() {
           addMarker(permanentLocation);
 
           $("#addMarkerModal").modal("hide");
-          sidebarDisplayPermLoc(location);
+          sideBarDisplayLocation(location);
         }
       }
     });
@@ -660,7 +599,7 @@ $("#perm-form-submit").click(function() {
           addMarker(permanentLocation);
 
           $("#addMarkerModal").modal("hide");
-          sidebarDisplayPermLoc(permanentLocation);
+          sideBarDisplayLocation(permanentLocation);
         }
       }
     });
@@ -711,7 +650,7 @@ $("#event-form-submit").click(function() {
           addMarker(eventLocation);
 
           $("#addMarkerModal").modal("hide");
-          sidebarDisplayEventLoc(eventLocation);
+          sideBarDisplayLocation(eventLocation);
         }
       },
       fail: function(json) {
@@ -733,7 +672,7 @@ $("#event-form-submit").click(function() {
           addMarker(eventLocation);
 
           $("#addMarkerModal").modal("hide");
-          sidebarDisplayEventLoc(eventLocation);
+          sideBarDisplayLocation(eventLocation);
         }
       },
       fail: function(json) {
@@ -768,6 +707,7 @@ $("#rumour-form-submit").click(function() {
           addMarker(rumourLocation);
 
           $("#addMarkerModal").modal("hide");
+          sideBarDisplayLocation(rumourLocation);
         }
       },
       fail: function(json) {
@@ -791,6 +731,7 @@ $("#rumour-form-submit").click(function() {
           addMarker(rumourLocation);
 
           $("#addMarkerModal").modal("hide");
+          sideBarDisplayLocation(rumourLocation);
         }
       },
       fail: function(json) {
