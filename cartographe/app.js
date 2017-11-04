@@ -144,33 +144,34 @@ class Point {
 }
 
 class Rumour {
-  constructor(id, owner_id, name, coord, contact, text, site) {
-    this.is = id;
+  constructor(id, owner_id, title, coord, contact, text, site) {
+    this.id = id;
     this.owner_id = owner_id;
-    this.name = name;
+    this.title = title;
     this.coord = coord;
     this.contact = contact;
     this.text = text;
     this.site = site;
+    this.category = "rumour";
   }
 
   static parse (json) {
     var j_id = json._id,
       j_owner_id = json.owner_id,
-      j_name = json.name,
+      j_title = json.name,
       j_coord = json.coord,
       j_contact = json.contact,
       j_text = json.text,
       j_site = json.site;
 
-    return new Rumour(j_id, j_owner_id, j_name, Point.unpackCoord(j_coord), j_contact, j_text, j_site);
+    return new Rumour(j_id, j_owner_id, j_title, Point.unpackCoord(j_coord), j_contact, j_text, j_site);
   }
 
   createMarker() {
     var loc = this;
-    this.marker = L.marker(unproject([this.coord.x, this.coord.y]), {icon: rumourIcon}).bindPopup('<h3>' + this.name + '</h3><br>' + formatText(this.text.replace(regex_html, "").replace(/\n/g, "<br>")) + '<br><a target="_blank" href="' + this.site + '">site web</a>');
+    this.marker = L.marker(unproject([this.coord.x, this.coord.y]), {icon: rumourIcon}).bindPopup('<h3>' + this.title + '</h3><br>' + formatText(this.text.replace(regex_html, "").replace(/\n/g, "<br>")) + '<br><a target="_blank" href="' + this.site + '">site web</a>');
     this.marker.on("click", function(e) {
-
+      sideBarDisplayLocation(loc);
     });
     this.marker.addTo(map);
   }
@@ -241,7 +242,7 @@ class PermanentLocation extends Location {
     var loc = this;
     this.marker = L.marker(unproject([this.coord.x, this.coord.y]), {icon: iconsList.get(this.icon)}).bindPopup('<h3>' + this.name + '</h3><br>' + formatText(this.description.replace(regex_html, "").replace(/\n/g, "<br>")) + '<br><a target="_blank" href="' + this.site + '">site web</a>');
     this.marker.on("click", function(e) {
-      sidebarDisplayPermLoc(loc);
+      sideBarDisplayLocation(loc);
     });
     this.marker.addTo(map);
   }
@@ -288,7 +289,7 @@ class EventLocation extends Location {
 
     this.marker = L.marker(unproject([this.coord.x, this.coord.y]), {icon: iconsList.get(this.icon)}).bindPopup('<h2>' + this.name + '</h2>' + formatteddate + '<br>' + formatText(this.description.replace(regex_html, "").replace(/\n/g, "<br>")) + '<br><a target="_blank" href="' + this.site + '">site web</a>');
     this.marker.on("click", function(e) {
-      sidebarDisplayEventLoc(loc);
+      sideBarDisplayLocation(loc);
     });
     this.marker.addTo(map);
   }
@@ -344,6 +345,78 @@ function formatText(text) {
   formatted = formatted.replace(/\\n/g, '<br>')
 
   return formatted;
+}
+
+function sideBarDisplayLocation(location) {
+  switch (location.category) {
+    case "rumour":
+
+      $('#features').removeClass("panel-default panel-info").addClass("panel-success");
+      $('#sidebar h3').text(location.title);
+      $('.contact').text(location.contact);
+
+      $('.site').text(location.site).attr('href', location.site).removeClass("list-group-item-info ist-group-item-danger").addClass("list-group-item-success");
+
+      // Cut description if too long.
+      $('.description').html(formatText(location.text.replace(regex_html, "")));
+
+      break;
+    case "event":
+
+      $('#features').removeClass("panel-default panel-info panel-success").addClass("panel-danger");
+      $('#sidebar h3').text(location.name);
+      $('.contact').text(location.contact);
+
+      $('#hours-heading').text("Date");
+      var date = new Date(location.end_date);
+      if (date) {
+          $('.hours').text(date.toLocaleDateString() + " " + date.toLocaleTimeString().substr(0, 5));
+      } else {
+        $('.hours').text("Non renseigné.");
+      }
+
+      $('.type').text(location.typesToString());
+
+      $('.site').text(location.site).attr('href', location.site).removeClass("list-group-item-info list-group-item-success").addClass("list-group-item-danger");
+
+      // Cut description if too long.
+      $('.description').html(formatText(location.description.replace(regex_html, "")));
+
+      break;
+    case "location":
+
+      $('#features').removeClass("panel-default panel-danger panel-success").addClass("panel-info");
+      $('#sidebar h3').text(location.name);
+      $('.contact').text(location.contact);
+
+      $('#hours-heading').text("Horaires");
+      $('.hours').text(location.hours);
+
+      $('.type').text(location.typesToString());
+
+      $('.site').text(location.site).attr('href', location.site).removeClass("list-group-item-danger list-group-item-success").addClass("list-group-item-info");
+
+      // Cut description if too long.
+      if (location.description.length > 800) {
+        $('.description').html(formatText(location.description.replace(regex_html, "")))
+      } else {
+        $('.description').html(formatText(location.description.replace(regex_html, "")))
+      }
+
+      break;
+    default:
+      return;
+  }
+
+  displayCommand(location);
+
+  thisLoc = location;
+
+  $("#sidebar").animate({
+    width: "300"
+  }, 500, function() {
+    //map.invalidateSize();
+  });
 }
 
 // Display info about a Permanent Location
@@ -411,12 +484,18 @@ function sidebarDisplayEventLoc(loc) {
   Set detail modal.
 */
 $('#permloc-detail-modal').on('show.bs.modal', function (e) {
-  $('#permloc-detail-modal-title').text(thisLoc.name);
-  $('#permloc-detail-modal-description').html(formatText(thisLoc.description.replace(regex_html, "")));
+
+  if (thisLoc.category === "rumour") {
+    $('#permloc-detail-modal-title').text(thisLoc.title);
+    $('#permloc-detail-modal-description').html(formatText(thisLoc.text.replace(regex_html, "")));
+  } else if (thisLoc.category === "event" || thisLoc.category === "location") {
+    $('#permloc-detail-modal-title').text(thisLoc.name);
+    $('#permloc-detail-modal-description').html(formatText(thisLoc.description.replace(regex_html, "")));
+  }
 })
 
 /*
-  Called when the user clicked the "modify" locatio button. It opens the location form modal, fills it with current data, and updates the document when user validates.
+  Called when the user clicked the "modify" location button. It opens the location form modal, fills it with current data, and updates the document when user validates.
 */
 function actionModify() {
   mode = "modify";
@@ -489,6 +568,23 @@ function actionDelete() {
           map.removeLayer(thisLoc.marker);
           sidebarClose();
         }
+      }
+    });
+  } else if (thisLoc.category === "rumour") {
+    // Request API to remove rumour...
+    console.log("rumeur");
+    $.ajax({
+      method: "DELETE",
+      url: 'http://gw2rp-tools.ovh/api/rumours/' + thisLoc.id + "?token=" + thisUser.token,
+      dataType: 'json',
+      success: function(json) {
+        if (json.success) {
+          map.removeLayer(thisLoc.marker);
+          sidebarClose();
+        }
+      },
+      fail: function(json) {
+        console.log(json);
       }
     });
   }
@@ -652,6 +748,62 @@ $("#event-form-submit").click(function() {
     });
   }
 
+
+  return false;
+});
+
+$("#rumour-form-submit").click(function() {
+
+  var title = $('#rumour-form #title').val(),
+    contact = $('#rumour-form #contact').val(),
+    text = $('#rumour-form #text').val().replace(regex_html, ""),
+    coord = "[" + x + "," + y + "]",
+    site = $('#rumour-form #site').val(),
+    category = "rumour";
+
+  if (mode === "add") {
+    // Request API to add rumour...
+    $.ajax({
+      method: "POST",
+      url: 'http://gw2rp-tools.ovh/api/rumours',
+      data: { name: title, text: text, contact: contact, coord: coord, category: category, site: site, token: thisUser.token },
+      dataType: 'json',
+      success: function(json) {
+        console.log(json);
+        if (json.success) {
+          var rumour = json.rumour;
+          var rumourLocation = Rumour.parse(rumour);
+          addMarker(rumour);
+
+          $("#addMarkerModal").modal("hide");
+        }
+      },
+      fail: function(json) {
+        console.log(json);
+      }
+    });
+  } else if (mode === "modify") {
+    // Request API to add permanent location...
+    $.ajax({
+      method: "PUT",
+      url: 'http://gw2rp-tools.ovh/api/rumours/' + thisLoc.id,
+      data: { name: title, text: text, contact: contact, coord: coord, category: category, site: site, token: thisUser.token },
+      dataType: 'json',
+      success: function(json) {
+        if (json.success) {
+          map.removeLayer(thisLoc.marker);
+
+          var rumour = json.rumour;
+          var rumourLocation = Rumour.parse(rumour);
+          addMarker(rumourLocation);
+
+          $("#addMarkerModal").modal("hide");
+        }
+      },
+      fail: function(json) {
+      }
+    });
+  }
 
   return false;
 });

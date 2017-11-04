@@ -24,22 +24,23 @@
   <div class="container">
     <div class="container" id="maintenance">
       <div class="alert alert-warning" role="alert">
-        <h4 class="alert-heading">Site en construction</h4>
-        <p>Repassez plus tard ;)<br>Vous pouvez déjà accéder au cartographe pour tester et faire des retours. Attention, les données sur régulièrement modifiées/effacées dans le cadre de changements assez drastiques !</p>
-        <hr>
         <h4 class="alert-heading">Documentation API</h4>
         <p>L'accès à l'API commence à <a href="/api">/api</a>.
           <br/>
           La documentation est accessible via l'onglet "Documentation".
         </p>
       </div>
-
-      <div class="list-group" id="incoming-event-list">
-
+      <div class="container">
+        <h4>Prochains évènements</h4>
+        <div class="list-group" id="incoming-event-list"></div>
+      </div>
+      <div class="container">
+        <h4>Dernières rumeurs</h4>
+        <div class="list-group" id="latest-rumours-list"></div>
       </div>
     </div>
 
-    <!-- Modal -->
+    <!-- Event detail Modal -->
     <div class="modal fade" id="event-details-modal" tabindex="-1" role="dialog" aria-labelledby="event-details-modal-title" aria-hidden="true">
       <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
@@ -86,6 +87,43 @@
     </div>
   </div><!-- /.container -->
 
+  <!-- Rumour Modal -->
+  <div class="modal fade" id="rumour-details-modal" tabindex="-1" role="dialog" aria-labelledby="event-details-modal-title" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="rumour-details-modal-title">Modal title</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="container">
+            <div class="row">
+              <div class="col-sm">
+                <label for="rumour-details-modal-contact">Contact :</label>
+                <p id="rumour-details-modal-contact"></p>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-sm">
+                <label for="rumour-details-modal-description">Rumeur :</label>
+                <p id="rumour-details-modal-description"></p>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-sm">
+                <label for="rumour-details-modal-site">Site :</label>
+                <p id="rumour-details-modal-site"></p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div><!-- /.container -->
+
   <!-- jQuery library -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.js"></script>
   <!-- Latest compiled JavaScript -->
@@ -131,12 +169,27 @@
       url: 'http://gw2rp-tools.ovh/api/events?next=5',
       dataType: 'json',
       success: function(json) {
-        console.log(json);
         if (json.success) {
           var events = json.events;
           $('#incoming-event-list').html("");
           for (var event_index in events) {
             addEventToList('#incoming-event-list', events[event_index]);
+          }
+        }
+      }
+    });
+
+    // retrieves 5 latest rumours and displays them in a list.
+    $.ajax({
+      method: "GET",
+      url: 'http://gw2rp-tools.ovh/api/rumours?latest=5',
+      dataType: 'json',
+      success: function(json) {
+        if (json.success) {
+          var rumours = json.rumours;
+          $('#latest-rumours-list').html("");
+          for (var rumour_index in rumours) {
+            addRumourToList('#latest-rumours-list', rumours[rumour_index]);
           }
         }
       }
@@ -158,20 +211,17 @@
     }
 
     function showEventModal(eventId) {
-      console.log(eventId);
       $.ajax({
         method: "GET",
         url: 'http://gw2rp-tools.ovh/api/events/' + eventId,
         dataType: 'json',
         success: function(json) {
-          console.log(json);
           if (json.success) {
             var event = json.event;
             $('#event-details-modal-title').text(event.name);
             $('#event-details-modal-description').html(formatText(event.description));
             var date = new Date(event.end_date);
             if (date) {
-              console.log(date);
               var dateString = date.toLocaleDateString().substr(0, 10);
               if (date.getHours() > 0) {
                 dateString += " - " + date.toLocaleTimeString().substr(0, 5);
@@ -188,7 +238,7 @@
     }
 
     function addEventToList(idList, event) {
-      var currentHtml = $('#incoming-event-list').html();
+      var currentHtml = $(idList).html();
       var date = new Date(event.end_date);
       var dateString = date.toLocaleDateString().substr(0, 10);
       if (date.getHours() > 0) {
@@ -196,7 +246,33 @@
       }
       var thisEventHtml = '<div href="#" class="list-group-item flex-column align-items-start"><div class="d-flex w-100 justify-content-between"><h5 class="mb-1">' + event.name + '</h5><small>' + dateString + '</small></div><p class="mb-1" style="white-space: pre-wrap; overflow: hidden; text-overflow: ellipsis; max-height: 100px;">' + formatText(event.description) + '</p><a href="#" onclick="showEventModal(\'' +  event._id + '\')"><small>En lire plus...</small></a></div>';
       currentHtml += thisEventHtml;
-      $('#incoming-event-list').html(currentHtml);
+      $(idList).html(currentHtml);
+    }
+
+    function showRumourModal(rumourId) {
+      $.ajax({
+        method: "GET",
+        url: 'http://gw2rp-tools.ovh/api/rumours/' + rumourId,
+        dataType: 'json',
+        success: function(json) {
+          if (json.success) {
+            var rumour = json.rumour;
+            $('#rumour-details-modal-title').text(rumour.name);
+            $('#rumour-details-modal-description').html(formatText(rumour.text));
+
+            $('#rumour-details-modal-contact').text(rumour.contact);
+            $('#rumour-details-modal-site').html("<a href='" + rumour.site + "' target='_blank'>" + rumour.site + "</a>");
+            $('#rumour-details-modal').modal('show');
+          }
+        }
+      });
+    }
+
+    function addRumourToList(idList, rumour) {
+      var currentHtml = $(idList).html();
+      var thisRumourHtml = '<div href="#" class="list-group-item flex-column align-items-start"><div class="d-flex w-100 justify-content-between"><h5 class="mb-1">' + rumour.name + '</h5></div><p class="mb-1" style="white-space: pre-wrap; overflow: hidden; text-overflow: ellipsis; max-height: 100px;">' + formatText(rumour.text) + '</p><a href="#" onclick="showRumourModal(\'' +  rumour._id + '\')"><small>En lire plus...</small></a></div>';
+      currentHtml += thisRumourHtml;
+      $(idList).html(currentHtml);
     }
   </script>
 
