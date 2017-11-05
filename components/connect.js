@@ -53,6 +53,9 @@ function establishConnectionCallback(callback) {
               // Do nothing, token is invalid.
               callback(false);
             }
+          },
+          error: function(json) {
+            displayAPIAlert();
           }
         });
       }
@@ -91,6 +94,10 @@ function establishConnection() {
             } else {
               // Do nothing, token is invalid.
             }
+          },
+          error: function(json) {
+            console.log("dad");
+            displayAPIAlert();
           }
         });
       }
@@ -132,7 +139,11 @@ function signIn() {
       url: 'http://gw2rp-tools.ovh/api/login',
       data: { nick_name: $('#login-username').val(), password: $('#login-password').val()},
       dataType: 'json',
-      success: onSignInResponse
+      success: onSignInResponse,
+      error: function(json) {
+        $('#login-form #login-alert #text').text("Impossible de se connecter au serveur dans les Brumes, le problème vient peut-être de notre côté :/");
+        $('#login-form #login-alert').show();
+      }
     });
   } else {
     $('#login-form #login-alert').text("Vous devez indiquer votre mot de passe et votre nom d'utilisateur.");
@@ -145,8 +156,8 @@ function onSignInResponse(json) {
     $('#login-form #login-alert').hide();
     onSignIn(json);
   } else {
-    $('#login-form #login-alert').text("Le nom d'utilisateur et le mot de passe ne correspondent pas.");
-    $('#login-form #login-alert').show();
+    $('#login-form #login-alert #text').text("Le nom d'utilisateur et le mot de passe ne correspondent pas.");
+    $('#login-form #login-alert #text').show();
   }
 }
 
@@ -175,7 +186,7 @@ function onSignIn(json) {
 }
 
 function displaySignUpAlert(message) {
-  $('#signup-alert').text(message);
+  $('#signup-alert #text').text(message);
   $('#signup-alert').show();
 }
 
@@ -243,7 +254,11 @@ function signUp() {
       url: 'http://gw2rp-tools.ovh/api/signup',
       data: { nick_name: $('#signup-username').val(), password: $('#signup-password').val(), email: $('#signup-email').val(), gw2_account: gw2_name, gw2_id: gw2_account_id },
       dataType: 'json',
-      success: onSignUpResponse
+      success: onSignUpResponse,
+      error: function(json) {
+        $('#login-form #login-alert #text').text("Impossible de se connecter au serveur dans les Brumes, le problème vient peut-être de notre côté :/");
+        $('#login-form #login-alert').show();
+      }
     });
   }
 }

@@ -22,7 +22,15 @@
   </header>
 
   <div class="container">
-    <div class="container" id="maintenance">
+    <div class="container">
+      <div class="alert alert-danger alert-dismissible" role="alert" id="main-alert">
+        <div id="text">Nous avons détecté une erreur inconnue. Le problème vient probablement de notre côté des Brumes :/</div>
+        <button type="button" class="close" data-dismiss="alert" aria-label="Fermer">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+    </div>
+    <div class="container">
       <div class="alert alert-warning" role="alert">
         <h4 class="alert-heading">Documentation API</h4>
         <p>L'accès à l'API commence à <a href="/api">/api</a>.
@@ -142,9 +150,15 @@
   <script src="/components/connect.js"></script>
 
   <script>
+  $('#main-alert').hide();
   $('#navigation').load("/components/header.html", function() {
-    establishConnection();
+    establishConnectionCallback(function(success) {});
   });
+
+  function displayAPIAlert() {
+    $('#main-alert #text').text("Le GOLEM M4554G3R n'a pas pu contacter le serveur dans les Brumes, le problème vient certainement de notre côté.");
+    $('#main-alert').show();
+  }
   </script>
 
   <script>

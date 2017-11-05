@@ -1,7 +1,18 @@
 body {
   padding-top: 5rem;
 }
+
 .starter-template {
   padding: 3rem 1.5rem;
   text-align: center;
+}
+
+.navbar {
+  background-color: brown!important;
+}
+.navbar .nav-item .nav-link {
+  color: white;
+}
+.navbar .active>.nav-link {
+  color: yellow!important;
 }

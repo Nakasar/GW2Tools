@@ -22,9 +22,17 @@
 
   <div class="container">
     <article>
-      <h1>Utilisation de l'API</h1>
-      <p>Ipsum</p>
-      <h2>Liste des endpoints</h2>
+      <h1>Boîte à Outils GW2RP</h1>
+
+      <h2>A propos</h2>
+      <p>La <strong>Boîte à Outils GW2RP</strong> est un ensemble d'outils conçus pour Guild Wars 2 et la pratique du jeu de rôle sur MMORPG.</p>
+      <p>Pour les petits curieux et férus de l'informatique, l'interface sur laquelle vous vous trouvez utilise Bootstrap pour l'architecture et Leaflet pour la carte. L'API tourne sous Node.js (express) avec une base MongoDB (mongoose).</p>
+
+      <h2>Utilisation de l'API</h2>
+      <p>La Boîte à Outils récupère ses données et gère ses utilisateur à l'aide d'une API. La documentation ci-dessous présente les différentes adresses qui permettent de récupérer et modifier ces données.</p>
+      <p>La racine de l'api est accessible à <code>http://gw2rp-tools.ovh/api</code>.</p>
+
+      <h3>Liste des endpoints</h3>
       <table class="table">
         <tr>
           <th>Endpoint</th>
@@ -61,10 +69,16 @@
           <td>End point des lieux permanents.</td>
           <td><span class="badge badge-success">GET</span> <span class="badge badge-primary">POST</span> <span class="badge badge-warning">PUT</span> <span class="badge badge-danger">DELETE</span></td>
         </tr>
+        <tr>
+          <td>/rumours</td>
+          <td>End point des rumeurs.</td>
+          <td><span class="badge badge-success">GET</span> <span class="badge badge-primary">POST</span> <span class="badge badge-warning">PUT</span> <span class="badge badge-danger">DELETE</span></td>
+        </tr>
       </table>
-      <h2>Détails des endpoints</h2>
+
+      <h3>Détails des endpoints</h3>
       <p>Toutes les réponses de l'API contiennent le mot-clé <code>{ success: true/false }</code> pour indiquer si la requête a réussi ou non.</p>
-      <p>Les endpoints indiqués <span class="authed badge badge-dark">auth</span> nécessite la présence du token de l'utilisateur dans la requête : <code>{ token: <em>token</em> }</code>.</p>
+      <p>Les endpoints indiqués <span class="authed badge badge-dark">auth</span> nécessite la présence d'un token valide de l'utilisateur dans la requête : <code>{ token: <em>token</em> }</code>.</p>
       <table class="table">
         <tr>
           <th>/me</th>
@@ -129,12 +143,15 @@
         </tr>
         <tr>
           <td><span class="badge badge-warning">PUT</span> <span class="authed badge badge-dark">auth</span></td>
-          <td><code>{ champs à mettre à jour }</code></td>
-          <td>Mets à jour l'utilisateur (si le token appartient à cet utilisateur).</td>
-          <td><code>user: { _id, nick_name, gw2_account, admin }</code></td>
+          <td>Champs parmi : <code>{ <em>old_password</em>, <em>new_password</em>, <em>username</em>, <em>gw2_account</em> }</code><br>Précisez : <code>?general=true</code> ou <code>?security=true</code></td>
+          <td>Mets à jour l'utilisateur (si le token appartient à cet utilisateur).
+            <br><code><em>general</em></code> pour les infos générales
+            <br><code><em>general</em></code> pour le mot de passe)
+          </td>
+          <td></td>
         </tr>
         <tr>
-          <td><span class="badge badge-danger">DELETE</span> <span class="authed badge badge-dark">auth</span> <span class="badge badge-dark">admin</span></td>
+          <td><span class="badge badge-danger">DELETE</span> <span class="authed badge badge-dark">auth</span></td>
           <td></td>
           <td>Supprime cet utilisateur s'il s'agit de celui du token (ou admin).</td>
           <td></td>
@@ -178,7 +195,7 @@
           <td><code>event: { _id ...}</code></td>
         </tr>
         <tr>
-          <td><span class="badge badge-danger">DELETE</span> <span class="authed badge badge-dark">auth</span> <span class="badge badge-dark">admin</span></td>
+          <td><span class="badge badge-danger">DELETE</span> <span class="authed badge badge-dark">auth</span></td>
           <td></td>
           <td>Supprime l'événement indiqué s'il appartient à l'utilisateur du token (ou admin).</td>
           <td></td>
@@ -222,9 +239,53 @@
           <td><code>location: { _id ...}</code></td>
         </tr>
         <tr>
-          <td><span class="badge badge-danger">DELETE</span> <span class="authed badge badge-dark">auth</span> <span class="badge badge-dark">admin</span></td>
+          <td><span class="badge badge-danger">DELETE</span> <span class="authed badge badge-dark">auth</span></td>
           <td></td>
           <td>Supprime ce lieu permanent s'il appartient à l'utilisateur du token (ou admin).</td>
+          <td></td>
+        </tr>
+
+        <tr>
+          <th>/rumours</th>
+        </tr>
+        <tr>
+          <td><span class="badge badge-success">GET</span></td>
+          <td><code>?latest=<em>xx</em></code></td>
+          <td>Liste des rumeurs en base.<br><code>next</code> retourne les <code><em>xx</em></code> dernières rumeurs.</td>
+          <td><code>rumours: [rumour]</code></td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-primary">POST</span> <span class="authed badge badge-dark">auth</span></td>
+          <td><code>{ name, text, contact, coord: [x, y], category, site }</code></td>
+          <td>Ajoute une nouvelle rumeur qui appartiendra à cet utilisateur.</td>
+          <td><code>rumour: { _id ...}</code></td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-danger">DELETE</span> <span class="authed badge badge-dark">auth</span> <span class="badge badge-dark">admin</span></td>
+          <td></td>
+          <td>Supprime l'ensemble des rumeurs en base</td>
+          <td></td>
+        </tr>
+
+        <tr>
+          <th>/rumours/:rumourId</th>
+        </tr>
+        <tr>
+          <td><span class="badge badge-success">GET</span></td>
+          <td></td>
+          <td>Retourne la rumeur indiquée si elle existe..</td>
+          <td><code>rumour: { _id ... }</code></td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-warning">PUT</span> <span class="authed badge badge-dark">auth</span></td>
+          <td><code>{  }</code></td>
+          <td>Met à jour la rumeur (si elle appartient à cet utilisateur ).</td>
+          <td><code>rumour: { _id ...}</code></td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-danger">DELETE</span> <span class="authed badge badge-dark">auth</span></td>
+          <td></td>
+          <td>Supprime cette rumeur si elle appartient à l'utilisateur du token (ou admin).</td>
           <td></td>
         </tr>
       </table>
