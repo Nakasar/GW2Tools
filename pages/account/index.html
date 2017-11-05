@@ -155,12 +155,13 @@
             $('#modify-general #success').show();
             // user is logged in.
           } else {
+            console.log(json);
             switch (json.code) {
               case "UPDU-01":
-                displayPasswordAlert("Ce nom d'utilisateur est déjà utilisé.")
+                displayGeneralInfoAlert("Ce nom d'utilisateur est déjà utilisé.")
                 break;
               default:
-                displayPasswordAlert('Une erreur inconnue est survenue.')
+                displayGeneralInfoAlert('Une erreur inconnue est survenue.')
                 break;
             }
           }

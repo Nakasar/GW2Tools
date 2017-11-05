@@ -135,7 +135,7 @@ class Rumour {
 
   static parse (json) {
     var j_id = json._id,
-      j_owner_id = json.owner_id,
+      j_owner_id = json.owner,
       j_title = json.name,
       j_coord = json.coord,
       j_contact = json.contact,
@@ -145,9 +145,17 @@ class Rumour {
     return new Rumour(j_id, j_owner_id, j_title, Point.unpackCoord(j_coord), j_contact, j_text, j_site);
   }
 
+  //
+
   createMarker() {
     var loc = this;
-    this.marker = L.marker(unproject([this.coord.x, this.coord.y]), {icon: rumourIcon}).bindPopup('<h3>' + this.title + '</h3><br>' + formatText(this.text.replace(regex_html, "").replace(/\n/g, "<br>")) + '<br><a target="_blank" href="' + this.site + '">site web</a>');
+    var popupContent = '<h3>' + this.title + '</h3><br>';
+    if (thisUser.admin || thisUser.id == this.owner_id) {
+      popupContent += '<a href="#" onClick="actionDelete()">Supprimer</a> - <a href="#" onClick="actionModify()">Modifier</a><br>';
+    }
+    popupContent += formatText(this.text.replace(regex_html, "").replace(/\n/g, "<br>")) + '<br><a target="_blank" href="' + this.site + '">site web</a>';
+    this.marker = L.marker(unproject([this.coord.x, this.coord.y]), {icon: rumourIcon})
+      .bindPopup(popupContent);
     this.marker.on("click", function(e) {
       sideBarDisplayLocation(loc);
     });
@@ -208,7 +216,7 @@ class PermanentLocation extends Location {
       j_hours = json.hours,
       j_icon = json.icon,
       j_name = json.name,
-      j_owner_id = json.owner_id,
+      j_owner_id = json.owner,
       j_site = json.site,
       j_type = json.types,
       j_id = json._id;
@@ -218,7 +226,14 @@ class PermanentLocation extends Location {
 
   createMarker() {
     var loc = this;
-    this.marker = L.marker(unproject([this.coord.x, this.coord.y]), {icon: iconsList.get(this.icon)}).bindPopup('<h3>' + this.name + '</h3><br>' + formatText(this.description.replace(regex_html, "").replace(/\n/g, "<br>")) + '<br><a target="_blank" href="' + this.site + '">site web</a>');
+
+    var popupContent = '<h3>' + this.name + '</h3><br>';
+    if (thisUser.admin || thisUser.id == this.owner_id) {
+      popupContent += '<a href="#" onClick="actionDelete()">Supprimer</a> - <a href="#" onClick="actionModify()">Modifier</a><br>';
+    }
+    popupContent += formatText(this.description.replace(regex_html, "").replace(/\n/g, "<br>")) + '<br><a target="_blank" href="' + this.site + '">site web</a>';
+
+    this.marker = L.marker(unproject([this.coord.x, this.coord.y]), {icon: iconsList.get(this.icon)}).bindPopup(popupContent);
     this.marker.on("click", function(e) {
       sideBarDisplayLocation(loc);
     });
@@ -243,7 +258,7 @@ class EventLocation extends Location {
       j_end_date = json.end_date,
       j_icon = json.icon,
       j_name = json.name,
-      j_owner_id = json.owner_id,
+      j_owner_id = json.owner,
       j_site = json.site,
       j_type = json.types,
       j_id = json._id,
@@ -254,6 +269,12 @@ class EventLocation extends Location {
 
   createMarker() {
     var loc = this;
+
+    var popupContent = '<h3>' + this.name + '</h3><br>';
+    if (thisUser.admin || thisUser.id == this.owner_id) {
+      popupContent += '<a href="#" onClick="actionDelete()">Supprimer</a> - <a href="#" onClick="actionModify()">Modifier</a><br>';
+    }
+
     var date = new Date(loc.end_date);
     var formatteddate = ""
     if (date) {
@@ -265,7 +286,9 @@ class EventLocation extends Location {
       formatteddate = formatteddate + "</h4>";
     }
 
-    this.marker = L.marker(unproject([this.coord.x, this.coord.y]), {icon: iconsList.get(this.icon)}).bindPopup('<h2>' + this.name + '</h2>' + formatteddate + '<br>' + formatText(this.description.replace(regex_html, "").replace(/\n/g, "<br>")) + '<br><a target="_blank" href="' + this.site + '">site web</a>');
+    popupContent += formatteddate + "<br>" + formatText(this.description.replace(regex_html, "").replace(/\n/g, "<br>")) + '<br><a target="_blank" href="' + this.site + '">site web</a>';
+
+    this.marker = L.marker(unproject([this.coord.x, this.coord.y]), {icon: iconsList.get(this.icon)}).bindPopup(popupContent);
     this.marker.on("click", function(e) {
       sideBarDisplayLocation(loc);
     });
@@ -482,7 +505,6 @@ function actionDelete() {
       url: 'http://gw2rp-tools.ovh/api/locations/' + thisLoc.id + "?token=" + thisUser.token,
       dataType: 'json',
       success: function(json) {
-        console.log(json);
         if (json.success) {
           map.removeLayer(thisLoc.marker);
           sidebarClose();
@@ -504,7 +526,6 @@ function actionDelete() {
     });
   } else if (thisLoc.category === "rumour") {
     // Request API to remove rumour...
-    console.log("rumeur");
     $.ajax({
       method: "DELETE",
       url: 'http://gw2rp-tools.ovh/api/rumours/' + thisLoc.id + "?token=" + thisUser.token,
@@ -516,7 +537,6 @@ function actionDelete() {
         }
       },
       fail: function(json) {
-        console.log(json);
       }
     });
   }
@@ -571,7 +591,6 @@ $("#perm-form-submit").click(function() {
       data: { name: name, description: description, contact: contact, types: type, coord: coord, icon: icon, category: category, hours: hours, site: site, token: thisUser.token },
       dataType: 'json',
       success: function(json) {
-        console.log(json);
         if (json.success) {
           var location = json.location;
           var permanentLocation = PermanentLocation.parse(location);
@@ -590,7 +609,6 @@ $("#perm-form-submit").click(function() {
       data: { name: name, description: description, contact: contact, types: type, coord: coord, icon: icon, category: category, hours: hours, site: site, token: thisUser.token },
       dataType: 'json',
       success: function(json) {
-        console.log(json);
         if (json.success) {
           map.removeLayer(thisLoc.marker);
 
@@ -711,7 +729,6 @@ $("#rumour-form-submit").click(function() {
         }
       },
       fail: function(json) {
-        console.log(json);
       }
     });
   } else if (mode === "modify") {
@@ -727,7 +744,6 @@ $("#rumour-form-submit").click(function() {
 
           var rumour = json.rumour;
           var rumourLocation = Rumour.parse(rumour);
-		  console.log(rumourLocation);
           addMarker(rumourLocation);
 
           $("#addMarkerModal").modal("hide");
