@@ -145,18 +145,22 @@ class Rumour {
     return new Rumour(j_id, j_owner_id, j_title, Point.unpackCoord(j_coord), j_contact, j_text, j_site);
   }
 
-  //
-
   createMarker() {
     var loc = this;
     var popupContent = '<h3>' + this.title + '</h3><br>';
-    if (thisUser.admin || thisUser.id == this.owner_id) {
+    if (thisUser && (thisUser.admin || thisUser.id == this.owner_id)) {
       popupContent += '<a href="#" onClick="actionDelete()">Supprimer</a> - <a href="#" onClick="actionModify()">Modifier</a><br>';
     }
-    popupContent += formatText(this.text.replace(regex_html, "").replace(/\n/g, "<br>")) + '<br><a target="_blank" href="' + this.site + '">site web</a>';
+    popupContent += formatText(this.text.replace(regex_html, "")).replace(/\n/g, "<br>");
+    if (this.site.length > 0) {
+      popupContent += '<br><a target="_blank" href="' + this.site + '">site web</a>';
+    }
+
     this.marker = L.marker(unproject([this.coord.x, this.coord.y]), {icon: rumourIcon})
       .bindPopup(popupContent);
     this.marker.on("click", function(e) {
+      var stateObj = { foo: "bar" };
+      history.pushState(stateObj, loc.title, "?id=" + loc.id);
       sideBarDisplayLocation(loc);
     });
     this.marker.addTo(map);
@@ -228,13 +232,18 @@ class PermanentLocation extends Location {
     var loc = this;
 
     var popupContent = '<h3>' + this.name + '</h3><br>';
-    if (thisUser.admin || thisUser.id == this.owner_id) {
+    if (thisUser && (thisUser.admin || thisUser.id == this.owner_id)) {
       popupContent += '<a href="#" onClick="actionDelete()">Supprimer</a> - <a href="#" onClick="actionModify()">Modifier</a><br>';
     }
-    popupContent += formatText(this.description.replace(regex_html, "").replace(/\n/g, "<br>")) + '<br><a target="_blank" href="' + this.site + '">site web</a>';
+    popupContent += formatText(this.description.replace(regex_html, "")).replace(/\n/g, "<br>");
+    if (this.site.length > 0) {
+      popupContent += '<br><a target="_blank" href="' + this.site + '">site web</a>';
+    }
 
     this.marker = L.marker(unproject([this.coord.x, this.coord.y]), {icon: iconsList.get(this.icon)}).bindPopup(popupContent);
     this.marker.on("click", function(e) {
+      var stateObj = { foo: "bar" };
+      history.pushState(stateObj, loc.name, "?id=" + loc.id);
       sideBarDisplayLocation(loc);
     });
     this.marker.addTo(map);
@@ -271,7 +280,7 @@ class EventLocation extends Location {
     var loc = this;
 
     var popupContent = '<h3>' + this.name + '</h3><br>';
-    if (thisUser.admin || thisUser.id == this.owner_id) {
+    if (thisUser && (thisUser.admin || thisUser.id == this.owner_id)) {
       popupContent += '<a href="#" onClick="actionDelete()">Supprimer</a> - <a href="#" onClick="actionModify()">Modifier</a><br>';
     }
 
@@ -286,10 +295,16 @@ class EventLocation extends Location {
       formatteddate = formatteddate + "</h4>";
     }
 
-    popupContent += formatteddate + "<br>" + formatText(this.description.replace(regex_html, "").replace(/\n/g, "<br>")) + '<br><a target="_blank" href="' + this.site + '">site web</a>';
+    popupContent += formatteddate + "<br>" + formatText(this.description.replace(regex_html, "")).replace(/\n/g, "<br>");
+
+    if (this.site.length > 0) {
+      popupContent += '<br><a target="_blank" href="' + this.site + '">site web</a>';
+    }
 
     this.marker = L.marker(unproject([this.coord.x, this.coord.y]), {icon: iconsList.get(this.icon)}).bindPopup(popupContent);
     this.marker.on("click", function(e) {
+      var stateObj = { foo: "bar" };
+      history.pushState(stateObj, loc.name, "?id=" + loc.id);
       sideBarDisplayLocation(loc);
     });
     this.marker.addTo(map);
@@ -316,10 +331,10 @@ function sidebarClose() {
 
 function displayCommand(loc) {
   if(signedIn) {
-    if(thisUser.admin == 1) {
+    if(thisUser.admin) {
       $('#actionDelete').show();
       $('#actionModify').show();
-    } else if(thisUser.id === loc.owner.id) {
+    } else if(thisUser.id === loc.owner_id) {
       $('#actionDelete').show();
       $('#actionModify').show();
     } else {
