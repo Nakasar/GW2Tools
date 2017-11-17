@@ -517,7 +517,7 @@ function actionDelete() {
     // Request API to remove permanent location...
     $.ajax({
       method: "DELETE",
-      url: 'http://gw2rp-tools.ovh/api/locations/' + thisLoc.id + "?token=" + thisUser.token,
+      url: 'https://gw2rp-tools.ovh/api/locations/' + thisLoc.id + "?token=" + thisUser.token,
       dataType: 'json',
       success: function(json) {
         if (json.success) {
@@ -530,7 +530,7 @@ function actionDelete() {
     // Request API to remove event location...
     $.ajax({
       method: "DELETE",
-      url: 'http://gw2rp-tools.ovh/api/events/' + thisLoc.id + "?token=" + thisUser.token,
+      url: 'https://gw2rp-tools.ovh/api/events/' + thisLoc.id + "?token=" + thisUser.token,
       dataType: 'json',
       success: function(json) {
         if (json.success) {
@@ -543,7 +543,7 @@ function actionDelete() {
     // Request API to remove rumour...
     $.ajax({
       method: "DELETE",
-      url: 'http://gw2rp-tools.ovh/api/rumours/' + thisLoc.id + "?token=" + thisUser.token,
+      url: 'https://gw2rp-tools.ovh/api/rumours/' + thisLoc.id + "?token=" + thisUser.token,
       dataType: 'json',
       success: function(json) {
         if (json.success) {
@@ -602,7 +602,7 @@ $("#perm-form-submit").click(function() {
     // Request API to add permanent location...
     $.ajax({
       method: "POST",
-      url: 'http://gw2rp-tools.ovh/api/locations',
+      url: 'https://gw2rp-tools.ovh/api/locations',
       data: { name: name, description: description, contact: contact, types: type, coord: coord, icon: icon, category: category, hours: hours, site: site, token: thisUser.token },
       dataType: 'json',
       success: function(json) {
@@ -620,7 +620,7 @@ $("#perm-form-submit").click(function() {
     // Request API to add permanent location...
     $.ajax({
       method: "PUT",
-      url: 'http://gw2rp-tools.ovh/api/locations/' + thisLoc.id,
+      url: 'https://gw2rp-tools.ovh/api/locations/' + thisLoc.id,
       data: { name: name, description: description, contact: contact, types: type, coord: coord, icon: icon, category: category, hours: hours, site: site, token: thisUser.token },
       dataType: 'json',
       success: function(json) {
@@ -673,7 +673,7 @@ $("#event-form-submit").click(function() {
     // Request API to add permanent location...
     $.ajax({
       method: "POST",
-      url: 'http://gw2rp-tools.ovh/api/events',
+      url: 'https://gw2rp-tools.ovh/api/events',
       data: { name: name, description: description, contact: contact, types: type, coord: coord, icon: icon, category: category, end_date: end_date, site: site, difficulty: difficulty, token: thisUser.token },
       dataType: 'json',
       success: function(json) {
@@ -693,7 +693,7 @@ $("#event-form-submit").click(function() {
     // Request API to add permanent location...
     $.ajax({
       method: "PUT",
-      url: 'http://gw2rp-tools.ovh/api/events/' + thisLoc.id,
+      url: 'https://gw2rp-tools.ovh/api/events/' + thisLoc.id,
       data: { name: name, description: description, contact: contact, types: type, coord: coord, icon: icon, category: category, end_date: end_date, site: site, difficulty: difficulty, token: thisUser.token },
       dataType: 'json',
       success: function(json) {
@@ -730,7 +730,7 @@ $("#rumour-form-submit").click(function() {
     // Request API to add rumour...
     $.ajax({
       method: "POST",
-      url: 'http://gw2rp-tools.ovh/api/rumours',
+      url: 'https://gw2rp-tools.ovh/api/rumours',
       data: { name: title, text: text, contact: contact, coord: coord, category: category, site: site, token: thisUser.token },
       dataType: 'json',
       success: function(json) {
@@ -750,7 +750,7 @@ $("#rumour-form-submit").click(function() {
     // Request API to add permanent location...
     $.ajax({
       method: "PUT",
-      url: 'http://gw2rp-tools.ovh/api/rumours/' + thisLoc.id,
+      url: 'https://gw2rp-tools.ovh/api/rumours/' + thisLoc.id,
       data: { name: title, text: text, contact: contact, coord: coord, category: category, site: site, token: thisUser.token },
       dataType: 'json',
       success: function(json) {

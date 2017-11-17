@@ -37,7 +37,7 @@ function establishConnectionCallback(callback) {
         // Request API to check validity of stored token.
         $.ajax({
           method: "POST",
-          url: 'http://gw2rp-tools.ovh/api/me',
+          url: 'https://gw2rp-tools.ovh/api/me',
           data: { id: id, token: token },
           dataType: 'json',
           success: function(json) {
@@ -80,7 +80,7 @@ function establishConnection() {
         // Request API to check validity of stored token.
         $.ajax({
           method: "POST",
-          url: 'http://gw2rp-tools.ovh/api/me',
+          url: 'https://gw2rp-tools.ovh/api/me',
           data: { id: id, token: token },
           dataType: 'json',
           success: function(json) {
@@ -136,7 +136,7 @@ function signIn() {
   if ($('#login-password').val() != "" && $('#login-username').val() != "") {
     $.ajax({
       method: "POST",
-      url: 'http://gw2rp-tools.ovh/api/login',
+      url: 'https://gw2rp-tools.ovh/api/login',
       data: { nick_name: $('#login-username').val(), password: $('#login-password').val()},
       dataType: 'json',
       success: onSignInResponse,
@@ -251,7 +251,7 @@ function signUp() {
 
     $.ajax({
       method: "POST",
-      url: 'http://gw2rp-tools.ovh/api/signup',
+      url: 'https://gw2rp-tools.ovh/api/signup',
       data: { nick_name: $('#signup-username').val(), password: $('#signup-password').val(), email: $('#signup-email').val(), gw2_account: gw2_name, gw2_id: gw2_account_id },
       dataType: 'json',
       success: onSignUpResponse,
