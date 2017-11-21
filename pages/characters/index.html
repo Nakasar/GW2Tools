@@ -171,9 +171,10 @@
         <div class="col-md-8">
           <form id="form-search-character">
             <div class="input-group">
-              <input type="text" class="form-control" placeholder="Chercher un personnage..." aria-label="Rercherche de personnage...">
+              <input id="search-character-text" type="text" class="form-control" placeholder="Chercher un personnage..." aria-label="Rercherche de personnage...">
               <span class="input-group-btn">
-                <button class="btn btn-secondary" type="button"><span class="oi oi-magnifying-glass"></span></button>
+                <button class="btn btn-secondary" type="button" onClick="searchCharacters()"><span class="oi oi-magnifying-glass"></span></button>
+                <button class="btn btn-secondary" type="button" onClick="loadAll()"><span class="oi oi-x"></span></button>
               </span>
             </div>
           </form>
@@ -332,7 +333,7 @@
 
       $.ajax({
         method: "PUT",
-        url: 'http://localhost:3000/api/characters/' + thisCharacter.id,
+        url: 'https://gw2rp-tools.ovh/api/characters/' + thisCharacter.id,
         data: { token: thisUser.token, name: name, description: description, appearance: appearance, image_url: image_url, caracteristics: caracteristics, skills: skills },
         dataType: 'json',
         success: function(json) {
@@ -376,7 +377,7 @@
   function loadCharacter(id) {
     $.ajax({
       method: "GET",
-      url: 'http://localhost:3000/api/characters/' + id,
+      url: 'https://gw2rp-tools.ovh/api/characters/' + id,
       dataType: 'json',
       success: function(json) {
         console.log(json);
@@ -423,12 +424,13 @@
   function loadAll() {
     $.ajax({
       method: "GET",
-      url: 'http://localhost:3000/api/characters',
+      url: 'https://gw2rp-tools.ovh/api/characters',
       dataType: 'json',
       success: function(json) {
         if (json.success) {
           parseCharactersToTable(json.characters);
           setListMode("all");
+          $('#search-character-text').val("");
         }
       },
       error: function(json) {
@@ -444,7 +446,7 @@
       if (signedIn && thisUser.id) {
         $.ajax({
           method: "GET",
-          url: 'http://localhost:3000/api/users/' + thisUser.id + '/characters',
+          url: 'https://gw2rp-tools.ovh/api/users/' + thisUser.id + '/characters',
           dataType: 'json',
           success: function(json) {
             if (json.success) {
@@ -457,6 +459,29 @@
           }
         });
       }
+    }
+  }
+
+  const character_name_regex = /^[a-zA-Z \-_'\u00C0-\u017F]{0,40}$/;
+  function searchCharacters() {
+    var search = $('#search-character-text').val();
+    if (character_name_regex.test(search)) {
+      $.ajax({
+        method: "GET",
+        url: 'https://gw2rp-tools.ovh/api/characters?search=' + search,
+        dataType: 'json',
+        success: function(json) {
+          if (json.success) {
+            parseCharactersToTable(json.characters);
+            setListMode("search");
+          }
+        },
+        error: function(json) {
+          displayAPIAlert();
+        }
+      });
+    } else {
+      console.log("Invalid search params")
     }
   }
 
@@ -585,7 +610,7 @@
   function confirmDelete() {
     $.ajax({
       method: "DELETE",
-      url: 'http://localhost:3000/api/characters/' + thisCharacter.id,
+      url: 'https://gw2rp-tools.ovh/api/characters/' + thisCharacter.id,
       data: { token: thisUser.token },
       dataType: 'json',
       success: function(json) {
@@ -765,7 +790,7 @@
         var name = $('#name-textarea').val().replace(regex_html, "");
         $.ajax({
           method: "PUT",
-          url: 'http://localhost:3000/api/characters/' + thisCharacter.id,
+          url: 'https://gw2rp-tools.ovh/api/characters/' + thisCharacter.id,
           data: { token: thisUser.token, name: name },
           dataType: 'json',
           success: function(json) {
@@ -790,7 +815,7 @@
         var description = $('#description-textarea').val().replace(regex_html, "");
         $.ajax({
           method: "PUT",
-          url: 'http://localhost:3000/api/characters/' + thisCharacter.id,
+          url: 'https://gw2rp-tools.ovh/api/characters/' + thisCharacter.id,
           data: { token: thisUser.token, description: description },
           dataType: 'json',
           success: function(json) {
@@ -815,7 +840,7 @@
         var appearance = $('#appearance-textarea').val().replace(regex_html, "");
         $.ajax({
           method: "PUT",
-          url: 'http://localhost:3000/api/characters/' + thisCharacter.id,
+          url: 'https://gw2rp-tools.ovh/api/characters/' + thisCharacter.id,
           data: { token: thisUser.token, appearance: appearance },
           dataType: 'json',
           success: function(json) {
@@ -854,7 +879,7 @@
 
     $.ajax({
       method: "POST",
-      url: 'http://localhost:3000/api/characters/',
+      url: 'https://gw2rp-tools.ovh/api/characters/',
       data: { token: thisUser.token, name: name },
       dataType: 'json',
       success: function(json) {
