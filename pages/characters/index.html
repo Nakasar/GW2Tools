@@ -47,7 +47,7 @@
 
   <div class="container">
     <div class="container">
-      <div class="alert alert-danger alert-dismissible" role="alert" id="main-alert">
+      <div class="alert alert-danger alert-dismissible" role="alert" id="main-alert" style="display: none;">
         <div id="text">Nous avons détecté une erreur inconnue. Le problème vient probablement de notre côté des Brumes :/</div>
         <button type="button" class="close" data-dismiss="alert" aria-label="Fermer">
           <span aria-hidden="true">&times;</span>
@@ -55,13 +55,24 @@
       </div>
     </div>
     <div class="container" id="character-detail">
-      <div class="alert alert-warning alert-dismissible" role="alert" id="character-alert">
+      <div class="alert alert-warning alert-dismissible" role="alert" id="character-alert" style="display: none;">
         <div id="text">Il n'existe pas de personnage avec cet identifiant.</div>
         <button type="button" class="close" data-dismiss="alert" aria-label="Fermer">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
-      <h1 id="character-name"></h1>
+      <h1>
+        <span id="character-name">Personnage</span>
+        <span id="name-modify" onClick="modify('name')" class="action-button oi oi-pencil" title="éditer" aria-hidden="true" style="font-size: 1rem;"></span>
+        <form id="name-form" style="display: none">
+          <div class="form-group">
+            <input type="text" class="form-control" id="name-textarea"/>
+            <span id="name-modify" onClick="save('name')" class="action-button oi oi-check" title="éditer" aria-hidden="true" style="font-size: 1rem;"></span>
+            <span id="name-modify" onClick="modify('')" class="action-button oi oi-x" title="éditer" aria-hidden="true" style="font-size: 1rem;"></span>
+          </div>
+        </form>
+      </h1>
+
       <h2>Description</h2>
       <a id="description-modify" style="display:none" href="#" onclick="modify('description')">Modifier</a>
       <form id="description-form" style="display:none">
@@ -105,7 +116,7 @@
             <td></td>
             <td></td>
             <td></td>
-            <td><button type="button" class="btn btn-success float-right" onClick="createCaracteristic()">+</button></td>
+            <td><button type="button" class="btn btn-success float-right" onClick="createEntry('caract')">+</button></td>
           </tr>
         </tfoot>
       </table>
@@ -127,16 +138,18 @@
             <td></td>
             <td></td>
             <td></td>
-            <td><button type="button" class="btn btn-success float-right" onClick="createSkill()">+</button></td>
+            <td><button type="button" class="btn btn-success float-right" onClick="createEntry('skill')">+</button></td>
           </tr>
         </tfoot>
       </table>
 
       <div class="container" id="actions">
+        <button type="button" class="btn btn-success" onClick="actionSave()" id="action-save" style="display: none;">Enregistrer</button>
+        <button type="button" class="btn btn-warning" onClick="actionRevert()" id="action-revert" style="display: none;">Annuler</button>
         <button type="button" class="btn btn-danger" onClick="actionDelete()" id="action-delete">Supprimer</button>
       </div>
       <hr/>
-      <div class="container" id="actions">
+      <div class="container">
         <button type="button" class="btn btn-secondary float-right" onClick="returnToList(false)" id="action-return">Retour à la liste</button>
       </div>
     </div>
@@ -165,15 +178,13 @@
   <script src="/components/connect.js"></script>
 
   <script>
-  $('#main-alert').hide();
-  $('#character-alert').hide();
   $('#characters-list').hide();
   $('#character-detail').hide();
   $('#character-alert').hide();
+
   $('#navigation').load("/components/header.html", function() {
     $('#nav-characters').addClass('active');
     establishConnectionCallback(function(success) {
-      console.log("poop");
       // Display specific character if in url, full list otherwise.
       // Search for URL parameters (location, coord...)
       var url = new URL(window.location.href);
@@ -195,7 +206,141 @@
   </script>
 
   <script>
+  class Character {
+    constructor(id, name, description, appearance) {
+      this.id = id;
+      this.name = name;
+      this.description = description;
+      this.appearance = appearance;
+      this.caracteristics = new Map();
+      this.skills = new Map();
+      this.entryCount = 1;
+    }
+
+    static parse(json) {
+      var j_id = json._id, j_name = json.name, j_description = "", j_appearance = "";
+      if (json.description) {
+        j_description = json.description.replace(regex_html, "");
+      }
+      if (json.appearance) {
+        j_appearance = json.appearance.replace(regex_html, "");
+      }
+
+      var character = new Character(j_id, j_name, j_description, j_appearance);
+
+      if (json.caracteristics) {
+        for(var i in json.caracteristics) {
+          character.addCaracteristic(json.caracteristics[i]);
+        }
+      }
+      if (json.skills) {
+        for(var i in json.skills) {
+          character.addSkill(json.skills[i]);
+        }
+      }
+      return character;
+    }
+
+    addCaracteristic(caracteristic) {
+      if (caracteristic._id) {
+        this.caracteristics.set(caracteristic._id, caracteristic);
+      } else {
+        this.caracteristics.set(this.nextId(), caracteristic);
+      }
+    }
+
+    removeCaracteristic(id) {
+      if (this.caracteristics.has(id)) {
+        this.caracteristics.delete(id);
+      }
+    }
+
+    addSkill(skill) {
+      if (skill._id) {
+        this.skills.set(skill._id, skill);
+      } else {
+        this.skills.set(this.nextId(), skill);
+      }
+    }
+
+    removeSkill(id) {
+      if (this.skills.has(id)) {
+        this.skills.delete(id);
+      }
+    }
+
+    modifyEntry(field, id, entry) {
+      switch (field) {
+        case "caract":
+          this.caracteristics.set(id, entry);
+          break;
+        case "skill":
+          this.skills.set(id, entry);
+          break;
+        default:
+          break;
+      }
+    }
+
+    // Will save this character to the API.
+    save() {
+      var name = this.name.replace(regex_html, ""),
+        description = this.description.replace(regex_html, ""),
+        appearance = this.appearance.replace(regex_html, ""),
+        image_url = "",
+        caracteristics = [],
+        skills = [];
+
+      for (var [id, caract] of this.caracteristics) {
+        caracteristics.push({ name: caract.name, value: caract.value, remark: caract.remark });
+      }
+
+      for (var [id, skill] of this.skills) {
+        skills.push({ name: skill.name, value: skill.value, remark: skill.remark });
+      }
+
+      $.ajax({
+        method: "PUT",
+        url: 'http://localhost:3000/api/characters/' + thisCharacter.id,
+        data: { token: thisUser.token, name: name, description: description, appearance: appearance, image_url: image_url, caracteristics: caracteristics, skills: skills },
+        dataType: 'json',
+        success: function(json) {
+          console.log(json);
+          if (json.success) {
+            loadCharacter(json.character._id);
+            $('#actions > #action-save').removeClass("disabled");
+            $('#actions > #action-revert').removeClass("disabled");
+            $('#actions > #action-delete').removeClass("disabled");
+          }
+        },
+        error: function(json) {
+          displayAPIAlert();
+          $('#actions > #action-save').removeClass("disabled");
+          $('#actions > #action-revert').removeClass("disabled");
+          $('#actions > #action-delete').removeClass("disabled");
+        }
+      });
+    }
+
+    nextId() {
+      return this.entryCount++;
+    }
+  }
+
   var thisCharacter;
+  var modified = false;
+
+  function stateToModified() {
+    modified = true;
+    $('#action-save').show();
+    $('#action-revert').show();
+  }
+
+  function stateToSync() {
+    modified = false;
+    $('#action-save').hide();
+    $('#action-revert').hide();
+  }
 
   function loadCharacter(id) {
     $.ajax({
@@ -206,6 +351,7 @@
         console.log(json);
         if (json.success) {
           parseCharacter(json.character);
+          stateToSync();
         } else {
           $('#character-alert').show();
           loadAll();
@@ -234,62 +380,68 @@
   }
 
   function parseCharacter(character) {
-    thisCharacter = character;
-    $('#characters-list').hide();
+    thisCharacter = Character.parse(character);
+    if (thisCharacter) {
+      $('#characters-list').hide();
 
-    $('#character-detail > h1').text(character.name);
-    if (character.description) {
-      $('#character-detail > #description').html(formatText(character.description));
-    }
-    if (character.appearance) {
-      $('#character-detail > #appearance').html(formatText(character.appearance));
-    }
-
-    if (character.caracteristics) {
-      for (var i in character.caracteristics) {
-        var caract = character.caracteristics[i];
-        var caractHtml = '<tr>';
-        caractHtml += '<td>' + caract.name + '</td>';
-        caractHtml += '<td>' + caract.value + '</td>';
-        caractHtml += '<td>' + caract.name + '</td>';
-        caractHtml += '<td class="table-actions"><span class="oi oi-pencil" title="éditer" aria-hidden="true"></span><span class="oi oi-delete" title="supprimer" aria-hidden="true"></span></td>';
-        caractHtml += '</tr>';
-        $('#character-detail #caracteristics-table > tbody').append(caractHtml);
+      $('#character-detail #character-name').text(character.name);
+      if (character.description) {
+        $('#character-detail > #description').html(formatText(character.description));
       }
-    }
-
-    if (character.skills) {
-      for (var i in character.skills) {
-        var skill = character.skills[i];
-        var skillHtml = '<tr>';
-        skillHtml += '<td>' + skill.name + '</td>';
-        skillHtml += '<td>' + skill.value + '</td>';
-        skillHtml += '<td>' + skill.name + '</td>';
-        skillHtml += '<td class="table-actions"><span class="oi oi-pencil" title="éditer" aria-hidden="true"></span><span class="oi oi-delete" title="supprimer" aria-hidden="true"></span></td>';
-        skillHtml += '</tr>';
-        $('#character-detail #skills-table > tbody').append(skillHtml);
+      if (character.appearance) {
+        $('#character-detail > #appearance').html(formatText(character.appearance));
       }
-    }
 
-    if (signedIn && (thisUser.admin || thisUser.id === thisCharacter.owner)) {
-      $('#action-delete').show();
-      $('#character-detail #description-modify').show();
-      $('#character-detail #appearance-modify').show();
-      $('#character-detail #caracteristics-table > tfoot').show();
-      $('#character-detail #skills-table > tfoot').show();
-      $('#character-detail .table-actions').show();
+      $('#character-detail #caracteristics-table > tbody > tr').remove();
+      if (character.caracteristics) {
+        for (var i in character.caracteristics) {
+          var caract = character.caracteristics[i];
+          var caractHtml = '<tr id="' + caract._id + '">';
+          caractHtml += '<td id="name">' + caract.name + '</td>';
+          caractHtml += '<td id="value">' + caract.value + '</td>';
+          caractHtml += '<td id="remark">' + caract.remark + '</td>';
+          caractHtml += '<td class="table-actions" id="actions"><div id="actions-default"><span onClick="modifyEntry(\'caract\', \'' + caract._id + '\')" class="action-button oi oi-pencil" title="éditer" aria-hidden="true"></span> <span onClick="deleteEntry(\'caract\', \'' + caract._id + '\')" class="action-button oi oi-delete" title="supprimer" aria-hidden="true"></span></div><div id="actions-edited" style="display: none;">' + `<span onClick="saveEntry('caract', '` + caract._id  + `')" class="action-button oi oi-check" title="valider" aria-hidden="true"></span> ` + `<span onClick="modifyEntry('', '` + caract._id  + `')" class="action-button oi oi-x" title="annuler" aria-hidden="true"></span>` + '</div></td>';
+          caractHtml += '</tr>';
+          $('#character-detail #caracteristics-table > tbody').append(caractHtml);
+        }
+      }
+
+      $('#character-detail #skills-table > tbody > tr').remove();
+      if (character.skills) {
+        for (var i in character.skills) {
+          var skill = character.skills[i];
+          var skillHtml = '<tr id="' + skill._id + '">';
+          skillHtml += '<td id="name">' + skill.name + '</td>';
+          skillHtml += '<td id="value">' + skill.value + '</td>';
+          skillHtml += '<td id="remark">' + skill.remark + '</td>';
+          skillHtml += '<td class="table-actions" id="actions"><div id="actions-default"><span onClick="modifyEntry(\'skill\', \'' + skill._id + '\')" class="action-button oi oi-pencil" title="éditer" aria-hidden="true"></span> <span onClick="deleteEntry(\'skill\', \'' + skill._id + '\')" class="action-button oi oi-delete" title="supprimer" aria-hidden="true"></span></div><div id="actions-edited" style="display: none;">' + `<span onClick="saveEntry('skill', '` + skill._id  + `')" class="action-button oi oi-check" title="valider" aria-hidden="true"></span> ` + `<span onClick="modifyEntry('', '` + skill._id  + `')" class="action-button oi oi-x" title="annuler" aria-hidden="true"></span>` + '</div></td>';
+          skillHtml += '</tr>';
+          $('#character-detail #skills-table > tbody').append(skillHtml);
+        }
+      }
+
+      if (signedIn && (thisUser.admin || thisUser.id === thisCharacter.owner)) {
+        $('#action-delete').show();
+        $('#character-detail #description-modify').show();
+        $('#character-detail #appearance-modify').show();
+        $('#character-detail #caracteristics-table > tfoot').show();
+        $('#character-detail #skills-table > tfoot').show();
+        $('#character-detail .table-actions').show();
+      } else {
+        $('#action-delete').hide();
+        $('#character-detail #description-modify').hide();
+        $('#character-detail #appearance-modify').hide();
+        $('#character-detail #caracteristics-table > tfoot').hide();
+        $('#character-detail #skills-table > tfoot').hide();
+        $('#character-detail .table-actions').hide();
+      }
+
+      $('#character-detail').show();
+      var stateObj = { foo: "bar" };
+      history.pushState(stateObj, character.name, "?id=" + character._id);
     } else {
-      $('#action-delete').hide();
-      $('#character-detail #description-modify').hide();
-      $('#character-detail #appearance-modify').hide();
-      $('#character-detail #caracteristics-table > tfoot').hide();
-      $('#character-detail #skills-table > tfoot').hide();
-      $('#character-detail .table-actions').hide();
+      loadAll();
     }
-
-    $('#character-detail').show();
-    var stateObj = { foo: "bar" };
-    history.replaceState(stateObj, character.name, "?id=" + character._id);
   }
 
   function parseCharactersToTable(characters) {
@@ -303,7 +455,7 @@
       characterHtml += '<td><div class="btn-group" role="group" aria-label="Actions">';
       characterHtml += '<button type="button" class="btn btn-primary" onClick="viewCharacter(\'' + character._id + '\')">Voir</button>'; // Detail action
       characterHtml += '</td>';
-      characterHtml += '</tr>'
+      characterHtml += '</tr>';
     }
     $('#characters-table > tbody').append(characterHtml);
   }
@@ -314,7 +466,7 @@
 
   function returnToList(requireReload) {
     var stateObj = { foo: "bar" };
-    history.replaceState(stateObj, "Liste des personnages", ".");
+    history.pushState(stateObj, "Liste des personnages", ".");
     $('#character-detail').hide();
     if (requireReload) {
       loadAll();
@@ -332,10 +484,23 @@
     $("#modal-delete").modal('show');
   }
 
+  function actionSave() {
+    console.log("Saving character...");
+    $('#actions > #action-save').addClass('disabled');
+    $('#actions > #action-delete').addClass('disabled');
+    $('#actions > #action-revert').addClass('disabled');
+    thisCharacter.save();
+  }
+
+  function actionRevert() {
+    console.log("Reverting character...");
+    loadCharacter(thisCharacter.id);
+  }
+
   function confirmDelete() {
     $.ajax({
       method: "DELETE",
-      url: 'http://localhost:3000/api/characters/' + thisCharacter._id,
+      url: 'http://localhost:3000/api/characters/' + thisCharacter.id,
       data: { token: thisUser.token },
       dataType: 'json',
       success: function(json) {
@@ -353,11 +518,20 @@
   }
 
   function modify(field) {
+    $('#character-name').show();
+    $('#name-modify').show();
     $('#description-modify').show();
     $('#appearance-modify').show();
+    $('#name-form').hide();
     $('#description-form').hide();
     $('#appearance-form').hide();
     switch (field) {
+      case "name":
+        $('#character-name').hide();
+        $('#name-modify').hide();
+        $('#name-textarea').val(thisCharacter.name);
+        $('#name-form').show();
+        break;
       case "description":
         $('#description-modify').hide();
         $('#description-textarea').val(thisCharacter.description);
@@ -373,15 +547,165 @@
     }
   }
 
+  function resetEntry(field, id) {
+    console.log("Quit edit mode for entry " + field + ", id: " + id);
+  }
+
+  var tmpField = {};
+  function modifyEntry(field, id) {
+    console.log("Enter edit mode for entry " + field + ", id: " + id);
+    if (!id) {
+      return;
+    }
+
+    var thisLine = $('#' + id);
+    if (tmpField._id) {
+      var oldLine = $('#' + tmpField._id);
+      // Remove old line if empty.
+      if (tmpField.name.length > 0) {
+        oldLine.find('#name').text(tmpField.name);
+        oldLine.find('#value').text(tmpField.value);
+        oldLine.find('#remark').text(tmpField.remark);
+        oldLine.find('#actions > #actions-default').show();
+        oldLine.find('#actions > #actions-edited').hide();
+      } else {
+        // Remove entry from UI
+        oldLine.remove();
+        if (thisCharacter.caracteristics.has(tmpField._id)) {
+          thisCharacter.removeCaracteristic(tmpField._id);
+        } else if (thisCharacter.skills.has(tmpField._id)) {
+          thisCharacter.removeSkill(tmpField._id);
+        }
+      }
+    }
+
+    switch (field) {
+      case "caract":
+        tmpField = { _id: id, name: thisLine.find('#name').text(), value: thisLine.find('#value').text(), remark: thisLine.find('#remark').text() };
+        var nameFormHtml = '<form><div class="form-group"><input class="form-control" type="text" id="name-form" value="' + thisLine.find('#name').text() + '"/></div></form>'
+        thisLine.find('#name').html(nameFormHtml);
+        var valueFormHtml = '<form><div class="form-group"><input class="form-control" type="number" id="value-form" value="' + thisLine.find('#value').text() + '"/></div></form>'
+        thisLine.find('#value').html(valueFormHtml);
+        var remarkFormHtml = '<form><div class="form-group"><input class="form-control" type="text" id="remark-form" value="' + thisLine.find('#remark').text() + '"/></div></form>'
+        thisLine.find('#remark').html(remarkFormHtml);
+        thisLine.find('#actions > #actions-default').hide();
+        thisLine.find('#actions > #actions-edited').show();
+        break;
+      case "skill":
+        tmpField = { _id: id, name: thisLine.find('#name').text(), value: thisLine.find('#value').text(), remark: thisLine.find('#remark').text() };
+        var nameFormHtml = '<form><div class="form-group"><input class="form-control" type="text" id="name-form" value="' + thisLine.find('#name').text() + '"/></div></form>'
+        thisLine.find('#name').html(nameFormHtml);
+        var valueFormHtml = '<form><div class="form-group"><input class="form-control" type="number" id="value-form" value="' + thisLine.find('#value').text() + '"/></div></form>'
+        thisLine.find('#value').html(valueFormHtml);
+        var remarkFormHtml = '<form><div class="form-group"><input class="form-control" type="text" id="remark-form" value="' + thisLine.find('#remark').text() + '"/></div></form>'
+        thisLine.find('#remark').html(remarkFormHtml);
+        thisLine.find('#actions > #actions-default').hide();
+        thisLine.find('#actions > #actions-edited').show();
+        break;
+      default:
+        tmpField = {};
+        break;
+    }
+  }
+
+  function saveEntry(field, id) {
+    console.log("Save entry " + field + ", id: " + id);
+    if (!id || !field) {
+      return;
+    }
+    var thisLine = $('#' + id);
+    if (thisLine) {
+      tmpField = { _id: id, name: thisLine.find('#name-form').val().replace(regex_html, ""), value: thisLine.find('#value-form').val().replace(regex_html, ""), remark: thisLine.find('#remark-form').val().replace(regex_html, "") };
+      thisCharacter.modifyEntry(field, id, tmpField);
+      modifyEntry("", id);
+      stateToModified();
+    }
+  }
+
+  function deleteEntry(field, id) {
+    console.log("Delete entry " + field + ", id: " + id);
+    if (!id || !field) {
+      return;
+    }
+    switch (field) {
+      case "caract":
+        thisCharacter.removeCaracteristic(id);
+        var thisLine = $('#' + id).remove();
+        stateToModified();
+        break;
+      case "skill":
+        thisCharacter.removeSkill(id);
+        var thisLine = $('#' + id).remove();
+        stateToModified();
+        break;
+      default:
+        break;
+    }
+  }
+
+  function createEntry(field) {
+    console.log("Create new entry " + field);
+    var id = thisCharacter.nextId();
+    switch (field) {
+      case "caract":
+        var caractHtml = '<tr id="' + id + '">';
+        caractHtml += '<td id="name">' + '</td>';
+        caractHtml += '<td id="value">' + '</td>';
+        caractHtml += '<td id="remark">' +'</td>';
+        caractHtml += '<td class="table-actions" id="actions"><div id="actions-default"><span onClick="modifyEntry(\'caract\', \'' + id + '\')" class="action-button oi oi-pencil" title="éditer" aria-hidden="true"></span> <span onClick="deleteEntry(\'caract\', \'' + id + '\')" class="action-button oi oi-delete" title="supprimer" aria-hidden="true"></span></div><div id="actions-edited" style="display: none;">' + `<span onClick="saveEntry('caract', '` + id  + `')" class="action-button oi oi-check" title="valider" aria-hidden="true"></span> ` + `<span onClick="modifyEntry('', '` + id  + `')" class="action-button oi oi-x" title="annuler" aria-hidden="true"></span>` + '</div></td>';
+        caractHtml += '</tr>';
+        $('#character-detail #caracteristics-table > tbody').append(caractHtml);
+        modifyEntry("caract", id);
+        break;
+      case "skill":
+        var skillHtml = '<tr id="' + id + '">';
+        skillHtml += '<td id="name">' + '</td>';
+        skillHtml += '<td id="value">'+ '</td>';
+        skillHtml += '<td id="remark">' + '</td>';
+        skillHtml += '<td class="table-actions" id="actions"><div id="actions-default"><span onClick="modifyEntry(\'skill\', \'' + id + '\')" class="action-button oi oi-pencil" title="éditer" aria-hidden="true"></span> <span onClick="deleteEntry(\'skill\', \'' + id + '\')" class="action-button oi oi-delete" title="supprimer" aria-hidden="true"></span></div><div id="actions-edited" style="display: none;">' + `<span onClick="saveEntry('skill', '` + id  + `')" class="action-button oi oi-check" title="valider" aria-hidden="true"></span> ` + `<span onClick="modifyEntry('', '` + id  + `')" class="action-button oi oi-x" title="annuler" aria-hidden="true"></span>` + '</div></td>';
+        skillHtml += '</tr>';
+        $('#character-detail #skills-table > tbody').append(skillHtml);
+        modifyEntry("skill", id);
+        break;
+      default:
+        break;
+    }
+  }
+
   function save(field) {
     switch (field) {
+      case "name":
+        $('#name-form #save-button').addClass("disabled");
+        $('#name-form #cancel-button').addClass("disabled");
+        var name = $('#name-textarea').val().replace(regex_html, "");
+        $.ajax({
+          method: "PUT",
+          url: 'http://localhost:3000/api/characters/' + thisCharacter.id,
+          data: { token: thisUser.token, name: name },
+          dataType: 'json',
+          success: function(json) {
+            console.log(json);
+            if (json.success) {
+              $("#character-detail #character-name").text(json.character.name);
+              modify("");
+            }
+            $('#name-form #save-button').removeClass("disabled");
+            $('#name-form #cancel-button').removeClass("disabled");
+          },
+          error: function(json) {
+            displayAPIAlert();
+            $('#name-form #save-button').removeClass("disabled");
+            $('#name-form #cancel-button').removeClass("disabled");
+          }
+        });
+        break;
       case "description":
         $('#description-form #save-button').addClass("disabled");
         $('#description-form #cancel-button').addClass("disabled");
         var description = $('#description-textarea').val().replace(regex_html, "");
         $.ajax({
           method: "PUT",
-          url: 'http://localhost:3000/api/characters/' + thisCharacter._id,
+          url: 'http://localhost:3000/api/characters/' + thisCharacter.id,
           data: { token: thisUser.token, description: description },
           dataType: 'json',
           success: function(json) {
@@ -406,7 +730,7 @@
         var appearance = $('#appearance-textarea').val().replace(regex_html, "");
         $.ajax({
           method: "PUT",
-          url: 'http://localhost:3000/api/characters/' + thisCharacter._id,
+          url: 'http://localhost:3000/api/characters/' + thisCharacter.id,
           data: { token: thisUser.token, appearance: appearance },
           dataType: 'json',
           success: function(json) {
@@ -424,8 +748,6 @@
             $('#appearance-form #cancel-button').removeClass("disabled");
           }
         });
-        break;
-      case "name":
         break;
       default:
         break;

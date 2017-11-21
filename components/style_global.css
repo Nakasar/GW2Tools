@@ -16,3 +16,7 @@ body {
 .navbar .active>.nav-link {
   color: yellow!important;
 }
+
+.action-button {
+  cursor: pointer;
+}

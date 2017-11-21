@@ -1,5 +1,6 @@
 var signedIn = false;
 var thisUser;
+var signInCallback;
 
 function showLoginModal() {
   if (signedIn) {
@@ -21,6 +22,7 @@ function askForDisconnect() {
 }
 
 function establishConnectionCallback(callback) {
+  signInCallback = callback;
   $('#nav-connect').show();
   $('#nav-account').hide();
   $('#nav-disconnet').hide();
@@ -134,6 +136,10 @@ function signOut() {
     localStorage.removeItem("user_id");
     localStorage.removeItem("user_token");
   }
+
+  if (signInCallback) {
+    signInCallback(false);
+  }
 }
 
 function signIn() {
@@ -185,6 +191,10 @@ function onSignIn(json) {
     localStorage.setItem("user_nick_name", thisUser.name);
     localStorage.setItem("user_id", thisUser.id);
     localStorage.setItem("user_token", thisUser.token);
+  }
+
+  if (signInCallback) {
+    signInCallback(true);
   }
 }
 
