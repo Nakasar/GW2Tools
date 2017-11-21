@@ -1,5 +1,3 @@
-const regex_html = /<(.|\n)*?>/;
-
 var difficulty_table = new Map();
 difficulty_table.set("peaceful", "Promenade");
 difficulty_table.set("easy", "Facile");

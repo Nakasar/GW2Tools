@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <title>Outils GW2RP - Cartographe</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" />
+  <link rel="stylesheet" href="/components/style_global.css">
+  <link rel="stylesheet" href="/cartographe/style.css">
+  <link rel="stylesheet" href="style.css">
+
+</head>
+<body>
+  <div id="page">
+    <div id="mapdiv"></div>
+  </div>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"></script>
+
+  <script>
+    var signedIn = false;
+    var thisUser;
+  </script>
+
+  <script src="/cartographe/map.js"></script>
+
+  <script src="/components/base.js"></script>
+
+  <script>
+  function endLoad() {
+    // Remove progress here.
+    // Search for URL parameters (location, coord...)
+    var url = new URL(window.location.href);
+    if (url.searchParams.has("id")) {
+      // Url has a given ID, search for the matching location and zoom to it.
+      var id = url.searchParams.get("id");
+      if (locationsById.has(id)) {
+        //59f3521f243c736551570175
+        var location = locationsById.get(id);
+        map.setView(unproject([location.coord.x, location.coord.y]), 7);
+        sideBarDisplayLocation(location);
+      }
+    }
+  }
+
+  var loadCompleted = 0;
+  const maxLoads = 3;
+  function loadComplete() {
+    loadCompleted += 1;
+    if (loadCompleted >= maxLoads) {
+      endLoad();
+    }
+  }
+
+  $(function() {
+    $.ajax({
+      method: "GET",
+      url: 'https://gw2rp-tools.ovh/api/locations',
+      dataType: 'json',
+      success: function(json) {
+        if (json.success) {
+          var locations = json.locations;
+          for (var location_index in locations) {
+            var permanentLocation = PermanentLocation.parse(locations[location_index]);
+            addMarker(permanentLocation);
+          }
+          loadComplete();
+        }
+      }
+    });
+
+    $.ajax({
+      method: "GET",
+      url: 'https://gw2rp-tools.ovh/api/events',
+      dataType: 'json',
+      success: function(json) {
+        console.log(json);
+        if (json.success) {
+          var events = json.events;
+          for (var event_index in events) {
+            var eventLocation = EventLocation.parse(events[event_index]);
+            addMarker(eventLocation);
+          }
+          loadComplete();
+        }
+      }
+    });
+
+    $.ajax({
+      method: "GET",
+      url: 'https://gw2rp-tools.ovh/api/rumours',
+      dataType: 'json',
+      success: function(json) {
+        console.log(json);
+        if (json.success) {
+          var rumours = json.rumours;
+          for (var rumour_index in rumours) {
+            var rumour = Rumour.parse(rumours[rumour_index]);
+            addMarker(rumour);
+          }
+          loadComplete();
+        }
+      }
+    });
+  });
+  </script>
+
+</body>
+</html>
