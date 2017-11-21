@@ -153,8 +153,23 @@
         <button type="button" class="btn btn-secondary float-right" onClick="returnToList(false)" id="action-return">Retour à la liste</button>
       </div>
     </div>
+
     <div class="container" id="characters-list">
-      <button type="button" class="btn btn-success float-right" onClick="create()">Créer un personnage</button>
+      <form id="form-character" style="display: none;">
+        <div class="form-group">
+          <label for="name-form">Création d'un personnage</label>
+          <div class="input-group">
+            <input class="form-control" id="name-form" type="text" placeholder="Nom du personnage"/>
+            <span class="input-group-btn">
+              <button id="action-validate-character" type="button" class="btn btn-success float-right" onClick="validateCharacter()">Créer</button>
+              <button id="action-cancel-character" type="button" class="btn btn-secondary float-right" onClick="cancelCharacter()">Annuler</button>
+            </span>
+          </div>
+        </div>
+      </form>
+
+      <button id="action-create-character" type="button" class="btn btn-success float-right" onClick="createCharacter()">Créer un personnage</button>
+
       <table class="table" id="characters-table">
         <thead class="thead-light">
           <tr>
@@ -166,6 +181,7 @@
         </tbody>
       </table>
     </div>
+
   </div>
 
   <!-- jQuery library -->
@@ -387,9 +403,13 @@
       $('#character-detail #character-name').text(character.name);
       if (character.description) {
         $('#character-detail > #description').html(formatText(character.description));
+      } else {
+        $('#character-detail > #description').html("");
       }
       if (character.appearance) {
         $('#character-detail > #appearance').html(formatText(character.appearance));
+      } else {
+        $('#character-detail > #appearance').html("");
       }
 
       $('#character-detail #caracteristics-table > tbody > tr').remove();
@@ -456,8 +476,8 @@
       characterHtml += '<button type="button" class="btn btn-primary" onClick="viewCharacter(\'' + character._id + '\')">Voir</button>'; // Detail action
       characterHtml += '</td>';
       characterHtml += '</tr>';
+      $('#characters-table > tbody').append(characterHtml);
     }
-    $('#characters-table > tbody').append(characterHtml);
   }
 
   function viewCharacter(id) {
@@ -753,6 +773,52 @@
         break;
     }
     return true;
+  }
+
+  function createCharacter() {
+    $("#form-character").show();
+    $("#action-create-character").hide();
+  }
+
+  function validateCharacter() {
+    $("#form-character #name-form").attr("disabled", true);
+    $("#form-character #action-validate-character").attr("disabled", true);
+    $("#form-character #action-cancel-character").attr("disabled", true);
+
+    var name = $("#form-character #name-form").val().replace(regex_html, "");
+
+    $.ajax({
+      method: "POST",
+      url: 'http://localhost:3000/api/characters/',
+      data: { token: thisUser.token, name: name },
+      dataType: 'json',
+      success: function(json) {
+        console.log(json);
+        if (json.success) {
+          loadCharacter(json.character._id);
+          $("#form-character #name-form").val("");
+          $("#form-character #name-form").attr("disabled", false);
+          $("#form-character #action-validate-character").attr("disabled", false);
+          $("#form-character #action-cancel-character").attr("disabled", false);
+          $("#form-character").hide();
+          $("#action-create-character").show();
+          $('#action-return').attr('onClick', 'returnToList(true)');
+        }
+      },
+      error: function(json) {
+        displayAPIAlert();
+        $("#form-character #name-form").attr("disabled", false);
+        $("#form-character #action-validate-character").attr("disabled", false);
+        $("#form-character #action-cancel-character").attr("disabled", false);
+      }
+    });
+    //$("#form-character").hide();
+    //$("#action-create-character").show();
+  }
+
+  function cancelCharacter() {
+    $("#form-character").hide();
+    $("#action-create-character").show();
   }
   </script>
 
