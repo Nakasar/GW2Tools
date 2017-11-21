@@ -167,8 +167,22 @@
           </div>
         </div>
       </form>
-
-      <button id="action-create-character" type="button" class="btn btn-success float-right" onClick="createCharacter()">Créer un personnage</button>
+      <div class="row" id="character-list-head">
+        <div class="col-md-8">
+          <form id="form-search-character">
+            <div class="input-group">
+              <input type="text" class="form-control" placeholder="Chercher un personnage..." aria-label="Rercherche de personnage...">
+              <span class="input-group-btn">
+                <button class="btn btn-secondary" type="button"><span class="oi oi-magnifying-glass"></span></button>
+              </span>
+            </div>
+          </form>
+        </div>
+        <div class="col-md-4">
+          <button id="action-create-character" style="display: none;" type="button" class="btn btn-success float-right" onClick="createCharacter()" title="Créer un personnage"><span class="oi oi-plus"></span></button>
+          <button id="action-my-characters" style="display: none;" type="button" class="btn btn-outline-info float-right" onClick="seeMyCharacters()" title="Mes personnages"><span class="oi oi-people"></span></button>
+        </div>
+      </div>
 
       <table class="table" id="characters-table">
         <thead class="thead-light">
@@ -223,8 +237,9 @@
 
   <script>
   class Character {
-    constructor(id, name, description, appearance) {
+    constructor(id, owner, name, description, appearance) {
       this.id = id;
+      this.owner = owner;
       this.name = name;
       this.description = description;
       this.appearance = appearance;
@@ -234,7 +249,7 @@
     }
 
     static parse(json) {
-      var j_id = json._id, j_name = json.name, j_description = "", j_appearance = "";
+      var j_id = json._id, j_owner = json.owner, j_name = json.name, j_description = "", j_appearance = "";
       if (json.description) {
         j_description = json.description.replace(regex_html, "");
       }
@@ -242,7 +257,7 @@
         j_appearance = json.appearance.replace(regex_html, "");
       }
 
-      var character = new Character(j_id, j_name, j_description, j_appearance);
+      var character = new Character(j_id, j_owner, j_name, j_description, j_appearance);
 
       if (json.caracteristics) {
         for(var i in json.caracteristics) {
@@ -379,6 +394,32 @@
     });
   }
 
+  // All, search, mines
+  var mode = "all";
+  function setListMode(newState) {
+    if (signedIn) {
+      $('#action-create-character').show();
+      $('#action-my-characters').show();
+    } else {
+      $('#action-create-character').hide();
+      $('#action-my-characters').hide();
+    }
+
+    $('#action-my-characters').removeClass('btn-info').addClass('btn-outline-info').attr("title", "Mes personnages");;
+    switch (newState) {
+      case "mines":
+        $('#action-my-characters').removeClass('btn-outline-info').addClass('btn-info').attr("title", "Tous les personnages");
+        mode = "mines";
+        break;
+      case "search":
+        mode = "search";
+        break;
+      default: // "all"
+        mode = "all";
+        break;
+    }
+  }
+
   function loadAll() {
     $.ajax({
       method: "GET",
@@ -387,12 +428,36 @@
       success: function(json) {
         if (json.success) {
           parseCharactersToTable(json.characters);
+          setListMode("all");
         }
       },
       error: function(json) {
         displayAPIAlert();
       }
     });
+  }
+
+  function seeMyCharacters() {
+    if (mode == "mines") {
+      loadAll();
+    } else {
+      if (signedIn && thisUser.id) {
+        $.ajax({
+          method: "GET",
+          url: 'http://localhost:3000/api/users/' + thisUser.id + '/characters',
+          dataType: 'json',
+          success: function(json) {
+            if (json.success) {
+              parseCharactersToTable(json.characters);
+              setListMode("mines");
+            }
+          },
+          error: function(json) {
+            displayAPIAlert();
+          }
+        });
+      }
+    }
   }
 
   function parseCharacter(character) {
