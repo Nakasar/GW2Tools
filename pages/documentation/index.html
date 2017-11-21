@@ -288,6 +288,82 @@
           <td>Supprime cette rumeur si elle appartient à l'utilisateur du token (ou admin).</td>
           <td></td>
         </tr>
+
+        <tr>
+          <th>/characters</th>
+        </tr>
+        <tr>
+          <td><span class="badge badge-success">GET</span></td>
+          <td><code>?search_terms=<em>xx xxx xxx</em></code></td>
+          <td>Liste des personnages en base, correspondants aux termes de recherche si présents.</td>
+          <td><code>characters: [{ _id: String, name: String, description: String, appearance: String, owner: String, created_date: Date, last_update: Date, image_url: String }]</code></td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-primary">POST</span> <span class="authed badge badge-dark">auth</span></td>
+          <td><code><code>{ name: String, description: String, appearance: String, image_url: String }</code></td>
+          <td>Ajoute un nouveau personnage qui appartiendra à cet utilisateur.</td>
+          <td><code>character: { _id: String, name: String, description: String, appearance: String, owner: String, created_date: Date, last_update: Date, image_url: String, skills: [], caracteristics: [] }</code></td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-danger">DELETE</span> <span class="authed badge badge-dark">auth</span> <span class="badge badge-dark">admin</span></td>
+          <td></td>
+          <td>Supprime l'ensemble des personnages en base</td>
+          <td></td>
+        </tr>
+
+        <tr>
+          <th>/characters/:characterId</th>
+        </tr>
+        <tr>
+          <td><span class="badge badge-success">GET</span></td>
+          <td></td>
+          <td>Retourne le personnage indiqué s'il existe..</td>
+          <td><code>character: { _id: String, name: String, description: String, appearance: String, owner: String, created_date: Date, last_update: Date, image_url: String, skills: [], caracteristics: [] }</code></td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-warning">PUT</span> <span class="authed badge badge-dark">auth</span></td>
+          <td>Champs au choix parmi : <code>{ description: String, appearance: String, image_url: String, name: String }</code></td>
+          <td>Met à jour le personnage (s'il appartient à cet utilisateur ).</td>
+          <td><code>character: { _id: String, name: String, description: String, appearance: String, owner: String, created_date: Date, last_update: Date, image_url: String, skills: [], caracteristics: [] }</code></td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-danger">DELETE</span> <span class="authed badge badge-dark">auth</span></td>
+          <td></td>
+          <td>Supprime ce personnage s'il appartient à l'utilisateur du token (ou admin).</td>
+          <td></td>
+        </tr>
+
+        <tr>
+          <th>/characters/:characterId/caracs</th>
+        </tr>
+        <tr>
+          <td><span class="badge badge-warning">PUT</span> <span class="authed badge badge-dark">auth</span></td>
+          <td><code>{ caracteristics: [{ name: String, value: Number, remark: String }] }</code></td>
+          <td>Met à jour la lisite des caractéristiques du personnage (s'il appartient à cet utilisateur ).</td>
+          <td><code>character: { _id: String, name: String, description: String, appearance: String, owner: String, created_date: Date, last_update: Date, image_url: String, skills: [], caracteristics: [] }</code></td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-danger">DELETE</span> <span class="authed badge badge-dark">auth</span></td>
+          <td><code>{ caracteristics: [String] }</code></td>
+          <td>Supprime les caractéristiques nommées dans la liste de ce personnage s'il appartient à l'utilisateur du token (ou admin).</td>
+          <td></td>
+        </tr>
+
+        <tr>
+          <th>/characters/:characterId/skills</th>
+        </tr>
+        <tr>
+          <td><span class="badge badge-warning">PUT</span> <span class="authed badge badge-dark">auth</span></td>
+          <td><code>{ skills: [{ name: String, value: Number, remark: String }] }</code></td>
+          <td>Met à jour la lisite des compétences du personnage (s'il appartient à cet utilisateur ).</td>
+          <td><code>character: { _id: String, name: String, description: String, appearance: String, owner: String, created_date: Date, last_update: Date, image_url: String, skills: [], caracteristics: [] }</code></td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-danger">DELETE</span> <span class="authed badge badge-dark">auth</span></td>
+          <td><code>{ skills: [String] }</code></td>
+          <td>Supprime les compétences nommées dans la liste de ce personnage s'il appartient à l'utilisateur du token (ou admin).</td>
+          <td></td>
+        </tr>
       </table>
     </article>
   </div>
