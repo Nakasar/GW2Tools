@@ -877,10 +877,34 @@
 
     var name = $("#form-character #name-form").val().replace(regex_html, "");
 
+    const defaultCaracteristics = [
+      { name: "Charisme", value: 15, remark: ""},
+      { name: "Constitution", value: 15, remark: ""},
+      { name: "Dextérité", value: 15, remark: ""},
+      { name: "Force", value: 15, remark: ""},
+      { name: "Intelligence", value: 15, remark: ""},
+      { name: "Sagesse", value: 15, remark: ""},
+      { name: "Volonté", value: 15, remark: ""}
+    ];
+    const defaultSkills = [
+      { name: "Acuité visuelle", value: 10, remark: ""},
+      { name: "Acuité sonore", value: 10, remark: ""},
+      { name: "Acuité olphactive", value: 10, remark: ""},
+      { name: "Acuité étherique", value: 10, remark: ""},
+      { name: "Pugilat", value: 10, remark: ""},
+      { name: "Réactivité", value: 10, remark: ""},
+      { name: "Esquive", value: 10, remark: ""},
+      { name: "Vitalité", value: 10, remark: ""},
+      { name: "Endurance", value: 10, remark: ""},
+      { name: "Survie", value: 10, remark: ""},
+      { name: "Mémorisation", value: 10, remark: ""},
+      { name: "Education", value: 10, remark: ""}
+    ];
+
     $.ajax({
       method: "POST",
       url: 'https://gw2rp-tools.ovh/api/characters/',
-      data: { token: thisUser.token, name: name },
+      data: { token: thisUser.token, name: name, caracteristics: defaultCaracteristics, skills: defaultSkills, status: "played" },
       dataType: 'json',
       success: function(json) {
         console.log(json);
