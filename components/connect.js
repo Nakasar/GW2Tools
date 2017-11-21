@@ -219,7 +219,7 @@ function validateSignUp() {
   }
   var password_regex = (/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/);
   if (!password_regex.test(password)) {
-    displaySignUpAlert("Le mot de passe doit contenir au moins 8 caractères dont un chiffre, une majuscule et une minuscule.");
+    displaySignUpAlert("Le mot de passe doit contenir au moins 8 caractères dont un chiffre, une majuscule et une minuscule, mais pas de caractères spéciaux ni d'accents.");
     return false;
   }
   if(password != $("#signup-password-confirm").val() ) {
