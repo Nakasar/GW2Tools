@@ -37,7 +37,6 @@ function establishConnectionCallback(callback) {
         // Request API to check validity of stored token.
         $.ajax({
           method: "POST",
-          url: 'https://gw2rp-tools.ovh/api/me',
           data: { id: id, token: token },
           dataType: 'json',
           success: function(json) {
@@ -56,10 +55,17 @@ function establishConnectionCallback(callback) {
           },
           error: function(json) {
             displayAPIAlert();
+            callback(false);
           }
         });
+      } else {
+        callback(false);
       }
+    } else {
+      callback(false);
     }
+  } else {
+    callback(false);
   }
 }
 
@@ -80,7 +86,6 @@ function establishConnection() {
         // Request API to check validity of stored token.
         $.ajax({
           method: "POST",
-          url: 'https://gw2rp-tools.ovh/api/me',
           data: { id: id, token: token },
           dataType: 'json',
           success: function(json) {
@@ -96,7 +101,6 @@ function establishConnection() {
             }
           },
           error: function(json) {
-            console.log("dad");
             displayAPIAlert();
           }
         });
@@ -136,7 +140,6 @@ function signIn() {
   if ($('#login-password').val() != "" && $('#login-username').val() != "") {
     $.ajax({
       method: "POST",
-      url: 'https://gw2rp-tools.ovh/api/login',
       data: { nick_name: $('#login-username').val(), password: $('#login-password').val()},
       dataType: 'json',
       success: onSignInResponse,

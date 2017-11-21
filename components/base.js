@@ -1,3 +1,5 @@
+const regex_html = /<(.|\n)*?>/;
+
 class User {
   constructor(id, name, admin, email, token) {
     this.id = id;

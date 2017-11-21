@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <meta name="theme-color" content="#000000">
+  <meta name="description" content="">
+  <meta name="author" content="Kavin 'Nakasar' Thizy">
+
+  <title>Personnages - Outils RP</title>
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+  <link rel="stylesheet" href="/components/style_global.css">
+  <link rel="stylesheet" href="/src/open-iconic/font/css/open-iconic-bootstrap.css">
+
+</head>
+<body>
+  <header>
+    <div id="navigation">
+    </div>
+  </header>
+
+  <!-- Modals -->
+  <div>
+    <!-- Deletion Confirmation Dialog -->
+    <div id="modal-delete" class="modal fade" tabindex="-1" role="dialog">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Supprimer</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <p id="message">Supprimer le personnage ?</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-danger" onClick="confirmDelete()">Supprimer</button>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="container">
+      <div class="alert alert-danger alert-dismissible" role="alert" id="main-alert">
+        <div id="text">Nous avons détecté une erreur inconnue. Le problème vient probablement de notre côté des Brumes :/</div>
+        <button type="button" class="close" data-dismiss="alert" aria-label="Fermer">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+    </div>
+    <div class="container" id="character-detail">
+      <div class="alert alert-warning alert-dismissible" role="alert" id="character-alert">
+        <div id="text">Il n'existe pas de personnage avec cet identifiant.</div>
+        <button type="button" class="close" data-dismiss="alert" aria-label="Fermer">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <h1 id="character-name"></h1>
+      <h2>Description</h2>
+      <a id="description-modify" style="display:none" href="#" onclick="modify('description')">Modifier</a>
+      <form id="description-form" style="display:none">
+        <div class="btn-group" role="group" aria-label="Actions">
+          <button type="button" class="btn btn-secondary" onClick="modify('')" id="cancel-button">Annuler</button>
+          <button type="button" class="btn btn-success" onClick="save('description')" id="save-button">Enregistrer</button>
+        </div>
+        <div class="form-group">
+          <textarea style="white-space: pre-wrap;" class="form-control" id="description-textarea" rows="5"></textarea>
+        </div>
+      </form>
+      <p style="white-space: pre-wrap;" id="description"></p>
+
+      <h2>Apparence</h2>
+      <a id="appearance-modify" style="display:none" href="#" onclick="modify('appearance')">Modifier</a>
+      <form id="appearance-form" style="display:none">
+        <div class="btn-group" role="group" aria-label="Actions">
+          <button type="button" class="btn btn-secondary" onClick="modify('')" id="cancel-button">Annuler</button>
+          <button type="button" class="btn btn-success" onClick="save('appearance')" id="save-button">Enregistrer</button>
+        </div>
+        <div class="form-group">
+          <textarea style="white-space: pre-wrap;" class="form-control" id="appearance-textarea" rows="5"></textarea>
+        </div>
+      </form>
+      <p style="white-space: pre-wrap;" id="appearance"></p>
+
+      <h2>Caractéristiques</h2>
+      <table class="table" id="caracteristics-table">
+        <thead class="thead-light">
+          <tr>
+            <th scope="col">Caractéristique</th>
+            <th scope="col">Valeur</th>
+            <th scope="col">Remarques</th>
+            <th scope="col" style="display: none;" class="table-actions">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+        </tbody>
+        <tfoot style="display: none;">
+          <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td><button type="button" class="btn btn-success float-right" onClick="createCaracteristic()">+</button></td>
+          </tr>
+        </tfoot>
+      </table>
+
+      <h2>Compétences</h2>
+      <table class="table" id="skills-table">
+        <thead class="thead-light">
+          <tr>
+            <th scope="col">Compétence</th>
+            <th scope="col">Valeur</th>
+            <th scope="col">Remarques</th>
+            <th scope="col" style="display: none;" class="table-actions">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+        </tbody>
+        <tfoot style="display: none;">
+          <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td><button type="button" class="btn btn-success float-right" onClick="createSkill()">+</button></td>
+          </tr>
+        </tfoot>
+      </table>
+
+      <div class="container" id="actions">
+        <button type="button" class="btn btn-danger" onClick="actionDelete()" id="action-delete">Supprimer</button>
+      </div>
+      <hr/>
+      <div class="container" id="actions">
+        <button type="button" class="btn btn-secondary float-right" onClick="returnToList(false)" id="action-return">Retour à la liste</button>
+      </div>
+    </div>
+    <div class="container" id="characters-list">
+      <button type="button" class="btn btn-success float-right" onClick="create()">Créer un personnage</button>
+      <table class="table" id="characters-table">
+        <thead class="thead-light">
+          <tr>
+            <th scope="col">Nom</th>
+            <th scope="col">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- jQuery library -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.js"></script>
+  <!-- Latest compiled JavaScript -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
+
+  <script src="/components/base.js"></script>
+  <script src="/components/connect.js"></script>
+
+  <script>
+  $('#main-alert').hide();
+  $('#character-alert').hide();
+  $('#characters-list').hide();
+  $('#character-detail').hide();
+  $('#character-alert').hide();
+  $('#navigation').load("/components/header.html", function() {
+    $('#nav-characters').addClass('active');
+    establishConnectionCallback(function(success) {
+      console.log("poop");
+      // Display specific character if in url, full list otherwise.
+      // Search for URL parameters (location, coord...)
+      var url = new URL(window.location.href);
+      if (url.searchParams.has("id")) {
+        // Url has a given ID, search for the matching location and zoom to it.
+        var id = url.searchParams.get("id");
+        loadCharacter(id);
+        $('#action-return').attr('onClick', 'returnToList(true)');
+      } else {
+        loadAll();
+      }
+    });
+  });
+
+  function displayAPIAlert() {
+    $('#main-alert #text').text("Le GOLEM M4554G3R n'a pas pu contacter le serveur dans les Brumes, le problème vient certainement de notre côté.");
+    $('#main-alert').show();
+  }
+  </script>
+
+  <script>
+  var thisCharacter;
+
+  function loadCharacter(id) {
+    $.ajax({
+      method: "GET",
+      url: 'http://localhost:3000/api/characters/' + id,
+      dataType: 'json',
+      success: function(json) {
+        console.log(json);
+        if (json.success) {
+          parseCharacter(json.character);
+        } else {
+          $('#character-alert').show();
+          loadAll();
+        }
+      },
+      error: function(json) {
+        displayAPIAlert();
+      }
+    });
+  }
+
+  function loadAll() {
+    $.ajax({
+      method: "GET",
+      url: 'http://localhost:3000/api/characters',
+      dataType: 'json',
+      success: function(json) {
+        if (json.success) {
+          parseCharactersToTable(json.characters);
+        }
+      },
+      error: function(json) {
+        displayAPIAlert();
+      }
+    });
+  }
+
+  function parseCharacter(character) {
+    thisCharacter = character;
+    $('#characters-list').hide();
+
+    $('#character-detail > h1').text(character.name);
+    if (character.description) {
+      $('#character-detail > #description').html(formatText(character.description));
+    }
+    if (character.appearance) {
+      $('#character-detail > #appearance').html(formatText(character.appearance));
+    }
+
+    if (character.caracteristics) {
+      for (var i in character.caracteristics) {
+        var caract = character.caracteristics[i];
+        var caractHtml = '<tr>';
+        caractHtml += '<td>' + caract.name + '</td>';
+        caractHtml += '<td>' + caract.value + '</td>';
+        caractHtml += '<td>' + caract.name + '</td>';
+        caractHtml += '<td class="table-actions"><span class="oi oi-pencil" title="éditer" aria-hidden="true"></span><span class="oi oi-delete" title="supprimer" aria-hidden="true"></span></td>';
+        caractHtml += '</tr>';
+        $('#character-detail #caracteristics-table > tbody').append(caractHtml);
+      }
+    }
+
+    if (character.skills) {
+      for (var i in character.skills) {
+        var skill = character.skills[i];
+        var skillHtml = '<tr>';
+        skillHtml += '<td>' + skill.name + '</td>';
+        skillHtml += '<td>' + skill.value + '</td>';
+        skillHtml += '<td>' + skill.name + '</td>';
+        skillHtml += '<td class="table-actions"><span class="oi oi-pencil" title="éditer" aria-hidden="true"></span><span class="oi oi-delete" title="supprimer" aria-hidden="true"></span></td>';
+        skillHtml += '</tr>';
+        $('#character-detail #skills-table > tbody').append(skillHtml);
+      }
+    }
+
+    if (signedIn && (thisUser.admin || thisUser.id === thisCharacter.owner)) {
+      $('#action-delete').show();
+      $('#character-detail #description-modify').show();
+      $('#character-detail #appearance-modify').show();
+      $('#character-detail #caracteristics-table > tfoot').show();
+      $('#character-detail #skills-table > tfoot').show();
+      $('#character-detail .table-actions').show();
+    } else {
+      $('#action-delete').hide();
+      $('#character-detail #description-modify').hide();
+      $('#character-detail #appearance-modify').hide();
+      $('#character-detail #caracteristics-table > tfoot').hide();
+      $('#character-detail #skills-table > tfoot').hide();
+      $('#character-detail .table-actions').hide();
+    }
+
+    $('#character-detail').show();
+    var stateObj = { foo: "bar" };
+    history.replaceState(stateObj, character.name, "?id=" + character._id);
+  }
+
+  function parseCharactersToTable(characters) {
+    $('#characters-table > tbody > tr').remove();
+    $('#characters-list').show();
+    $('#character-detail').hide();
+    for (var i in characters) {
+      var character = characters[i];
+      var characterHtml = '<tr>';
+      characterHtml += '<th scope="row">' + character.name + '</th>';
+      characterHtml += '<td><div class="btn-group" role="group" aria-label="Actions">';
+      characterHtml += '<button type="button" class="btn btn-primary" onClick="viewCharacter(\'' + character._id + '\')">Voir</button>'; // Detail action
+      characterHtml += '</td>';
+      characterHtml += '</tr>'
+    }
+    $('#characters-table > tbody').append(characterHtml);
+  }
+
+  function viewCharacter(id) {
+    loadCharacter(id);
+  }
+
+  function returnToList(requireReload) {
+    var stateObj = { foo: "bar" };
+    history.replaceState(stateObj, "Liste des personnages", ".");
+    $('#character-detail').hide();
+    if (requireReload) {
+      loadAll();
+    } else {
+      $('#characters-list').show();
+    }
+  }
+
+  function actionModify() {
+
+  }
+
+  function actionDelete() {
+    $("#modal-delete #message").text("Supprimer " + thisCharacter.name + " ?");
+    $("#modal-delete").modal('show');
+  }
+
+  function confirmDelete() {
+    $.ajax({
+      method: "DELETE",
+      url: 'http://localhost:3000/api/characters/' + thisCharacter._id,
+      data: { token: thisUser.token },
+      dataType: 'json',
+      success: function(json) {
+        if (json.success) {
+          $("#modal-delete").modal('hide');
+          returnToList(true);
+        } else {
+          console.log(json);
+        }
+      },
+      error: function(json) {
+        displayAPIAlert();
+      }
+    });
+  }
+
+  function modify(field) {
+    $('#description-modify').show();
+    $('#appearance-modify').show();
+    $('#description-form').hide();
+    $('#appearance-form').hide();
+    switch (field) {
+      case "description":
+        $('#description-modify').hide();
+        $('#description-textarea').val(thisCharacter.description);
+        $('#description-form').show();
+        break;
+      case "appearance":
+        $('#appearance-modify').hide();
+        $('#appearance-textarea').val(thisCharacter.appearance);
+        $('#appearance-form').show();
+        break;
+      default:
+        break;
+    }
+  }
+
+  function save(field) {
+    switch (field) {
+      case "description":
+        $('#description-form #save-button').addClass("disabled");
+        $('#description-form #cancel-button').addClass("disabled");
+        var description = $('#description-textarea').val().replace(regex_html, "");
+        $.ajax({
+          method: "PUT",
+          url: 'http://localhost:3000/api/characters/' + thisCharacter._id,
+          data: { token: thisUser.token, description: description },
+          dataType: 'json',
+          success: function(json) {
+            console.log(json);
+            if (json.success) {
+              $("#character-detail #description").html(formatText(json.character.description));
+              modify("");
+            }
+            $('#description-form #save-button').removeClass("disabled");
+            $('#description-form #cancel-button').removeClass("disabled");
+          },
+          error: function(json) {
+            displayAPIAlert();
+            $('#description-form #save-button').removeClass("disabled");
+            $('#description-form #cancel-button').removeClass("disabled");
+          }
+        });
+        break;
+      case "appearance":
+        $('#appearance-form #save-button').addClass("disabled");
+        $('#appearance-form #cancel-button').addClass("disabled");
+        var appearance = $('#appearance-textarea').val().replace(regex_html, "");
+        $.ajax({
+          method: "PUT",
+          url: 'http://localhost:3000/api/characters/' + thisCharacter._id,
+          data: { token: thisUser.token, appearance: appearance },
+          dataType: 'json',
+          success: function(json) {
+            console.log(json);
+            if (json.success) {
+              $("#character-detail #appearance").html(formatText(json.character.appearance));
+              modify("");
+            }
+            $('#appearance-form #save-button').removeClass("disabled");
+            $('#appearance-form #cancel-button').removeClass("disabled");
+          },
+          error: function(json) {
+            displayAPIAlert();
+            $('#appearance-form #save-button').removeClass("disabled");
+            $('#appearance-form #cancel-button').removeClass("disabled");
+          }
+        });
+        break;
+      case "name":
+        break;
+      default:
+        break;
+    }
+    return true;
+  }
+  </script>
+
+</body>
+</html>
