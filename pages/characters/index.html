@@ -68,7 +68,7 @@
           <div class="form-group">
             <input type="text" class="form-control" id="name-textarea"/>
             <span id="name-modify" onClick="save('name')" class="action-button oi oi-check" title="éditer" aria-hidden="true" style="font-size: 1rem;"></span>
-            <span id="name-modify" onClick="modify('')" class="action-button oi oi-x" title="éditer" aria-hidden="true" style="font-size: 1rem;"></span>
+            <span id="name-cancel" onClick="modify('')" class="action-button oi oi-x" title="éditer" aria-hidden="true" style="font-size: 1rem;"></span>
           </div>
         </form>
       </h1>
@@ -398,11 +398,10 @@
   // All, search, mines
   var mode = "all";
   function setListMode(newState) {
-    if (signedIn) {
       $('#action-create-character').show();
+    if (signedIn) {
       $('#action-my-characters').show();
     } else {
-      $('#action-create-character').hide();
       $('#action-my-characters').hide();
     }
 
@@ -797,6 +796,7 @@
             console.log(json);
             if (json.success) {
               $("#character-detail #character-name").text(json.character.name);
+              thisCharacter.name = json.character.name;
               modify("");
             }
             $('#name-form #save-button').removeClass("disabled");
@@ -822,6 +822,7 @@
             console.log(json);
             if (json.success) {
               $("#character-detail #description").html(formatText(json.character.description));
+              thisCharacter.description = json.character.description;
               modify("");
             }
             $('#description-form #save-button').removeClass("disabled");
@@ -847,6 +848,7 @@
             console.log(json);
             if (json.success) {
               $("#character-detail #appearance").html(formatText(json.character.appearance));
+              thisCharacter.appearance = json.character.appearance;
               modify("");
             }
             $('#appearance-form #save-button').removeClass("disabled");
@@ -865,9 +867,15 @@
     return true;
   }
 
+
+
   function createCharacter() {
-    $("#form-character").show();
-    $("#action-create-character").hide();
+    if (signedIn) {
+      $("#form-character").show();
+      $("#action-create-character").hide();
+    } else {
+      showLoginModal();
+    }
   }
 
   function validateCharacter() {
@@ -926,8 +934,6 @@
         $("#form-character #action-cancel-character").attr("disabled", false);
       }
     });
-    //$("#form-character").hide();
-    //$("#action-create-character").show();
   }
 
   function cancelCharacter() {
