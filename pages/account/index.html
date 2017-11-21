@@ -83,7 +83,7 @@
       if (signedIn) {
         $.ajax({
           method: "GET",
-          url: 'http://gw2rp-tools.ovh/api/users/' + thisUser.id + "?token=" + thisUser.token,
+          url: 'https://gw2rp-tools.ovh/api/users/' + thisUser.id + "?token=" + thisUser.token,
           dataType: 'json',
           success: function(json) {
             if (json.success) {
@@ -147,7 +147,7 @@
     if (validateGeneralInfo()) {
       $.ajax({
         method: "PUT",
-        url: 'http://gw2rp-tools.ovh/api/users/' + thisUser.id + "?general=true&token=" + thisUser.token,
+        url: 'https://gw2rp-tools.ovh/api/users/' + thisUser.id + "?general=true&token=" + thisUser.token,
         data: { nick_name: $('#modify-general #name').val(), gw2_account: $("#modify-general #gw2_account").val() },
         dataType: 'json',
         success: function(json) {
@@ -216,7 +216,7 @@
     if (validatePassword()) {
       $.ajax({
         method: "PUT",
-        url: 'http://gw2rp-tools.ovh/api/users/' + thisUser.id + "?security=true&token=" + thisUser.token,
+        url: 'https://gw2rp-tools.ovh/api/users/' + thisUser.id + "?security=true&token=" + thisUser.token,
         data: { old_password: $('#modify-password #password-old').val(), new_password: $('#modify-password #password-new-1').val()},
         dataType: 'json',
         success: function(json) {
