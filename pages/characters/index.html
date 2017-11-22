@@ -229,7 +229,11 @@
         // Url has a given ID, search for the matching location and zoom to it.
         var id = url.searchParams.get("id");
         loadCharacter(id);
-        $('.action-return').attr('onClick', 'returnToList(true)');
+        if (deviceCategory() === "lg") {
+          loadAll()
+        } else {
+          $('.action-return').attr('onClick', 'returnToList(true)');
+        }
       } else {
         loadAll();
       }
@@ -239,6 +243,31 @@
   function displayAPIAlert() {
     $('#main-alert #text').text("Le GOLEM M4554G3R n'a pas pu contacter le serveur dans les Brumes, le problème vient certainement de notre côté.");
     $('#main-alert').show();
+  }
+
+  function resizeHandler(category) {
+    if (category === "lg") {
+      // Go to master/detail
+      if (!loadedAll) {
+        loadAll();
+      }
+      $('#characters-list').show();
+      if (thisCharacter) {
+        $('#character-detail').css("visibility", "visible");
+      }
+      $('#character-detail').show();
+    } else {
+      // Display only master or detail
+      if (thisCharacter) {
+        $('#character-detail').css("visibility", "visible");
+        $('#character-detail').show();
+        $('#characters-list').hide();
+      } else {
+        $('#character-detail').css("visibility", "visible");
+        $('#character-detail').hide();
+        $('#characters-list').show();
+      }
+    }
   }
   </script>
 
@@ -367,6 +396,7 @@
 
   var thisCharacter;
   var modified = false;
+  var loadedAll = false;
 
   function stateToModified() {
     modified = true;
@@ -435,6 +465,7 @@
         if (json.success) {
           parseCharactersToTable(json.characters);
           setListMode("all");
+          loadedAll = true;
           $('#search-character-text').val("");
         }
       },
@@ -488,6 +519,14 @@
     } else {
       console.log("Invalid search params")
     }
+  }
+
+  function emptyCharacterDetail() {
+    $('#character-detail #character-name').text("Personnage");
+    $('#character-detail > #description').html("");
+    $('#character-detail > #appearance').html("");
+    $('#character-detail #caracteristics-table > tbody > tr').remove();
+    $('#character-detail #skills-table > tbody > tr').remove();
   }
 
   function parseCharacter(character) {
@@ -592,8 +631,10 @@
   }
 
   function returnToList(requireReload) {
+    thisCharacter = {};
     var stateObj = { foo: "bar" };
     history.pushState(stateObj, "Liste des personnages", ".");
+    emptyCharacterDetail();
     if (deviceCategory() !== "lg") {
       $('#character-detail').hide();
     } else {

@@ -48,3 +48,9 @@ function deviceCategory() {
     return "lg";
   }
 }
+
+$(window).resize(function() {
+  if (resizeHandler) {
+    resizeHandler(deviceCategory());
+  }
+});
