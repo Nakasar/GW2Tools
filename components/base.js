@@ -50,7 +50,7 @@ function deviceCategory() {
 }
 
 $(window).resize(function() {
-  if (resizeHandler) {
+  if (typeof resizeHandler !== "undefined") {
     resizeHandler(deviceCategory());
   }
 });
