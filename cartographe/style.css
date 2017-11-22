@@ -19,6 +19,7 @@ html, body, #container {
   height: 100%;
   max-width: 100%;
   width: 0px;
+  overflow-x: scroll;
 }
 
 #mapdiv {
