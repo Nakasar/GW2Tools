@@ -112,12 +112,12 @@
 
         <h1>
           <span id="character-name">Personnage</span>
-          <span id="name-modify" onClick="modify('name')" class="action-button oi oi-pencil" title="éditer" aria-hidden="true" style="font-size: 1rem;"></span>
-          <form id="name-form" style="display: none">
+          <span id="name-modify-button" onClick="modify('name')" class="action-button oi oi-pencil" title="éditer" aria-hidden="true" style="display: none; font-size: 1rem;"></span>
+          <form id="character-name-form" style="display: none">
             <div class="form-group">
               <input type="text" class="form-control" id="name-textarea"/>
               <span id="name-modify" onClick="save('name')" class="action-button oi oi-check" title="éditer" aria-hidden="true" style="font-size: 1rem;"></span>
-              <span id="name-cancel" onClick="modify('')" class="action-button oi oi-x" title="éditer" aria-hidden="true" style="font-size: 1rem;"></span>
+              <span id="name-cancel" onClick="modify('')" class="action-button oi oi-x" title="annuler" aria-hidden="true" style="font-size: 1rem;"></span>
             </div>
           </form>
         </h1>
@@ -580,6 +580,7 @@
 
       if (signedIn && (thisUser.admin || thisUser.id === thisCharacter.owner)) {
         $('#action-delete').show();
+        $('#name-modify-button').show();
         $('#character-detail #description-modify').show();
         $('#character-detail #appearance-modify').show();
         $('#character-detail #caracteristics-table > tfoot').show();
@@ -587,6 +588,7 @@
         $('#character-detail .table-actions').show();
       } else {
         $('#action-delete').hide();
+        $('#name-modify-button').hide()
         $('#character-detail #description-modify').hide();
         $('#character-detail #appearance-modify').hide();
         $('#character-detail #caracteristics-table > tfoot').hide();
@@ -616,8 +618,8 @@
     }
     for (var i in characters) {
       var character = characters[i];
-      var characterHtml = '<tr>';
-      characterHtml += '<th scope="row">' + character.name + '</th>';
+      var characterHtml = '<tr id="' + character._id + '">';
+      characterHtml += '<th scope="row" id="character-row-name">' + character.name + '</th>';
       characterHtml += '<td><div class="btn-group" role="group" aria-label="Actions">';
       characterHtml += '<button type="button" class="btn btn-primary" onClick="viewCharacter(\'' + character._id + '\')">Voir</button>'; // Detail action
       characterHtml += '</td>';
@@ -692,18 +694,18 @@
 
   function modify(field) {
     $('#character-name').show();
-    $('#name-modify').show();
+    $('#name-modify-button').show();
     $('#description-modify').show();
     $('#appearance-modify').show();
-    $('#name-form').hide();
+    $('#character-name-form').hide();
     $('#description-form').hide();
     $('#appearance-form').hide();
     switch (field) {
       case "name":
         $('#character-name').hide();
-        $('#name-modify').hide();
+        $('#name-modify-button').hide();
         $('#name-textarea').val(thisCharacter.name);
-        $('#name-form').show();
+        $('#character-name-form').show();
         break;
       case "description":
         $('#description-modify').hide();
@@ -861,6 +863,7 @@
             if (json.success) {
               $("#character-detail #character-name").text(json.character.name);
               thisCharacter.name = json.character.name;
+              $('#' + thisCharacter.id + ' #character-row-name').text(thisCharacter.name);
               modify("");
             }
             $('#name-form #save-button').removeClass("disabled");
