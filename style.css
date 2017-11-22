@@ -1,3 +1,21 @@
 #event-details-modal label {
   font-weight: bold;
 }
+
+#next-events {
+  background-color: #f2e6d9;
+  padding: 10px;
+}
+
+#next-events .list-group-item {
+  background-color: #f9f2ec;
+}
+
+#last-rumours {
+  background-color: #f2e6d9;
+  padding: 10px;
+}
+
+#last-rumours .list-group-item {
+  background-color: #f9f2ec;
+}

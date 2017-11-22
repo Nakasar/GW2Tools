@@ -36,3 +36,15 @@ function formatText(text) {
 
   return formatted;
 }
+
+function deviceCategory() {
+  if ($(window).width() <= 576) {
+    return "sm";
+  } else if ($(window).width() <= 768) {
+    return "md";
+  } else if ($(window).width() <= 992) {
+    return "sm";
+  } else {
+    return "lg";
+  }
+}

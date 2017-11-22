@@ -1,5 +1,7 @@
 body {
   padding-top: 5rem;
+  background-color: #d2a679; /* Base color theme : #996633 */
+  background-image: url('/src/img/bg/purty_wood.png');
 }
 
 .starter-template {

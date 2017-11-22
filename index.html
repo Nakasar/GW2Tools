@@ -31,20 +31,15 @@
       </div>
     </div>
     <div class="container">
-      <div class="alert alert-warning" role="alert">
-        <h4 class="alert-heading">Documentation API</h4>
-        <p>L'accès à l'API commence à <a href="/api">/api</a>.
-          <br/>
-          La documentation est accessible via l'onglet "Documentation".
-        </p>
-      </div>
-      <div class="container">
-        <h4>Prochains évènements</h4>
-        <div class="list-group" id="incoming-event-list"></div>
-      </div>
-      <div class="container">
-        <h4>Dernières rumeurs</h4>
-        <div class="list-group" id="latest-rumours-list"></div>
+      <div class="row">
+        <div class="col-md-6" id="next-events">
+          <h4>Prochains évènements</h4>
+          <div class="list-group" id="incoming-event-list"></div>
+        </div>
+        <div class="col-md-6" id="last-rumours">
+          <h4>Dernières rumeurs</h4>
+          <div class="list-group" id="latest-rumours-list"></div>
+        </div>
       </div>
     </div>
 

@@ -1,0 +1,19 @@
+#character-detail {
+  background-image: url('/src/img/bg/ricepaper.png');
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+#characters-list {
+  background-image: url('/src/img/bg/ricepaper.png');
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+body {
+  margin-bottom: 10px;
+}
+
+.table .thead-light th {
+  background-color: #d7b582;
+}

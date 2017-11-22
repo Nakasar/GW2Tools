@@ -13,6 +13,7 @@
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
   <link rel="stylesheet" href="/components/style_global.css">
   <link rel="stylesheet" href="/src/open-iconic/font/css/open-iconic-bootstrap.css">
+  <link rel="stylesheet" href="characters.css">
 
 </head>
 <body>
@@ -54,149 +55,154 @@
         </button>
       </div>
     </div>
-    <div class="container" id="character-detail">
-      <div class="alert alert-warning alert-dismissible" role="alert" id="character-alert" style="display: none;">
-        <div id="text">Il n'existe pas de personnage avec cet identifiant.</div>
-        <button type="button" class="close" data-dismiss="alert" aria-label="Fermer">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <h1>
-        <span id="character-name">Personnage</span>
-        <span id="name-modify" onClick="modify('name')" class="action-button oi oi-pencil" title="éditer" aria-hidden="true" style="font-size: 1rem;"></span>
-        <form id="name-form" style="display: none">
+    <div class="row">
+
+      <div class="container col-lg-4" id="characters-list">
+        <form id="form-character" style="display: none;">
           <div class="form-group">
-            <input type="text" class="form-control" id="name-textarea"/>
-            <span id="name-modify" onClick="save('name')" class="action-button oi oi-check" title="éditer" aria-hidden="true" style="font-size: 1rem;"></span>
-            <span id="name-cancel" onClick="modify('')" class="action-button oi oi-x" title="éditer" aria-hidden="true" style="font-size: 1rem;"></span>
-          </div>
-        </form>
-      </h1>
-
-      <h2>Description</h2>
-      <a id="description-modify" style="display:none" href="#" onclick="modify('description')">Modifier</a>
-      <form id="description-form" style="display:none">
-        <div class="btn-group" role="group" aria-label="Actions">
-          <button type="button" class="btn btn-secondary" onClick="modify('')" id="cancel-button">Annuler</button>
-          <button type="button" class="btn btn-success" onClick="save('description')" id="save-button">Enregistrer</button>
-        </div>
-        <div class="form-group">
-          <textarea style="white-space: pre-wrap;" class="form-control" id="description-textarea" rows="5"></textarea>
-        </div>
-      </form>
-      <p style="white-space: pre-wrap;" id="description"></p>
-
-      <h2>Apparence</h2>
-      <a id="appearance-modify" style="display:none" href="#" onclick="modify('appearance')">Modifier</a>
-      <form id="appearance-form" style="display:none">
-        <div class="btn-group" role="group" aria-label="Actions">
-          <button type="button" class="btn btn-secondary" onClick="modify('')" id="cancel-button">Annuler</button>
-          <button type="button" class="btn btn-success" onClick="save('appearance')" id="save-button">Enregistrer</button>
-        </div>
-        <div class="form-group">
-          <textarea style="white-space: pre-wrap;" class="form-control" id="appearance-textarea" rows="5"></textarea>
-        </div>
-      </form>
-      <p style="white-space: pre-wrap;" id="appearance"></p>
-
-      <h2>Caractéristiques</h2>
-      <table class="table" id="caracteristics-table">
-        <thead class="thead-light">
-          <tr>
-            <th scope="col">Caractéristique</th>
-            <th scope="col">Valeur</th>
-            <th scope="col">Remarques</th>
-            <th scope="col" style="display: none;" class="table-actions">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-        </tbody>
-        <tfoot style="display: none;">
-          <tr>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td><button type="button" class="btn btn-success float-right" onClick="createEntry('caract')">+</button></td>
-          </tr>
-        </tfoot>
-      </table>
-
-      <h2>Compétences</h2>
-      <table class="table" id="skills-table">
-        <thead class="thead-light">
-          <tr>
-            <th scope="col">Compétence</th>
-            <th scope="col">Valeur</th>
-            <th scope="col">Remarques</th>
-            <th scope="col" style="display: none;" class="table-actions">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-        </tbody>
-        <tfoot style="display: none;">
-          <tr>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td><button type="button" class="btn btn-success float-right" onClick="createEntry('skill')">+</button></td>
-          </tr>
-        </tfoot>
-      </table>
-
-      <div class="container" id="actions">
-        <button type="button" class="btn btn-success" onClick="actionSave()" id="action-save" style="display: none;">Enregistrer</button>
-        <button type="button" class="btn btn-warning" onClick="actionRevert()" id="action-revert" style="display: none;">Annuler</button>
-        <button type="button" class="btn btn-danger" onClick="actionDelete()" id="action-delete">Supprimer</button>
-      </div>
-      <hr/>
-      <div class="container">
-        <button type="button" class="btn btn-secondary float-right" onClick="returnToList(false)" id="action-return">Retour à la liste</button>
-      </div>
-    </div>
-
-    <div class="container" id="characters-list">
-      <form id="form-character" style="display: none;">
-        <div class="form-group">
-          <label for="name-form">Création d'un personnage</label>
-          <div class="input-group">
-            <input class="form-control" id="name-form" type="text" placeholder="Nom du personnage"/>
-            <span class="input-group-btn">
-              <button id="action-validate-character" type="button" class="btn btn-success float-right" onClick="validateCharacter()">Créer</button>
-              <button id="action-cancel-character" type="button" class="btn btn-secondary float-right" onClick="cancelCharacter()">Annuler</button>
-            </span>
-          </div>
-        </div>
-      </form>
-      <div class="row" id="character-list-head">
-        <div class="col-md-8">
-          <form id="form-search-character">
+            <label for="name-form">Création d'un personnage</label>
             <div class="input-group">
-              <input id="search-character-text" type="text" class="form-control" placeholder="Chercher un personnage..." aria-label="Rercherche de personnage...">
+              <input class="form-control" id="name-form" type="text" placeholder="Nom du personnage"/>
               <span class="input-group-btn">
-                <button class="btn btn-secondary" type="button" onClick="searchCharacters()"><span class="oi oi-magnifying-glass"></span></button>
-                <button class="btn btn-secondary" type="button" onClick="loadAll()"><span class="oi oi-x"></span></button>
+                <button id="action-validate-character" type="button" class="btn btn-success float-right" onClick="validateCharacter()">Créer</button>
+                <button id="action-cancel-character" type="button" class="btn btn-secondary float-right" onClick="cancelCharacter()">Annuler</button>
               </span>
             </div>
-          </form>
+          </div>
+        </form>
+        <div class="row" id="character-list-head">
+          <div class="col-md-8">
+            <form id="form-search-character">
+              <div class="input-group">
+                <input id="search-character-text" type="text" class="form-control" placeholder="Chercher un personnage..." aria-label="Rercherche de personnage...">
+                <span class="input-group-btn">
+                  <button class="btn btn-secondary" type="button" onClick="searchCharacters()"><span class="oi oi-magnifying-glass"></span></button>
+                  <button class="btn btn-secondary" type="button" onClick="loadAll()"><span class="oi oi-x"></span></button>
+                </span>
+              </div>
+            </form>
+          </div>
+          <div class="col-md-4">
+            <button id="action-create-character" style="display: none;" type="button" class="btn btn-success float-right" onClick="createCharacter()" title="Créer un personnage"><span class="oi oi-plus"></span></button>
+            <button id="action-my-characters" style="display: none;" type="button" class="btn btn-outline-info float-right" onClick="seeMyCharacters()" title="Mes personnages"><span class="oi oi-people"></span></button>
+          </div>
         </div>
-        <div class="col-md-4">
-          <button id="action-create-character" style="display: none;" type="button" class="btn btn-success float-right" onClick="createCharacter()" title="Créer un personnage"><span class="oi oi-plus"></span></button>
-          <button id="action-my-characters" style="display: none;" type="button" class="btn btn-outline-info float-right" onClick="seeMyCharacters()" title="Mes personnages"><span class="oi oi-people"></span></button>
-        </div>
+
+        <table class="table" id="characters-table">
+          <thead class="thead-light">
+            <tr>
+              <th scope="col">Nom</th>
+              <th scope="col">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+          </tbody>
+        </table>
       </div>
 
-      <table class="table" id="characters-table">
-        <thead class="thead-light">
-          <tr>
-            <th scope="col">Nom</th>
-            <th scope="col">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-        </tbody>
-      </table>
-    </div>
+      <div class="container col-lg-8" id="character-detail">
+        <div class="alert alert-warning alert-dismissible" role="alert" id="character-alert" style="display: none;">
+          <div id="text">Il n'existe pas de personnage avec cet identifiant.</div>
+          <button type="button" class="close" data-dismiss="alert" aria-label="Fermer">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
 
+        <button type="button" class="action-return btn btn-secondary float-right" onClick="returnToList(false)">Retour à la liste</button>
+
+        <h1>
+          <span id="character-name">Personnage</span>
+          <span id="name-modify" onClick="modify('name')" class="action-button oi oi-pencil" title="éditer" aria-hidden="true" style="font-size: 1rem;"></span>
+          <form id="name-form" style="display: none">
+            <div class="form-group">
+              <input type="text" class="form-control" id="name-textarea"/>
+              <span id="name-modify" onClick="save('name')" class="action-button oi oi-check" title="éditer" aria-hidden="true" style="font-size: 1rem;"></span>
+              <span id="name-cancel" onClick="modify('')" class="action-button oi oi-x" title="éditer" aria-hidden="true" style="font-size: 1rem;"></span>
+            </div>
+          </form>
+        </h1>
+
+        <h2>Description</h2>
+        <a id="description-modify" style="display:none" href="#" onclick="modify('description')">Modifier</a>
+        <form id="description-form" style="display:none">
+          <div class="btn-group" role="group" aria-label="Actions">
+            <button type="button" class="btn btn-secondary" onClick="modify('')" id="cancel-button">Annuler</button>
+            <button type="button" class="btn btn-success" onClick="save('description')" id="save-button">Enregistrer</button>
+          </div>
+          <div class="form-group">
+            <textarea style="white-space: pre-wrap;" class="form-control" id="description-textarea" rows="5"></textarea>
+          </div>
+        </form>
+        <p style="white-space: pre-wrap;" id="description"></p>
+
+        <h2>Apparence</h2>
+        <a id="appearance-modify" style="display:none" href="#" onclick="modify('appearance')">Modifier</a>
+        <form id="appearance-form" style="display:none">
+          <div class="btn-group" role="group" aria-label="Actions">
+            <button type="button" class="btn btn-secondary" onClick="modify('')" id="cancel-button">Annuler</button>
+            <button type="button" class="btn btn-success" onClick="save('appearance')" id="save-button">Enregistrer</button>
+          </div>
+          <div class="form-group">
+            <textarea style="white-space: pre-wrap;" class="form-control" id="appearance-textarea" rows="5"></textarea>
+          </div>
+        </form>
+        <p style="white-space: pre-wrap;" id="appearance"></p>
+
+        <h2>Caractéristiques</h2>
+        <table class="table" id="caracteristics-table">
+          <thead class="thead-light">
+            <tr>
+              <th scope="col">Caractéristique</th>
+              <th scope="col">Valeur</th>
+              <th scope="col">Remarques</th>
+              <th scope="col" style="display: none;" class="table-actions">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+          </tbody>
+          <tfoot style="display: none;">
+            <tr>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td><button type="button" class="btn btn-success float-right" onClick="createEntry('caract')">+</button></td>
+            </tr>
+          </tfoot>
+        </table>
+
+        <h2>Compétences</h2>
+        <table class="table" id="skills-table">
+          <thead class="thead-light">
+            <tr>
+              <th scope="col">Compétence</th>
+              <th scope="col">Valeur</th>
+              <th scope="col">Remarques</th>
+              <th scope="col" style="display: none;" class="table-actions">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+          </tbody>
+          <tfoot style="display: none;">
+            <tr>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td><button type="button" class="btn btn-success float-right" onClick="createEntry('skill')">+</button></td>
+            </tr>
+          </tfoot>
+        </table>
+
+        <div id="actions">
+          <button type="button" class="btn btn-success" onClick="actionSave()" id="action-save" style="display: none;">Enregistrer</button>
+          <button type="button" class="btn btn-warning" onClick="actionRevert()" id="action-revert" style="display: none;">Annuler</button>
+          <button type="button" class="btn btn-danger" onClick="actionDelete()" id="action-delete">Supprimer</button>
+        </div>
+
+        <hr/>
+
+        <button type="button" style="margin-left: auto; margin-right: 0;" class="action-return btn btn-secondary" onClick="returnToList(false)">Retour à la liste</button>
+      </div>
+    </div>
   </div>
 
   <!-- jQuery library -->
@@ -223,7 +229,7 @@
         // Url has a given ID, search for the matching location and zoom to it.
         var id = url.searchParams.get("id");
         loadCharacter(id);
-        $('#action-return').attr('onClick', 'returnToList(true)');
+        $('.action-return').attr('onClick', 'returnToList(true)');
       } else {
         loadAll();
       }
@@ -487,7 +493,11 @@
   function parseCharacter(character) {
     thisCharacter = Character.parse(character);
     if (thisCharacter) {
-      $('#characters-list').hide();
+      if (deviceCategory() !== "lg") {
+        $('#characters-list').hide();
+      } else {
+        $('#characters-list').show();
+      }
 
       $('#character-detail #character-name').text(character.name);
       if (character.description) {
@@ -546,6 +556,7 @@
       }
 
       $('#character-detail').show();
+      $('#character-detail').css("visibility", "visible");
       var stateObj = { foo: "bar" };
       history.pushState(stateObj, character.name, "?id=" + character._id);
     } else {
@@ -556,7 +567,14 @@
   function parseCharactersToTable(characters) {
     $('#characters-table > tbody > tr').remove();
     $('#characters-list').show();
-    $('#character-detail').hide();
+    if (deviceCategory() !== "lg") {
+      $('#character-detail').hide();
+    } else {
+      if (!thisCharacter) {
+        $('#character-detail').css("visibility", "hidden");
+      }
+      $('#character-detail').show()
+    }
     for (var i in characters) {
       var character = characters[i];
       var characterHtml = '<tr>';
@@ -576,7 +594,12 @@
   function returnToList(requireReload) {
     var stateObj = { foo: "bar" };
     history.pushState(stateObj, "Liste des personnages", ".");
-    $('#character-detail').hide();
+    if (deviceCategory() !== "lg") {
+      $('#character-detail').hide();
+    } else {
+      $('#character-detail').css("visibility", "hidden");
+      $('#character-detail').show();
+    }
     if (requireReload) {
       loadAll();
     } else {
@@ -924,7 +947,7 @@
           $("#form-character #action-cancel-character").attr("disabled", false);
           $("#form-character").hide();
           $("#action-create-character").show();
-          $('#action-return').attr('onClick', 'returnToList(true)');
+          $('.action-return').attr('onClick', 'returnToList(true)');
         }
       },
       error: function(json) {
