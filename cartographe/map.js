@@ -41,15 +41,15 @@ const eventIcon = L.icon({
 iconsList.set("generic", eventIcon);
 const tavernIcon = L.icon({
     iconUrl: '/src/img/icons/20px-map-tavern.png',
-    iconSize: [30, 30],
-    iconAnchor: [15, 15],
+    iconSize: [20, 20],
+    iconAnchor: [10, 10],
     popupAnchor: [0, -15]
 });
 iconsList.set("tavern", tavernIcon);
 const merchantIcon = L.icon({
     iconUrl: '/src/img/icons/20px-map-merchant.png',
-    iconSize: [40, 40],
-    iconAnchor: [20, 20],
+    iconSize: [20, 20],
+    iconAnchor: [10, 10],
     popupAnchor: [0, -20]
 });
 iconsList.set("merchant", merchantIcon);
@@ -62,8 +62,8 @@ const genericIcon = L.icon({
 iconsList.set("other", genericIcon);
 const festivalIcon = L.icon({
     iconUrl: '/src/img/icons/20px-map-explorers.png',
-    iconSize: [30, 30],
-    iconAnchor: [15, 15],
+    iconSize: [20, 20],
+    iconAnchor: [10, 10],
     popupAnchor: [0, -15]
 });
 iconsList.set("festival", festivalIcon);
@@ -76,8 +76,8 @@ const guildIcon = L.icon({
 iconsList.set("guild", guildIcon);
 const assemblyIcon = L.icon({
     iconUrl: '/src/img/icons/20px-map-community.png',
-    iconSize: [30, 30],
-    iconAnchor: [15, 15],
+    iconSize: [20, 20],
+    iconAnchor: [10, 10],
     popupAnchor: [0, -15]
 });
 iconsList.set("communitary", assemblyIcon)
