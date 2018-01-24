@@ -21,6 +21,9 @@ translate_types.set("danger", "Zone dangereuse");
 //
 translate_types.set("other", "Autre");
 
+const eventTypes = ["battle", "camp", "communitary", "damages", "danger", "other"];
+const locationTypes = ["tavern", "trading", "exploration", "mercenary", "research", "nobility", "other"];
+
 // Inclusion de la librairie Leaflet
 var map;
 
@@ -129,6 +132,7 @@ class Rumour {
     this.text = text;
     this.site = site;
     this.category = "rumour";
+    this.type = "rumour";
   }
 
   static parse (json) {
@@ -162,6 +166,7 @@ class Rumour {
       sideBarDisplayLocation(loc);
     });
     this.marker.addTo(map);
+    this.hidden = false;
   }
 }
 
@@ -176,6 +181,7 @@ class Location {
     this.type = type;
     this.description = description;
     this.site = site;
+    this.hidden = false;
   }
 
   get getName() {
@@ -245,6 +251,7 @@ class PermanentLocation extends Location {
       sideBarDisplayLocation(loc);
     });
     this.marker.addTo(map);
+    this.hidden = false;
   }
 }
 
@@ -306,6 +313,7 @@ class EventLocation extends Location {
       sideBarDisplayLocation(loc);
     });
     this.marker.addTo(map);
+    this.hidden = false;
   }
 }
 
@@ -816,6 +824,175 @@ function createMap() {
     map.on("click", onMapClick);
     map.on('contextmenu', onMapRightClick);
 
+    makeLegend();
+}
+var legend;
+function makeLegend() {
+  legend = L.control();
+  legend.onAdd = function (map) {
+    this._div = L.DomUtil.create('div', 'map-legend');
+    this.update();
+    return this._div;
+  };
+
+  legend.update = function () {
+    var html = "";
+    html += '<a href="#" onclick="legendClickHideAll()">Tout cacher</a><br/>';
+    html += '<a href="#" onclick="legendClickShowAll()">Tout montrer</a>';
+    html += '<h4 id="legend-cat-event" onclick="legendClickHideCategory(\'event\')">Evènements</h4>';
+    html += '<ul class="list-group" id="event">';
+    for (var type of eventTypes) {
+      html += '<button id="legend-' + type + '" class="list-group-item list-group-item-action active" type="button" onclick="legendClick(\'event\', \'' + type + '\')" >' + "<img src='/src/img/24px-map-legend-visibility.png' class='showed' />" + translate_types.get(type) + '</button>';
+    }
+    html += "</ul>";
+
+    html += '<h4 id="legend-cat-location" onclick="legendClickHideCategory(\'location\')">Lieux</h4>';
+    html += '<ul class="list-group" id="location">';
+    for (var type of locationTypes) {
+      html += '<button id="legend-' + type + '" class="list-group-item list-group-item-action active" type="button" onclick="legendClick(\'location\', \'' + type + '\')" >' + "<img src='/src/img/24px-map-legend-visibility.png' class='hidden' />" + translate_types.get(type) + '</button>';
+    }
+    html += "</ul>";
+
+    html += '<h4 id="legend-cat-rumour" onclick="legendClickHideCategory(\'rumour\')">Rumeurs</h4>';
+    html += '<ul class="list-group" id="rumour">';
+    html += '<button id="legend-' + "rumour" + '" class="list-group-item list-group-item-action active" type="button" onclick="legendClick(\'rumour\', \'rumour\')" >' + "<img src='/src/img/24px-map-legend-visibility.png' class='hidden' />" + "Rumeur" + '</button>';
+    html += "</ul>";
+    this._div.innerHTML = html;
+  }
+
+  legend.addTo(map);
+
+  // Disable dragging when user's cursor enters the element
+  legend.getContainer().addEventListener('mouseover', function () {
+    map.dragging.disable();
+    map.touchZoom.disable();
+    map.doubleClickZoom.disable();
+    map.scrollWheelZoom.disable();
+    map.boxZoom.disable();
+    map.keyboard.disable();
+    if (map.tap) {
+      map.tap.disable();
+    }
+    map.off('contextmenu', onMapRightClick);
+  });
+
+  // Re-enable dragging when user's cursor leaves the element
+  legend.getContainer().addEventListener('mouseout', function () {
+    map.dragging.enable();
+    map.touchZoom.enable();
+    map.doubleClickZoom.enable();
+    map.scrollWheelZoom.enable();
+    map.boxZoom.enable();
+    map.keyboard.enable();
+    if (map.tap) {
+      map.tap.enable();
+    }
+    map.on('contextmenu', onMapRightClick);
+  });
+}
+
+var activeLabels = {event : {}, location : {}, rumour : {}};
+for (var type of eventTypes) {
+  activeLabels["event"][type] = true;
+}
+for (var type of locationTypes) {
+  activeLabels["location"][type] = true;
+}
+activeLabels["rumour"]["rumour"] = true;
+function legendClick(category, type) {
+  if (activeLabels[category][type]) {
+    hideMarkersOfType(category, type);
+  } else {
+    showMarkersOfType(category, type);
+  }
+}
+
+function legendClickHideCategory(category) {
+  switch (category) {
+    case "event":
+      for (var type of eventTypes) {
+        hideMarkersOfType("event", type);
+      }
+      $('.map-legend #legend-cat-event').attr('onclick', "legendClickShowCategory('event')");
+      break;
+    case "location":
+      for (var type of locationTypes) {
+        hideMarkersOfType("location", type);
+      }
+      $('.map-legend #legend-cat-location').attr('onclick', "legendClickShowCategory('location')");
+      break;
+    case "rumour":
+      hideMarkersOfType("rumour", "rumour");
+      $('.map-legend #legend-cat-rumour').attr('onclick', "legendClickShowCategory('rumour')");
+      break;
+    default:
+      break;
+  }
+}
+
+function legendClickShowCategory(category) {
+  switch (category) {
+    case "event":
+      for (var type of eventTypes) {
+        showMarkersOfType("event", type);
+      }
+      $('.map-legend #legend-cat-event').attr('onclick', "legendClickHideCategory('event')");
+      break;
+    case "location":
+      for (var type of locationTypes) {
+        showMarkersOfType("location", type);
+      }
+      $('.map-legend #legend-cat-location').attr('onclick', "legendClickHideCategory('location')");
+      break;
+    case "rumour":
+      showMarkersOfType("rumour", "rumour");
+      $('.map-legend #legend-cat-rumour').attr('onclick', "legendClickHideCategory('rumour')");
+      break;
+    default:
+      break;
+  }
+}
+
+function legendClickHideAll() {
+  legendClickHideCategory("event");
+  legendClickHideCategory("location");
+  legendClickHideCategory("rumour");
+}
+
+function legendClickShowAll() {
+  legendClickShowCategory("event");
+  legendClickShowCategory("location");
+  legendClickShowCategory("rumour")
+}
+
+function hideMarkersOfType(category, type) {
+  $('.map-legend #' + category + ' #legend-' + type).removeClass('active');
+  activeLabels[category][type] = false;
+  for (var location of locationsById.values()) {
+    if (!location.hidden && location.category === category) {
+      var hide = true;
+      for (var type of location.type) {
+        if (activeLabels[category][type]) {
+          hide = false;
+        }
+      }
+      if (hide) {
+        map.removeLayer(location.marker);
+        location.hidden = true;
+      }
+    }
+  }
+}
+function showMarkersOfType(category, type) {
+  $('.map-legend #' + category + ' #legend-' + type).addClass('active');
+  activeLabels[category][type] = true;
+  for (var location of locationsById.values()) {
+    if (location.hidden && location.category === category) {
+      if (location.type.includes(type)) {
+        addMarker(location);
+      }
+    }
+  }
 }
 
 var locationsById = new Map();
