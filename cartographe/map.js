@@ -26,63 +26,63 @@ var map;
 
 var iconsList = new Map();
 const rumourIcon = L.icon({
-  iconUrl: 'https://render.guildwars2.com/file/25B230711176AB5728E86F5FC5F0BFAE48B32F6E/97461.png',
+  iconUrl: '/src/img/icons/20px-map-rumor.png',
   iconSize: [20, 20],
   iconAnchor: [10, 10],
   popupAnchor: [0, -10]
 });
 iconsList.set("rumour", rumourIcon);
 const eventIcon = L.icon({
-    iconUrl: 'https://wiki.guildwars2.com/images/b/bc/Event_star_%28map_icon%29.png',
+    iconUrl: '/src/img/icons/20px-map-generic.png',
     iconSize: [20, 20],
     iconAnchor: [10, 10],
     popupAnchor: [0, -10]
 });
 iconsList.set("generic", eventIcon);
 const tavernIcon = L.icon({
-    iconUrl: 'https://wiki.guildwars2.com/images/thumb/4/4f/Belcher%27s_Bluff_%28map_icon%29.png/20px-Belcher%27s_Bluff_%28map_icon%29.png',
+    iconUrl: '/src/img/icons/20px-map-tavern.png',
     iconSize: [30, 30],
     iconAnchor: [15, 15],
     popupAnchor: [0, -15]
 });
 iconsList.set("tavern", tavernIcon);
 const merchantIcon = L.icon({
-    iconUrl: 'https://wiki.guildwars2.com/images/thumb/4/44/Merchant_%28map_icon%29.png/27px-Merchant_%28map_icon%29.png',
+    iconUrl: '/src/img/icons/20px-map-merchant.png',
     iconSize: [40, 40],
     iconAnchor: [20, 20],
     popupAnchor: [0, -20]
 });
 iconsList.set("merchant", merchantIcon);
 const genericIcon = L.icon({
-    iconUrl: 'https://wiki.guildwars2.com/images/f/fe/Scout_%28map_icon%29.png',
+    iconUrl: '/src/img/icons/20px-map-generic-guild.png',
     iconSize: [20, 20],
     iconAnchor: [10, 10],
     popupAnchor: [0, -10]
 });
 iconsList.set("other", genericIcon);
 const festivalIcon = L.icon({
-    iconUrl: 'https://wiki.guildwars2.com/images/thumb/2/27/Activity_%28map_icon%29.png/20px-Activity_%28map_icon%29.png',
+    iconUrl: '/src/img/icons/20px-map-explorers.png',
     iconSize: [30, 30],
     iconAnchor: [15, 15],
     popupAnchor: [0, -15]
 });
 iconsList.set("festival", festivalIcon);
 const guildIcon = L.icon({
-    iconUrl: 'https://wiki.guildwars2.com/images/thumb/f/f6/Guild_Commendation_Trader_%28map_icon%29.png/20px-Guild_Commendation_Trader_%28map_icon%29.png',
+    iconUrl: '/src/img/icons/20px-map-guild.png',
     iconSize: [20, 20],
     iconAnchor: [10, 10],
     popupAnchor: [0, -10]
 });
 iconsList.set("guild", guildIcon);
 const assemblyIcon = L.icon({
-    iconUrl: 'https://wiki.guildwars2.com/images/thumb/2/2c/Tournament_Master_%28map_icon%29.png/20px-Tournament_Master_%28map_icon%29.png',
+    iconUrl: '/src/img/icons/20px-map-community.png',
     iconSize: [30, 30],
     iconAnchor: [15, 15],
     popupAnchor: [0, -15]
 });
 iconsList.set("communitary", assemblyIcon)
 const battleIcon = L.icon({
-    iconUrl: 'https://wiki.guildwars2.com/images/6/67/Event_swords_%28map_icon%29.png',
+    iconUrl: '/src/img/icons/20px-map-battle.png',
     iconSize: [20, 20],
     iconAnchor: [10, 10],
     popupAnchor: [0, -10]
