@@ -168,8 +168,9 @@ function onSignInResponse(json) {
     $('#login-form #login-alert').hide();
     onSignIn(json);
   } else {
-    $('#login-form #login-alert #text').text("Le nom d'utilisateur et le mot de passe ne correspondent pas.");
-    $('#login-form #login-alert #text').show();
+    console.log(json);
+    $('#login-form #login-alert').text("Le nom d'utilisateur et le mot de passe ne correspondent pas.");
+    $('#login-form #login-alert').show();
   }
 }
 

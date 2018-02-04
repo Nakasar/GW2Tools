@@ -11,8 +11,8 @@
   <title>Personnages - Outils RP</title>
 
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
-  <link rel="stylesheet" href="/components/style_global.css">
   <link rel="stylesheet" href="/src/open-iconic/font/css/open-iconic-bootstrap.css">
+  <link rel="stylesheet" href="/components/style_global.css">
   <link rel="stylesheet" href="characters.css">
 
 </head>
@@ -76,15 +76,15 @@
               <div class="input-group">
                 <input id="search-character-text" type="text" class="form-control" placeholder="Chercher un personnage..." aria-label="Rercherche de personnage...">
                 <span class="input-group-btn">
-                  <button class="btn btn-secondary" type="button" onClick="searchCharacters()"><img src="/src/open-iconic/svg/magnifying-glass.svg" width="20px" heigth="20px" /></button>
-                  <button class="btn btn-secondary" type="button" onClick="loadAll()"><img src="/src/open-iconic/svg/x.svg" width="20px" heigth="20px" /></button>
+                  <button class="btn btn-secondary" type="button" onClick="searchCharacters()"><span class="oi oi-magnifying-glass"></span></button>
+                  <button class="btn btn-secondary" type="button" onClick="loadAll()"><span class="oi oi-x"></span></button>
                 </span>
               </div>
             </form>
           </div>
           <div class="col-md-4">
-            <button id="action-create-character" style="display: none;" type="button" class="btn btn-success float-right" onClick="createCharacter()" title="Créer un personnage"><img src="/src/open-iconic/svg/plus.svg" width="30px" heigth="30px" /></button>
-            <button id="action-my-characters" style="display: none;" type="button" class="btn btn-outline-info float-right" onClick="seeMyCharacters()" title="Mes personnages"><img src="/src/open-iconic/svg/people.svg" width="30px" heigth="30px" /n></button>
+            <button id="action-create-character" style="display: none;" type="button" class="btn btn-success float-right" onClick="createCharacter()" title="Créer un personnage"><span class="oi oi-plus"></button>
+            <button id="action-my-characters" style="display: none;" type="button" class="btn btn-outline-info float-right" onClick="seeMyCharacters()" title="Mes personnages"><span class="oi oi-people"></span></button>
           </div>
         </div>
 
@@ -112,12 +112,12 @@
 
         <h1>
           <span id="character-name">Personnage</span>
-          <img src="/src/open-iconic/svg/pencil.svg" width="20px" heigth="20px" id="name-modify-button" onClick="modify('name')" class="action-button" title="éditer" aria-hidden="true" style="display: none; font-size: 1rem;" />
+          <span id="name-modify-button" onClick="modify('name')" class="action-button oi oi-pencil" title="éditer" aria-hidden="true" style="display: none; font-size: 1rem;"></span>
           <form id="character-name-form" style="display: none">
             <div class="form-group">
               <input type="text" class="form-control" id="name-textarea"/>
-              <img src="/src/open-iconic/svg/check.svg" width="20px" heigth="20px" id="name-modify" onClick="save('name')" class="action-button" title="éditer" aria-hidden="true" style="font-size: 1rem;"/>
-              <img src="/src/open-iconic/svg/x.svg" width="20px" heigth="20px" id="name-cancel" onClick="modify('')" class="action-button" title="annuler" aria-hidden="true" style="font-size: 1rem;" />
+              <span id="name-modify" onClick="save('name')" class="action-button oi oi-check" title="éditer" aria-hidden="true" style="font-size: 1rem;"></span>
+              <span id="name-cancel" onClick="modify('')" class="action-button oi oi-x" title="annuler" aria-hidden="true" style="font-size: 1rem;"></span>
             </div>
           </form>
         </h1>
@@ -558,7 +558,7 @@
           caractHtml += '<td id="name">' + caract.name + '</td>';
           caractHtml += '<td id="value">' + caract.value + '</td>';
           caractHtml += '<td id="remark">' + caract.remark + '</td>';
-          caractHtml += '<td class="table-actions" id="actions"><div id="actions-default"><img src="/src/open-iconic/svg/pencil.svg" width="20px" heigth="20px" onClick="modifyEntry(\'caract\', \'' + caract._id + '\')" class="action-button" title="éditer" aria-hidden="true" /> <img src="/src/open-iconic/svg/delete.svg" width="20px" heigth="20px" onClick="deleteEntry(\'caract\', \'' + caract._id + '\')" class="action-button" title="supprimer" aria-hidden="true" /></div><div id="actions-edited" style="display: none;">' + `<img src="/src/open-iconic/svg/check.svg" width="20px" heigth="20px" onClick="saveEntry('caract', '` + caract._id  + `')" class="action-button" title="valider" aria-hidden="true" /> ` + `<img src="/src/open-iconic/svg/x.svg" width="20px" heigth="20px" onClick="modifyEntry('', '` + caract._id  + `')" class="action-button" title="annuler" aria-hidden="true" />` + '</div></td>';
+          caractHtml += '<td class="table-actions" id="actions"><div id="actions-default"><span onClick="modifyEntry(\'caract\', \'' + caract._id + '\')" class="action-button oi oi-pencil" title="éditer" aria-hidden="true"></span> <span onClick="deleteEntry(\'caract\', \'' + caract._id + '\')" class="action-button oi oi-delete" title="supprimer" aria-hidden="true"></span></div><div id="actions-edited" style="display: none;">' + `<span onClick="saveEntry('caract', '` + caract._id  + `')" class="action-button oi oi-check" title="valider" aria-hidden="true"></span> ` + `<span" onClick="modifyEntry('', '` + caract._id  + `')" class="action-button oi oi-x" title="annuler" aria-hidden="true"></span>` + '</div></td>';
           caractHtml += '</tr>';
           $('#character-detail #caracteristics-table > tbody').append(caractHtml);
         }
@@ -572,7 +572,7 @@
           skillHtml += '<td id="name">' + skill.name + '</td>';
           skillHtml += '<td id="value">' + skill.value + '</td>';
           skillHtml += '<td id="remark">' + skill.remark + '</td>';
-          skillHtml += '<td class="table-actions" id="actions"><div id="actions-default"><img src="/src/open-iconic/svg/pencil.svg" width="20px" heigth="20px" onClick="modifyEntry(\'skill\', \'' + skill._id + '\')" class="action-button" title="éditer" aria-hidden="true" /> <img src="/src/open-iconic/svg/delete.svg" width="20px" heigth="20px" onClick="deleteEntry(\'skill\', \'' + skill._id + '\')" class="action-button" title="supprimer" aria-hidden="true" /></div><div id="actions-edited" style="display: none;">' + `<img src="/src/open-iconic/svg/check.svg" width="20px" heigth="20px" onClick="saveEntry('skill', '` + skill._id  + `')" class="action-button" title="valider" aria-hidden="true" /> ` + `<img src="/src/open-iconic/svg/x.svg" width="20px" heigth="20px" onClick="modifyEntry('', '` + skill._id  + `')" class="action-button" title="annuler" aria-hidden="true" />` + '</div></td>';
+          skillHtml += '<td class="table-actions" id="actions"><div id="actions-default"><span onClick="modifyEntry(\'skill\', \'' + skill._id + '\')" class="action-button oi oi-pencil" title="éditer" aria-hidden="true"></span> <span onClick="deleteEntry(\'skill\', \'' + skill._id + '\')" class="action-button oi oi-delete" title="supprimer" aria-hidden="true"></span></div><div id="actions-edited" style="display: none;">' + `<span onClick="saveEntry('skill', '` + skill._id  + `')" class="action-button oi oi-check" title="valider" aria-hidden="true"></span> ` + `<span onClick="modifyEntry('', '` + skill._id  + `')" class="action-button oi oi-x" title="annuler" aria-hidden="true"></span>` + '</div></td>';
           skillHtml += '</tr>';
           $('#character-detail #skills-table > tbody').append(skillHtml);
         }
@@ -827,7 +827,7 @@
         caractHtml += '<td id="name">' + '</td>';
         caractHtml += '<td id="value">' + '</td>';
         caractHtml += '<td id="remark">' +'</td>';
-        caractHtml += '<td class="table-actions" id="actions"><div id="actions-default"><img src="/src/open-iconic/svg/pencil.svg" width="20px" heigth="20px" onClick="modifyEntry(\'caract\', \'' + id + '\')" class="action-button" title="éditer" aria-hidden="true"></img> <img src="/src/open-iconic/svg/delete.svg" width="20px" heigth="20px" onClick="deleteEntry(\'caract\', \'' + id + '\')" class="action-button" title="supprimer" aria-hidden="true"></img></div><div id="actions-edited" style="display: none;">' + `<img src="/src/open-iconic/svg/check.svg" width="20px" heigth="20px" onClick="saveEntry('caract', '` + id  + `')" class="action-button" title="valider" aria-hidden="true"></img> ` + `<img src="/src/open-iconic/svg/x.svg" width="20px" heigth="20px" onClick="modifyEntry('', '` + id  + `')" class="action-button" title="annuler" aria-hidden="true"></img>` + '</div></td>';
+        caractHtml += '<td class="table-actions" id="actions"><div id="actions-default"><span onClick="modifyEntry(\'caract\', \'' + id + '\')" class="action-button oi oi-pencil" title="éditer" aria-hidden="true"></span> <span onClick="deleteEntry(\'caract\', \'' + id + '\')" class="action-button oi oi-delete" title="supprimer" aria-hidden="true"></span></div><div id="actions-edited" style="display: none;">' + `<span onClick="saveEntry('caract', '` + id  + `')" class="action-button oi oi-check" title="valider" aria-hidden="true"></span> ` + `<span onClick="modifyEntry('', '` + id  + `')" class="action-button oi oi-check" title="annuler" aria-hidden="true"></span>` + '</div></td>';
         caractHtml += '</tr>';
         $('#character-detail #caracteristics-table > tbody').append(caractHtml);
         modifyEntry("caract", id);
@@ -837,7 +837,7 @@
         skillHtml += '<td id="name">' + '</td>';
         skillHtml += '<td id="value">'+ '</td>';
         skillHtml += '<td id="remark">' + '</td>';
-        skillHtml += '<td class="table-actions" id="actions"><div id="actions-default"><img src="/src/open-iconic/svg/pencil.svg" width="20px" heigth="20px" onClick="modifyEntry(\'skill\', \'' + id + '\')" class="action-button" title="éditer" aria-hidden="true"></img> <img src="/src/open-iconic/svg/delete.svg" width="20px" heigth="20px onClick="deleteEntry(\'skill\', \'' + id + '\')" class="action-button" title="supprimer" aria-hidden="true"></img></div><div id="actions-edited" style="display: none;">' + `<img src="/src/open-iconic/svg/check.svg" width="20px" heigth="20px" onClick="saveEntry('skill', '` + id  + `')" class="action-button" title="valider" aria-hidden="true"></img> ` + `<img src="/src/open-iconic/svg/x.svg" width="20px" heigth="20px" onClick="modifyEntry('', '` + id  + `')" class="action-button" title="annuler" aria-hidden="true"></img>` + '</div></td>';
+        skillHtml += '<td class="table-actions" id="actions"><div id="actions-default"><span onClick="modifyEntry(\'skill\', \'' + id + '\')" class="action-button oi oi-pencil" title="éditer" aria-hidden="true"></span> <span onClick="deleteEntry(\'skill\', \'' + id + '\')" class="action-button oi oi-x" title="supprimer" aria-hidden="true"></span></div><div id="actions-edited" style="display: none;">' + `<span onClick="saveEntry('skill', '` + id  + `')" class="action-button oi oi-check" title="valider" aria-hidden="true"></span> ` + `<span onClick="modifyEntry('', '` + id  + `')" class="action-button oi oi-x" title="annuler" aria-hidden="true"></span>` + '</div></td>';
         skillHtml += '</tr>';
         $('#character-detail #skills-table > tbody').append(skillHtml);
         modifyEntry("skill", id);
