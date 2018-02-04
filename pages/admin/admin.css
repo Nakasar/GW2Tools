@@ -1,0 +1,9 @@
+.admin-container {
+  background-image: url('/src/img/bg/ricepaper.png');
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.action-button-danger {
+  color: red;
+}

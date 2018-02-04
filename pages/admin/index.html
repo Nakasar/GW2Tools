@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <meta name="theme-color" content="#000000">
+  <meta name="description" content="">
+  <meta name="author" content="Kavin 'Nakasar' Thizy">
+
+  <title>Administrations - Outils RP</title>
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+  <link rel="stylesheet" href="/src/open-iconic/font/css/open-iconic-bootstrap.css">
+  <link rel="stylesheet" href="/components/style_global.css">
+  <link rel="stylesheet" href="admin.css">
+
+</head>
+<body>
+  <header>
+    <div id="navigation">
+    </div>
+  </header>
+
+  <!-- Modals -->
+  <div>
+    <!-- Deletion Confirmation Dialog -->
+    <div id="modal-delete" class="modal fade" tabindex="-1" role="dialog">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Supprimer</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <p id="message">Supprimer l'utilisateur ?</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-danger" onClick="confirmDelete()">Supprimer</button>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <!-- Password reset Dialog -->
+    <div id="modal-reset-password" class="modal fade" tabindex="-1" role="dialog">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Modification du mot de passe</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <form id="password-form">
+              <fieldset>
+                <div class="form-group">
+                  <label for="password1">Nouveau mot de passe :</label>
+                  <input type="text" class="form-control" id="password1" placeholder="Mot de passe">
+                </div>
+              </fieldset>
+              <div class="alert alert-danger alert-dismissible" role="alert" id="password-alert">
+                <div id="text">Le mot de passe n'est pas valide.</div>
+                <button type="button" class="close" data-dismiss="alert" aria-label="Fermer">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="alert alert-success alert-dismissible" role="alert" id="password-success">
+                <div id="text">Le mot de passe a été modifié.</div>
+                <button type="button" class="close" data-dismiss="alert" aria-label="Fermer">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-success" onClick="confirmPassword()">Modifier</button>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+  <div class="container">
+    <div class="container">
+      <div class="alert alert-danger alert-dismissible" role="alert" id="main-alert" style="display: none;">
+        <div id="text">Nous avons détecté une erreur inconnue. Le problème vient probablement de notre côté des Brumes :/</div>
+        <button type="button" class="close" data-dismiss="alert" aria-label="Fermer">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="container admin-container">
+      <h1>Panneau d'administration</h1>
+
+      <h2>Utilisateurs</h2>
+      <table class="table" id="users-table">
+        <thead class="thead-light">
+          <tr>
+            <th scope="col">Pseudo</th>
+            <th scope="col">Compte GW2</th>
+            <th scope="col">Inscription</th>
+            <th scope="col">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- jQuery library -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.js"></script>
+  <!-- Latest compiled JavaScript -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
+
+  <script src="/components/base.js"></script>
+  <script src="/components/connect.js"></script>
+
+  <script>
+  $('#navigation').load("/components/header.html", function() {
+    establishConnectionCallback(function(success) {
+      if (success) {
+        $('#nav-admin').addClass('active');
+
+        loadUsersList();
+      } else {
+        window.location.href = "/"
+      }
+    });
+  });
+
+  function displayAPIAlert() {
+    $('#main-alert #text').text("Le GOLEM M4554G3R n'a pas pu contacter le serveur dans les Brumes, le problème vient certainement de notre côté.");
+    $('#main-alert').show();
+  }
+  </script>
+
+  <script>
+  function loadUsersList() {
+    console.log("Loading user list...");
+
+    $.ajax({
+      method: "GET",
+      url: 'https://gw2rp-tools.ovh/api/users',
+      dataType: 'json',
+      data: { token: thisUser.token },
+      success: function(json) {
+        console.log(json);
+        if (json.success) {
+          parseUsersToTable(json.users);
+        }
+      },
+      error: function(json) {
+        displayAPIAlert();
+      }
+    });
+  }
+
+  function parseUsersToTable(users) {
+    $('#users-table > tbody > tr').remove();
+    for (var user of users) {
+      var userHtml = `<tr id="` + user._id + `">`;
+      userHtml += `<th scope="row" id="user-row-name">` + user.nick_name + `</td>`;
+      userHtml += `<td id="user-row-account">` + user.gw2_account + `.` + user.gw2_id + `</td>`;
+      userHtml += `<td id="user-row-register-date">` + user.register_date + `</td>`;
+      userHtml += `<td id="user-row-actions"><span onClick="resetPassword('` + user._id + `')" class="action-button oi oi-reload" title="Changer le mot de passe." aria-hidden="true"></span> <span onClick="deleteUser('` + user._id + `')" class="action-button action-button-danger oi oi-trash" title="Supprimer l'utilisateur." aria-hidden="true"></span></td>`;
+      userHtml += `</tr>`;
+      $('#users-table > tbody').append(userHtml);
+    }
+  }
+
+  var modifiedUserId;
+  function resetPassword(userId) {
+    modifiedUserId = userId;
+    $('#modal-reset-password #password-success').hide();
+    $('#modal-reset-password #password-alert').hide();
+    $('#modal-reset-password #password1').val('');
+    $('#modal-reset-password').modal('show');
+  }
+
+  function confirmPassword() {
+    var newPassword = $('#modal-reset-password #password1').val();
+    var password_regex = (/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/);
+
+    if (newPassword.length > 0 && password_regex.test(newPassword)) {
+      $.ajax({
+        method: "POST",
+        url: 'https://gw2rp-tools.ovh/api/users/' + modifiedUserId + '/password',
+        dataType: 'json',
+        data: { token: thisUser.token, password: newPassword },
+        success: function(json) {
+          console.log(json);
+          if (json.success) {
+            $('#modal-reset-password #password-success').show();
+            $('#modal-reset-password #password1').val('');
+          }
+        },
+        error: function(json) {
+          displayAPIAlert();
+        }
+      });
+    } else {
+      $('#modal-reset-password #password-alert').text(`Le mot de passe n'est pas valide (au moins 8 caractère dont une majuscule et un chiffre).`);
+      $('#modal-reset-password #password-alert').show();
+    }
+  }
+
+  function deleteUser(userId) {
+
+  }
+  </script>
+
+</body>
+</html>

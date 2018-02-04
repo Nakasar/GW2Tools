@@ -50,6 +50,11 @@ function establishConnectionCallback(callback) {
               $('#nav-account').show();
               $('#nav-disconnet').show();
               thisUser = new User(json.user.id, json.user.nick_name, json.user.admin, "", token);
+
+              if (thisUser.admin) {
+                $('#nav-documentation').after(`<li class="nav-item" id="nav-admin"><a href="/pages/admin" class="nav-link">Admin</a></li>`);
+              }
+
               callback(true);
             } else {
               // Do nothing, token is invalid.
@@ -100,6 +105,10 @@ function establishConnection() {
               $('#nav-account').show();
               $('#nav-disconnet').show();
               thisUser = new User(json.user.id, json.user.nick_name, json.user.admin, "", token);
+
+              if (thisUser.admin) {
+                $('#nav-documentation').after(`<li class="nav-item" id="nav-admin"><a href="/pages/admin" class="nav-link">Admin</a></li>`);
+              }
             } else {
               // Do nothing, token is invalid.
             }
@@ -190,6 +199,10 @@ function onSignIn(json) {
   $('#nav-account').show();
   $('#nav-disconnet').show();
 
+  if (thisUser.admin) {
+    $('#nav-documentation').after(`<li class="nav-item" id="nav-admin"><a href="/pages/admin" class="nav-link">Admin</a></li>`);
+  }
+  
   // Store user data in web storage.
   if (typeof(Storage) !== "undefined") {
     localStorage.setItem("user_nick_name", thisUser.name);
