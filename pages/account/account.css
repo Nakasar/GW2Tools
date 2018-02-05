@@ -6,3 +6,7 @@
 body {
   margin-bottom: 10px;
 }
+
+.action-button-danger {
+  color: red;
+}

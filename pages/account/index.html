@@ -11,6 +11,7 @@
   <title>Cartographe - Outils RP</title>
 
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+  <link rel="stylesheet" href="/src/open-iconic/font/css/open-iconic-bootstrap.css">
   <link rel="stylesheet" href="/components/style_global.css">
   <link rel="stylesheet" href="account.css">
 
@@ -62,6 +63,31 @@
       </div>
       <button id="password-btn" type="submit" class="btn btn-success">Mettre à jour le mot de passe.</button>
     </form>
+
+    <h2>Mes Créations</h2>
+    <h3>Personnages</h3>
+    <table class="table" id="characters">
+      <tbody>
+      </tbody>
+    </table>
+
+    <h3>Evènements</h3>
+    <table class="table" id="events">
+      <tbody>
+      </tbody>
+    </table>
+
+    <h3>Lieux</h3>
+    <table class="table" id="locations">
+      <tbody>
+      </tbody>
+    </table>
+
+    <h3>Rumeurs</h3>
+    <table class="table" id="rumours">
+      <tbody>
+      </tbody>
+    </table>
   </div>
 
   <!-- jQuery library -->
@@ -92,6 +118,8 @@
               // user is logged in.
               $('#modify-general #name').val(json.user.nick_name);
               $('#modify-general #gw2_account').val(json.user.gw2_account + "." + json.user.gw2_id);
+
+              loadCreations();
             } else {
               // Do nothing, token is invalid.
             }
@@ -243,9 +271,100 @@
 
     return true;
   }
-  </script>
 
-  <script>
+  function loadCreations() {
+    $.ajax({
+      method: "GET",
+      url: 'https://gw2rp-tools.ovh/api/users/' + thisUser.id + '/creations',
+      dataType: 'json',
+      success: function(json) {
+        console.log(json);
+        if (json.success) {
+          $('#characters > tbody > tr').remove();
+          for (var character of json.contents.characters) {
+            addCharacter(character);
+          }
+
+          $('#events > tbody > tr').remove();
+          for (var event of json.contents.events) {
+            addEvents(event);
+          }
+
+          $('#locations > tbody > tr').remove();
+          for (var location of json.contents.locations) {
+            addLocation(location);
+          }
+
+          $('#rumours > tbody > tr').remove();
+          for (var rumour of json.contents.rumors) {
+            addRumour(rumour);
+          }
+        }
+      },
+      error: function(json) {
+        console.log(json);
+      }
+    });
+  }
+
+  function addCharacter(character) {
+    var html = `<tr id="` + character._id + `">`;
+    html += `<td scope="row">` + character.name + `</td>`;
+    html += `<td>` + character.created_date + `</td>`;
+    html += `<td><span onClick="displayCreation('character', '` + character._id + `')" class="action-button oi oi-eye" title="Afficher." aria-hidden="true"></span> <span onClick="deleteCreation('character', '` + character._id + `')" class="action-button action-button-danger oi oi-trash" title="Supprimer." aria-hidden="true"></span></td>`;
+    html += "</tr>";
+    $('#characters > tbody').append(html);
+  }
+
+  function addEvent(creation) {
+    var html = `<tr id="` + creation._id + `">`;
+    html += `<td scope="row">` + creation.name + `</td>`;
+    html += `<td>` + creation.created_date + `</td>`;
+    html += `<td><span onClick="displayCreation('event', '` + creation._id + `')" class="action-button oi oi-eye" title="Afficher." aria-hidden="true"></span> <span onClick="deleteCreation('event', '` + creation._id + `')" class="action-button action-button-danger oi oi-trash" title="Supprimer." aria-hidden="true"></span></td>`;
+    html += "</tr>";
+    $('#events > tbody').append(html);
+  }
+
+  function addLocation(creation) {
+    var html = `<tr id="` + creation._id + `">`;
+    html += `<td scope="row">` + creation.name + `</td>`;
+    html += `<td>` + creation.created_date + `</td>`;
+    html += `<td><span onClick="displayCreation('location', '` + creation._id + `')" class="action-button oi oi-eye" title="Afficher." aria-hidden="true"></span> <span onClick="deleteCreation('location', '` + creation._id + `')" class="action-button action-button-danger oi oi-trash" title="Supprimer." aria-hidden="true"></span></td>`;
+    html += "</tr>";
+    $('#locations > tbody').append(html);
+  }
+
+  function addRumour(creation) {
+    var html = `<tr id="` + creation._id + `">`;
+    html += `<td scope="row">` + creation.name + `</td>`;
+    html += `<td>` + creation.created_date + `</td>`;
+    html += `<td><span onClick="displayCreation('rumour', '` + creation._id + `')" class="action-button oi oi-eye" title="Afficher." aria-hidden="true"></span> <span onClick="deleteCreation('rumour', '` + creation._id + `')" class="action-button action-button-danger oi oi-trash" title="Supprimer." aria-hidden="true"></span></td>`;
+    html += "</tr>";
+    $('#rumours > tbody').append(html);
+  }
+
+  function displayCreation(type, id) {
+    switch (type) {
+      case "character":
+        window.location.href = "/pages/characters?id=" + id;
+        break;
+      case "event":
+        window.location.href = "/cartographe?id=" + id;
+        break;
+      case "location":
+        window.location.href = "/cartographe?id=" + id;
+        break;
+      case "rumour":
+        window.location.href = "/cartographe?id=" + id;
+        break;
+      default:
+        break;
+    }
+  }
+
+  function deleteCreation(type, id) {
+    
+  }
   </script>
 
 </body>

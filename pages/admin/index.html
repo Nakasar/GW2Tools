@@ -35,7 +35,7 @@
             </button>
           </div>
           <div class="modal-body">
-            <p id="message">Supprimer l'utilisateur ?</p>
+            <p id="message">Supprimer le compte de <em id="account-name">l'utilisateur</em> ?</p>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-danger" onClick="confirmDelete()">Supprimer</button>
@@ -110,6 +110,7 @@
             <th scope="col">Pseudo</th>
             <th scope="col">Compte GW2</th>
             <th scope="col">Inscription</th>
+            <th scope="col">Statut</th>
             <th scope="col">Actions</th>
           </tr>
         </thead>
@@ -172,10 +173,15 @@
     $('#users-table > tbody > tr').remove();
     for (var user of users) {
       var userHtml = `<tr id="` + user._id + `">`;
-      userHtml += `<th scope="row" id="user-row-name">` + user.nick_name + `</td>`;
+      userHtml += `<td scope="row" id="user-row-name">` + user.nick_name + `</td>`;
       userHtml += `<td id="user-row-account">` + user.gw2_account + `.` + user.gw2_id + `</td>`;
       userHtml += `<td id="user-row-register-date">` + user.register_date + `</td>`;
-      userHtml += `<td id="user-row-actions"><span onClick="resetPassword('` + user._id + `')" class="action-button oi oi-reload" title="Changer le mot de passe." aria-hidden="true"></span> <span onClick="deleteUser('` + user._id + `')" class="action-button action-button-danger oi oi-trash" title="Supprimer l'utilisateur." aria-hidden="true"></span></td>`;
+      userHtml += `<td id="user-row-active">` + user.active + `</td>`;
+      if (user.active) {
+        userHtml += `<td id="user-row-actions"><span onClick="deactivateUser('` + user._id + `')" class="action-button oi oi-lock-locked" title="Désactiver le compte utilisateur." aria-hidden="true"></span> <span onClick="resetPassword('` + user._id + `')" class="action-button oi oi-reload" title="Changer le mot de passe." aria-hidden="true"></span> <span onClick="deleteUser('` + user._id + `')" class="action-button action-button-danger oi oi-trash" title="Supprimer l'utilisateur." aria-hidden="true"></span></td>`;
+      } else {
+        userHtml += `<td id="user-row-actions"><span onClick="activateUser('` + user._id + `')" class="action-button oi oi-lock-unlocked" title="Activer le compte utilisateur." aria-hidden="true"></span> <span onClick="resetPassword('` + user._id + `')" class="action-button oi oi-reload" title="Changer le mot de passe." aria-hidden="true"></span> <span onClick="deleteUser('` + user._id + `')" class="action-button action-button-danger oi oi-trash" title="Supprimer l'utilisateur." aria-hidden="true"></span></td>`;
+      }
       userHtml += `</tr>`;
       $('#users-table > tbody').append(userHtml);
     }
@@ -218,7 +224,67 @@
   }
 
   function deleteUser(userId) {
+    modifiedUserId = userId;
+    $('#modal-delete #account-name').text($('#users-table #' + userId + ' #user-row-name').text());
+    $('#modal-delete').modal('show');
+  }
 
+  function confirmDelete() {
+    $.ajax({
+      method: "DELETE",
+      url: 'https://gw2rp-tools.ovh/api/users/' + modifiedUserId,
+      dataType: 'json',
+      data: { token: thisUser.token },
+      success: function(json) {
+        console.log(json);
+        if (json.success) {
+          $('#users-table #' + modifiedUserId).remove();
+          modifiedUserId = "";
+          $('#modal-delete').modal('hide');
+        }
+      },
+      error: function(json) {
+        displayAPIAlert();
+      }
+    });
+  }
+
+  function deactivateUser(userId) {
+    $.ajax({
+      method: "POST",
+      url: 'https://gw2rp-tools.ovh/api/users/' + userId + '/status',
+      dataType: 'json',
+      data: { token: thisUser.token, status: "inactive" },
+      success: function(json) {
+        console.log(json);
+        if (json.success) {
+          $('#users-table #' + json.user.id + " #user-row-active").text("false");
+          $('#users-table #' + json.user.id + " #user-row-actions").html(`<span onClick="activateUser('` + json.user._id + `')" class="action-button oi oi-lock-unlocked" title="Activer le compte utilisateur." aria-hidden="true"></span> <span onClick="resetPassword('` + json.user._id + `')" class="action-button oi oi-reload" title="Changer le mot de passe." aria-hidden="true"></span> <span onClick="deleteUser('` + json.user._id + `')" class="action-button action-button-danger oi oi-trash" title="Supprimer l'utilisateur." aria-hidden="true"></span>`);
+        }
+      },
+      error: function(json) {
+        displayAPIAlert();
+      }
+    });
+  }
+
+  function activateUser(userId) {
+    $.ajax({
+      method: "POST",
+      url: 'https://gw2rp-tools.ovh/api/users/' + userId + '/status',
+      dataType: 'json',
+      data: { token: thisUser.token, status: "active" },
+      success: function(json) {
+        console.log(json);
+        if (json.success) {
+          $('#users-table #' + json.user.id + " #user-row-active").text("true");
+          $('#users-table #' + json.user.id + " #user-row-actions").html(`<span onClick="deactivateUser('` + json.user._id + `')" class="action-button oi oi-lock-locked" title="Désactiver le compte utilisateur." aria-hidden="true"></span> <span onClick="resetPassword('` + json.user._id + `')" class="action-button oi oi-reload" title="Changer le mot de passe." aria-hidden="true"></span> <span onClick="deleteUser('` + json.user._id + `')" class="action-button action-button-danger oi oi-trash" title="Supprimer l'utilisateur." aria-hidden="true"></span>`);
+        }
+      },
+      error: function(json) {
+        displayAPIAlert();
+      }
+    });
   }
   </script>
 

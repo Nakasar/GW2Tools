@@ -178,7 +178,14 @@ function onSignInResponse(json) {
     onSignIn(json);
   } else {
     console.log(json);
-    $('#login-form #login-alert').text("Le nom d'utilisateur et le mot de passe ne correspondent pas.");
+    switch (json.code) {
+      case "LOG-08":
+        $('#login-form #login-alert').text("Vous devez valider votre adresse mail pour utiliser votre compte.");
+        break;
+      default:
+        $('#login-form #login-alert').text("Le nom d'utilisateur et le mot de passe ne correspondent pas.");
+        break;
+    }
     $('#login-form #login-alert').show();
   }
 }
@@ -202,7 +209,7 @@ function onSignIn(json) {
   if (thisUser.admin) {
     $('#nav-documentation').after(`<li class="nav-item" id="nav-admin"><a href="/pages/admin" class="nav-link">Admin</a></li>`);
   }
-  
+
   // Store user data in web storage.
   if (typeof(Storage) !== "undefined") {
     localStorage.setItem("user_nick_name", thisUser.name);
