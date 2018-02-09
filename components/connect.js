@@ -180,7 +180,7 @@ function onSignInResponse(json) {
     console.log(json);
     switch (json.code) {
       case "LOG-08":
-        $('#login-form #login-alert').text("Vous devez valider votre adresse mail pour utiliser votre compte.");
+        $('#login-form #login-alert').html(`Vous devez valider votre adresse mail pour utiliser votre compte. <a href="#" onClick="askForValidation()">Cliquez ici</a> pour renvoyer le messager d'Abaddon par mail.`);
         break;
       default:
         $('#login-form #login-alert').text("Le nom d'utilisateur et le mot de passe ne correspondent pas.");
@@ -192,7 +192,7 @@ function onSignInResponse(json) {
 
 function onSignIn(json) {
   $('#login-password').val('');
-  $('#signup-success-alerts').hide();
+  $('#signup-success-alert').hide();
   $('#login-form').hide();
   $('#disconnect').text("Se déconnecter").removeClass('disabled');
   $('#disconnect').show();
@@ -311,5 +311,28 @@ function onSignUpResponse(json) {
     } else {
       displaySignUpAlert("Impossible de créer le compte, veuillez réessayer ou contacter les développeurs (Nakasar.1592 en jeu).");
     }
+  }
+}
+
+function askForValidation() {
+  if ($('#login-password').val() != "" && $('#login-username').val() != "") {
+    $.ajax({
+      method: "POST",
+      url: 'https://gw2rp-tools.ovh/api/validate',
+      data: { nick_name: $('#login-username').val(), password: $('#login-password').val() },
+      dataType: 'json',
+      success: function(json) {
+        $('#signup-success-alert').text("Un messager d'Abaddon apporte un nouveau lien de confirmation, pensez à vérifier votre boîte mail.");
+        $('#signup-success-alert').show();
+        $('#login-form #login-alert').hide();
+      },
+      error: function(json) {
+        $('#login-form #login-alert #text').text("Impossible de se connecter au serveur dans les Brumes, le problème vient peut-être de notre côté :/");
+        $('#login-form #login-alert').show();
+      }
+    });
+  } else {
+    $('#login-form #login-alert').text("Vous devez indiquer votre mot de passe et votre nom d'utilisateur demander une nouvelle validation.");
+    $('#login-form #login-alert').show();
   }
 }

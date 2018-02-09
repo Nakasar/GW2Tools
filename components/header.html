@@ -137,6 +137,7 @@
           <li class="nav-item dropdown">
             <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">&nbsp;Utilisation <b class="caret"></b></a>
             <div class="dropdown-menu">
+              <a class="dropdown-item" href="#tuto-account-tab" data-toggle="tab">Compte</a>
               <a class="dropdown-item" href="#tuto-cartopgraphe-tab" data-toggle="tab">Cartographe</a>
             </div>
           </li>
@@ -151,19 +152,22 @@
         </ul>
         <div class="tab-content" id="aboutTabsContent">
           <div class="tab-pane fade show active" id="about">
-            <p>Un ensemble d'outils conçus pour Guild Wars 2 et la pratique du jeu de rôle. L'application utilise Bootstrap pour la mise en page et Leaflet pour la gestion de la carte.
-            <br>
-            Réalisé par Kevin <em>"Nakasar"</em> Thizy (Nakasar.5192). <em>Pour tout commentaire, signalement de bug, je préfère un MP forum GW2RP ou un MP en jeu ;)</em></p>
-            <div class="panel panel-primary">
-              <div class="panel-heading">C'est quoi donc ?</div>
-              <ul class="list-group">
+            <p class="lead">Un ensemble d'outils conçus pour Guild Wars 2 et la pratique du jeu de rôle. L'application utilise Bootstrap pour la mise en page et Leaflet pour la gestion de la carte.</p>
+            <p class="lead">Réalisé par Kevin <em>"Nakasar"</em> Thizy (Nakasar.5192). <em>Pour tout commentaire, signalement de bug, je préfère un MP forum GW2RP ou un MP en jeu ;)</em></p>
+            <div class="card">
+              <div class="card-header">C'est quoi donc ?</div>
+              <ul class="list-group list-groups-flush">
                 <li class="list-group-item">
                   <h4 class="list-group-item-heading">Le Cartographe</h4>
-                  <p class="list-group-item-text">Recense les lieux de RP réguliers et les énèments en cours.</p>
+                  <p class="list-group-item-text">Recense les lieux de RP réguliers, les énèments en cours et des rumeurs sur une carte de la Tyrie.</p>
                 </li>
                 <li class="list-group-item">
-                  <h4 class="list-group-item-heading">Rien</h4>
-                  <p class="list-group-item-text">Si j'ai envie de rajouter un outil, il ira ici, chouette, non ?</p>
+                  <h4 class="list-group-item-heading">Personnages</h4>
+                  <p class="list-group-item-text">Recueille des fiches de personnages. Les caractéristiques et les compétences sont utilisables par le bot Discord.</p>
+                </li>
+                <li class="list-group-item">
+                  <h4 class="list-group-item-heading">GW2RP-Bot</h4>
+                  <p class="list-group-item-text">Bot Discord pouvant rechercher des évènements et des personnages, et jeter des dés en utilisant les fiches personnages.</p>
                 </li>
               </ul>
             </div>
@@ -177,13 +181,18 @@
           <div class="tab-pane fade" id="theaters-tab">
             <p>Les events sont des lieux temporaires. Affichés pour une durée maximale de une semaine, ils signalent une activité particulière dans un lieu.</p>
           </div>
+          <div class="tab-pane fade" id="tuto-account-tab">
+              <ul class="list-group">
+                <li class="list-group-item">Vous devez être connecté pour ajouter des éléments, et votre addresse mail doit être valide.</li>
+                <li class="list-group-item">Vous pouvez changer votre nom de compte et votre mot de passe dans l'onglet "Mon Compte".</li>
+              </ul>
+          </div>
           <div class="tab-pane fade" id="tuto-cartopgraphe-tab">
               <ul class="list-group">
                 <li class="list-group-item">Vous devez être connecté pour ajouter des marqueurs.</li>
                 <li class="list-group-item">Cliquez droit sur la carte pour ajouter un nouveau marqueur à cet emplacement.</li>
                 <li class="list-group-item">Cliquez gauche sur un marqueur de la carte pour afficher des détails à son sujet.</li>
                 <li class="list-group-item">Après avoir sélectionné un marquer, utilisez le menu latéral gauche pour le supprimer ou le modifier.</li>
-                <li class="list-group-item">Utilisez le panneau "Mon Compte" pour vous déconnecter.</li>
               </ul>
           </div>
         </div>

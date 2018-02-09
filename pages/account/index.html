@@ -31,6 +31,10 @@
         <input type="text" class="form-control" id="name">
       </div>
       <div class="form-group">
+        <label for="email">Mail</label>
+        <input type="text" class="form-control" id="email" disabled>
+      </div>
+      <div class="form-group">
         <label for="gw2_account">Compte gw2</label>
         <input type="text" class="form-control" id="gw2_account">
       </div>
@@ -117,6 +121,7 @@
               console.log(json);
               // user is logged in.
               $('#modify-general #name').val(json.user.nick_name);
+              $('#modify-general #email').val(json.user.email);
               $('#modify-general #gw2_account').val(json.user.gw2_account + "." + json.user.gw2_id);
 
               loadCreations();
@@ -363,7 +368,7 @@
   }
 
   function deleteCreation(type, id) {
-    
+
   }
   </script>
 
