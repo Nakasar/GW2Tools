@@ -12,6 +12,7 @@
 
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
   <link rel="stylesheet" href="/src/open-iconic/font/css/open-iconic-bootstrap.css">
+  <link rel="stylesheet" href="/src/tagEditor/jquery.tag-editor.css">
   <link rel="stylesheet" href="/components/style_global.css">
   <link rel="stylesheet" href="characters.css">
 
@@ -122,6 +123,15 @@
           </form>
         </h1>
 
+        <p id="character-tags-p"><span id="character-tags">Aucun tag</span> <a id="tags-modify-button" style="display:none" href="#" onclick="modify('tags')">Ajouter des tags</a></p>
+        <form id="character-tags-form" style="display: none">
+          <div class="form-group">
+            <textarea id="tags-textarea"></textarea>
+            <span id="tags-modify" onClick="save('tags')" class="action-button oi oi-check" title="éditer" aria-hidden="true" style="font-size: 1rem;"></span>
+            <span id="tags-cancel" onClick="modify('')" class="action-button oi oi-x" title="annuler" aria-hidden="true" style="font-size: 1rem;"></span>
+          </div>
+        </form>
+
         <h2>Description</h2>
         <a id="description-modify" style="display:none" href="#" onclick="modify('description')">Modifier</a>
         <form id="description-form" style="display:none">
@@ -210,6 +220,10 @@
   <!-- Latest compiled JavaScript -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+  <script src="/src/jquery.caret.js"></script>
+  <script src="/src/tagEditor/jquery.tag-editor.js"></script>
 
   <script src="/components/base.js"></script>
   <script src="/components/connect.js"></script>
@@ -277,6 +291,7 @@
       this.id = id;
       this.owner = owner;
       this.name = name;
+      this.tags = [];
       this.description = description;
       this.appearance = appearance;
       this.caracteristics = new Map();
@@ -286,6 +301,7 @@
 
     static parse(json) {
       var j_id = json._id, j_owner = json.owner, j_name = json.name, j_description = "", j_appearance = "";
+
       if (json.description) {
         j_description = json.description.replace(regex_html, "");
       }
@@ -294,6 +310,10 @@
       }
 
       var character = new Character(j_id, j_owner, j_name, j_description, j_appearance);
+
+      if (json.tags) {
+        character.tags = json.tags;
+      }
 
       if (json.caracteristics) {
         for(var i in json.caracteristics) {
@@ -354,6 +374,7 @@
       var name = this.name.replace(regex_html, ""),
         description = this.description.replace(regex_html, ""),
         appearance = this.appearance.replace(regex_html, ""),
+        tags = this.tags,
         image_url = "",
         caracteristics = [],
         skills = [];
@@ -369,7 +390,7 @@
       $.ajax({
         method: "PUT",
         url: 'https://gw2rp-tools.ovh/api/characters/' + thisCharacter.id,
-        data: { token: thisUser.token, name: name, description: description, appearance: appearance, image_url: image_url, caracteristics: caracteristics, skills: skills },
+        data: { token: thisUser.token, name: name, description: description, appearance: appearance, image_url: image_url, caracteristics: caracteristics, skills: skills, tags: tags },
         dataType: 'json',
         success: function(json) {
           console.log(json);
@@ -529,8 +550,8 @@
     $('#character-detail #skills-table > tbody > tr').remove();
   }
 
-  function parseCharacter(character) {
-    thisCharacter = Character.parse(character);
+  function parseCharacter(j_character) {
+    thisCharacter = Character.parse(j_character);
     if (thisCharacter) {
       if (deviceCategory() !== "lg") {
         $('#characters-list').hide();
@@ -538,22 +559,25 @@
         $('#characters-list').show();
       }
 
-      $('#character-detail #character-name').text(character.name);
-      if (character.description) {
-        $('#character-detail > #description').html(formatText(character.description));
+      $('#character-detail #character-name').text(thisCharacter.name);
+
+      $('#character-detail #character-tags').text(thisCharacter.tags.join(", "));
+
+      if (thisCharacter.description) {
+        $('#character-detail > #description').html(formatText(thisCharacter.description));
       } else {
         $('#character-detail > #description').html("");
       }
-      if (character.appearance) {
-        $('#character-detail > #appearance').html(formatText(character.appearance));
+      if (thisCharacter.appearance) {
+        $('#character-detail > #appearance').html(formatText(thisCharacter.appearance));
       } else {
         $('#character-detail > #appearance').html("");
       }
 
       $('#character-detail #caracteristics-table > tbody > tr').remove();
-      if (character.caracteristics) {
-        for (var i in character.caracteristics) {
-          var caract = character.caracteristics[i];
+      if (thisCharacter.caracteristics) {
+        for (var i in thisCharacter.caracteristics) {
+          var caract = thisCharacter.caracteristics[i];
           var caractHtml = '<tr id="' + caract._id + '">';
           caractHtml += '<td id="name">' + caract.name + '</td>';
           caractHtml += '<td id="value">' + caract.value + '</td>';
@@ -565,9 +589,9 @@
       }
 
       $('#character-detail #skills-table > tbody > tr').remove();
-      if (character.skills) {
-        for (var i in character.skills) {
-          var skill = character.skills[i];
+      if (thisCharacter.skills) {
+        for (var i in thisCharacter.skills) {
+          var skill = thisCharacter.skills[i];
           var skillHtml = '<tr id="' + skill._id + '">';
           skillHtml += '<td id="name">' + skill.name + '</td>';
           skillHtml += '<td id="value">' + skill.value + '</td>';
@@ -581,6 +605,7 @@
       if (signedIn && (thisUser.admin || thisUser.id === thisCharacter.owner)) {
         $('#action-delete').show();
         $('#name-modify-button').show();
+        $('#character-detail #tags-modify-button').show();
         $('#character-detail #description-modify').show();
         $('#character-detail #appearance-modify').show();
         $('#character-detail #caracteristics-table > tfoot').show();
@@ -589,6 +614,7 @@
       } else {
         $('#action-delete').hide();
         $('#name-modify-button').hide()
+        $('#character-detail #tags-modify-button').hide();
         $('#character-detail #description-modify').hide();
         $('#character-detail #appearance-modify').hide();
         $('#character-detail #caracteristics-table > tfoot').hide();
@@ -599,7 +625,7 @@
       $('#character-detail').show();
       $('#character-detail').css("visibility", "visible");
       var stateObj = { foo: "bar" };
-      history.pushState(stateObj, character.name, "?id=" + character._id);
+      history.pushState(stateObj, thisCharacter.name, "?id=" + thisCharacter.id);
     } else {
       loadAll();
     }
@@ -695,9 +721,13 @@
   function modify(field) {
     $('#character-name').show();
     $('#name-modify-button').show();
+    $('#character-tags-p').show();
+    $('#tags-modify-button').show();
     $('#description-modify').show();
     $('#appearance-modify').show();
     $('#character-name-form').hide();
+    $('#character-tags-form').hide();
+    $('#character-tags-form #tags-textarea').tagEditor('destroy');
     $('#description-form').hide();
     $('#appearance-form').hide();
     switch (field) {
@@ -716,6 +746,31 @@
         $('#appearance-modify').hide();
         $('#appearance-textarea').val(thisCharacter.appearance);
         $('#appearance-form').show();
+        break;
+      case "tags":
+        $('#character-tags-p').hide();
+        $('#tags-modify-button').hide();
+        $('#character-tags-form #tags-textarea').tagEditor('destroy');
+        if (thisCharacter.tags.length > 0) {
+          $('#character-tags-form #tags-textarea').tagEditor({
+            initialTags: thisCharacter.tags,
+            autocomplete: {
+              delay: 0,
+              position: { collision: 'flip' },
+              source: usual_character_tags
+            }
+          });
+        } else {
+          $('#character-tags-form #tags-textarea').tagEditor({
+            initialTags: [''],
+            autocomplete: {
+              delay: 0,
+              position: { collision: 'flip' },
+              source: usual_character_tags
+            }
+          });
+        }
+        $('#character-tags-form').show();
         break;
       default:
         break;
@@ -875,6 +930,38 @@
             $('#name-form #cancel-button').removeClass("disabled");
           }
         });
+        break;
+      case "tags":
+        $("#character-tags-form #tags-modify").hide();
+        $("#character-tags-form #tags-cancel").hide();
+        var tags = $("#character-tags-form #tags-textarea").tagEditor('getTags')[0].tags;
+        var validatedTags = [];
+        for (var tag of tags) {
+          validatedTags.push(tag.replace(regex_html, ""));
+        }
+
+        $.ajax({
+          method: "PUT",
+          url: 'https://gw2rp-tools.ovh/api/characters/' + thisCharacter.id,
+          data: { token: thisUser.token, tags: validatedTags },
+          dataType: 'json',
+          success: function(json) {
+            console.log(json);
+            if (json.success) {
+              $("#character-detail #character-tags").text(json.character.tags.join(", "));
+              thisCharacter.tags = json.character.tags;
+              modify("");
+            }
+            $("#character-tags-form #tags-modify").show();
+            $("#character-tags-form #tags-cancel").show();
+          },
+          error: function(json) {
+            displayAPIAlert();
+            $("#character-tags-form #tags-modify").show();
+            $("#character-tags-form #tags-cancel").show();
+          }
+        });
+
         break;
       case "description":
         $('#description-form #save-button').addClass("disabled");
