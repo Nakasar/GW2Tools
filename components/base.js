@@ -1,5 +1,4 @@
 const regex_html = /<(.|\n)*?>/;
-const usual_character_tags = ["mercenaire", "prieuré de durmand", "ordre des soupirs", "veilleurs", "érudit", "marchand"];
 
 class User {
   constructor(id, name, admin, email, token) {

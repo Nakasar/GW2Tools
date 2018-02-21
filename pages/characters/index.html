@@ -81,6 +81,15 @@
                   <button class="btn btn-secondary" type="button" onClick="loadAll()"><span class="oi oi-x"></span></button>
                 </span>
               </div>
+              <a href="#" id="expand-search">Recherche avancée</a>
+            </form>
+            <form id="form-advanced-search-character" style="display: none;">
+              <input id="advanced-search-character-text" type="text" class="form-control" placeholder="Nom de personnage" aria-label="Rercherche de personnage...">
+              <textarea id="advanced-search-character-tags"></textarea>
+              <span class="input-group-btn">
+                <button class="btn btn-secondary" type="button" onClick="advancedSearchCharacters()"><span class="oi oi-magnifying-glass"></span></button>
+              </span>
+              <a href="#" id="collapse-search">Recherche simple</a>
             </form>
           </div>
           <div class="col-md-4">
@@ -542,6 +551,32 @@
     }
   }
 
+  function advancedSearchCharacters() {
+    var search = $('#advanced-search-character-text').val();
+    var tags = $('#advanced-search-character-tags').tagEditor("getTags")[0].tags;
+    console.log(tags);
+    if (character_name_regex.test(search)) {
+      $.ajax({
+        method: "GET",
+        url: 'https://gw2rp-tools.ovh/api/characters/search',
+        data: { tags: tags, search: search },
+        dataType: 'json',
+        success: function(json) {
+          console.log(json);
+          if (json.success) {
+            parseCharactersToTable(json.characters);
+            setListMode("search");
+          }
+        },
+        error: function(json) {
+          displayAPIAlert();
+        }
+      });
+    } else {
+      console.log("Invalid search params")
+    }
+  }
+
   function emptyCharacterDetail() {
     $('#character-detail #character-name').text("Personnage");
     $('#character-detail > #description').html("");
@@ -576,8 +611,7 @@
 
       $('#character-detail #caracteristics-table > tbody > tr').remove();
       if (thisCharacter.caracteristics) {
-        for (var i in thisCharacter.caracteristics) {
-          var caract = thisCharacter.caracteristics[i];
+        for (var caract of thisCharacter.caracteristics.values()) {
           var caractHtml = '<tr id="' + caract._id + '">';
           caractHtml += '<td id="name">' + caract.name + '</td>';
           caractHtml += '<td id="value">' + caract.value + '</td>';
@@ -590,8 +624,7 @@
 
       $('#character-detail #skills-table > tbody > tr').remove();
       if (thisCharacter.skills) {
-        for (var i in thisCharacter.skills) {
-          var skill = thisCharacter.skills[i];
+        for (var skill of thisCharacter.skills.values()) {
           var skillHtml = '<tr id="' + skill._id + '">';
           skillHtml += '<td id="name">' + skill.name + '</td>';
           skillHtml += '<td id="value">' + skill.value + '</td>';
@@ -631,6 +664,8 @@
     }
   }
 
+  var characterNames = [];
+  var usual_character_tags = new Set();
   function parseCharactersToTable(characters) {
     $('#characters-table > tbody > tr').remove();
     $('#characters-list').show();
@@ -642,8 +677,16 @@
       }
       $('#character-detail').show()
     }
+
+    characterNames = [];
     for (var i in characters) {
       var character = characters[i];
+      character.tags.forEach(el => usual_character_tags.add(el));
+      characterNames.push(character.name);
+      $('#search-character-text').autocomplete({
+        source: characterNames,
+        minLength: 3
+      });
       var characterHtml = '<tr id="' + character._id + '">';
       characterHtml += '<th scope="row" id="character-row-name">' + character.name + '</th>';
       characterHtml += '<td><div class="btn-group" role="group" aria-label="Actions">';
@@ -757,7 +800,7 @@
             autocomplete: {
               delay: 0,
               position: { collision: 'flip' },
-              source: usual_character_tags
+              source: [...usual_character_tags]
             }
           });
         } else {
@@ -766,7 +809,7 @@
             autocomplete: {
               delay: 0,
               position: { collision: 'flip' },
-              source: usual_character_tags
+              source: [...usual_character_tags]
             }
           });
         }
@@ -1094,6 +1137,25 @@
     $("#form-character").hide();
     $("#action-create-character").show();
   }
+
+  $("#expand-search").click(function() {
+    $("#form-search-character").hide();
+    $("#form-advanced-search-character").show();
+    $('#advanced-search-character-tags').tagEditor('destroy');
+    $('#advanced-search-character-tags').tagEditor({
+      initialTags: [''],
+      autocomplete: {
+        delay: 0,
+        position: { collision: 'flip' },
+        source: [...usual_character_tags]
+      }
+    });
+  });
+
+  $("#collapse-search").click(function() {
+    $("#form-search-character").show();
+    $("#form-advanced-search-character").hide();
+  });
   </script>
 
 </body>
