@@ -154,7 +154,7 @@
 
     $.ajax({
       method: "GET",
-      url: 'https://gw2rp-tools.ovh/api/users',
+      url: `${api_url}/users`,
       dataType: 'json',
       data: { token: thisUser.token },
       success: function(json) {
@@ -203,7 +203,7 @@
     if (newPassword.length > 0 && password_regex.test(newPassword)) {
       $.ajax({
         method: "POST",
-        url: 'https://gw2rp-tools.ovh/api/users/' + modifiedUserId + '/password',
+        url: `${api_url}/users/` + modifiedUserId + '/password',
         dataType: 'json',
         data: { token: thisUser.token, password: newPassword },
         success: function(json) {
@@ -232,7 +232,7 @@
   function confirmDelete() {
     $.ajax({
       method: "DELETE",
-      url: 'https://gw2rp-tools.ovh/api/users/' + modifiedUserId,
+      url: `${api_url}/users/` + modifiedUserId,
       dataType: 'json',
       data: { token: thisUser.token },
       success: function(json) {
@@ -252,7 +252,7 @@
   function deactivateUser(userId) {
     $.ajax({
       method: "POST",
-      url: 'https://gw2rp-tools.ovh/api/users/' + userId + '/status',
+      url: `${api_url}/users/` + userId + '/status',
       dataType: 'json',
       data: { token: thisUser.token, status: "inactive" },
       success: function(json) {
@@ -271,7 +271,7 @@
   function activateUser(userId) {
     $.ajax({
       method: "POST",
-      url: 'https://gw2rp-tools.ovh/api/users/' + userId + '/status',
+      url: `${api_url}/users/` + userId + '/status',
       dataType: 'json',
       data: { token: thisUser.token, status: "active" },
       success: function(json) {

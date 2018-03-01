@@ -1,3 +1,6 @@
+//const api_url = 'http://localhost:3000/api'
+const api_url = 'https://gw2rp-tools.ovh/api'
+
 const regex_html = /<(.|\n)*?>/;
 
 class User {

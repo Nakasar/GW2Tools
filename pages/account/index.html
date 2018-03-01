@@ -114,7 +114,7 @@
       if (signedIn) {
         $.ajax({
           method: "GET",
-          url: 'https://gw2rp-tools.ovh/api/users/' + thisUser.id + "?token=" + thisUser.token,
+          url: `${api_url}/users/` + thisUser.id + "?token=" + thisUser.token,
           dataType: 'json',
           success: function(json) {
             if (json.success) {
@@ -181,7 +181,7 @@
     if (validateGeneralInfo()) {
       $.ajax({
         method: "PUT",
-        url: 'https://gw2rp-tools.ovh/api/users/' + thisUser.id + "?general=true&token=" + thisUser.token,
+        url: `${api_url}/users/` + thisUser.id + "?general=true&token=" + thisUser.token,
         data: { nick_name: $('#modify-general #name').val(), gw2_account: $("#modify-general #gw2_account").val() },
         dataType: 'json',
         success: function(json) {
@@ -250,7 +250,7 @@
     if (validatePassword()) {
       $.ajax({
         method: "PUT",
-        url: 'https://gw2rp-tools.ovh/api/users/' + thisUser.id + "?security=true&token=" + thisUser.token,
+        url: `${api_url}/users/` + thisUser.id + "?security=true&token=" + thisUser.token,
         data: { old_password: $('#modify-password #password-old').val(), new_password: $('#modify-password #password-new-1').val()},
         dataType: 'json',
         success: function(json) {
@@ -280,7 +280,7 @@
   function loadCreations() {
     $.ajax({
       method: "GET",
-      url: 'https://gw2rp-tools.ovh/api/users/' + thisUser.id + '/creations',
+      url: `${api_url}/users/` + thisUser.id + '/creations',
       dataType: 'json',
       success: function(json) {
         console.log(json);
@@ -312,11 +312,39 @@
     });
   }
 
+  function getCreationActions(type, id) {
+    html = `<td id="${type}-${id}"><span id="action-display" onClick="displayCreation('${type}', '${id}')" class="action-button oi oi-eye" title="Afficher." aria-hidden="true"></span>`
+    if (type === "location") {
+      html += ` <span id="action-refresh" onClick="refreshCreation('${type}', '${id}')" class="action-button oi oi-timer" title="Prolonger (trois mois)." aria-hidden="true"></span>`;
+    } else if (type === "rumour") {
+      html += ` <span id="action-refresh" onClick="refreshCreation('${type}', '${id}')" class="action-button oi oi-timer" title="Prolonger (une semaine)." aria-hidden="true"></span>`;
+    }
+    html += ` <span id="action-delete" onClick="deleteCreation('${type}', '${id}')" class="action-button action-button-danger oi oi-trash" title="Supprimer." aria-hidden="true"></span></td>`;
+    return html;
+  }
+
+  function refreshCreation(type, id) {
+    $.ajax({
+      method: "POST",
+      url: `${api_url}/` + type + 's/' + id + "/refresh",
+      data: { token: thisUser.token },
+      dataType: 'json',
+      success: function(json) {
+        console.log(json)
+        if (json.success) {
+          $(`#${type}-${id} #action-refresh`).addClass('action-button-success')
+        } else {
+
+        }
+      }
+    });
+  }
+
   function addCharacter(character) {
     var html = `<tr id="` + character._id + `">`;
     html += `<td scope="row">` + character.name + `</td>`;
     html += `<td>` + character.created_date + `</td>`;
-    html += `<td><span onClick="displayCreation('character', '` + character._id + `')" class="action-button oi oi-eye" title="Afficher." aria-hidden="true"></span> <span onClick="deleteCreation('character', '` + character._id + `')" class="action-button action-button-danger oi oi-trash" title="Supprimer." aria-hidden="true"></span></td>`;
+    html += getCreationActions("character", character._id)
     html += "</tr>";
     $('#characters > tbody').append(html);
   }
@@ -325,7 +353,7 @@
     var html = `<tr id="` + creation._id + `">`;
     html += `<td scope="row">` + creation.name + `</td>`;
     html += `<td>` + creation.created_date + `</td>`;
-    html += `<td><span onClick="displayCreation('event', '` + creation._id + `')" class="action-button oi oi-eye" title="Afficher." aria-hidden="true"></span> <span onClick="deleteCreation('event', '` + creation._id + `')" class="action-button action-button-danger oi oi-trash" title="Supprimer." aria-hidden="true"></span></td>`;
+    html += getCreationActions("event", creation._id)
     html += "</tr>";
     $('#events > tbody').append(html);
   }
@@ -334,7 +362,7 @@
     var html = `<tr id="` + creation._id + `">`;
     html += `<td scope="row">` + creation.name + `</td>`;
     html += `<td>` + creation.created_date + `</td>`;
-    html += `<td><span onClick="displayCreation('location', '` + creation._id + `')" class="action-button oi oi-eye" title="Afficher." aria-hidden="true"></span> <span onClick="deleteCreation('location', '` + creation._id + `')" class="action-button action-button-danger oi oi-trash" title="Supprimer." aria-hidden="true"></span></td>`;
+    html += getCreationActions("location", creation._id)
     html += "</tr>";
     $('#locations > tbody').append(html);
   }
@@ -343,7 +371,7 @@
     var html = `<tr id="` + creation._id + `">`;
     html += `<td scope="row">` + creation.name + `</td>`;
     html += `<td>` + creation.created_date + `</td>`;
-    html += `<td><span onClick="displayCreation('rumour', '` + creation._id + `')" class="action-button oi oi-eye" title="Afficher." aria-hidden="true"></span> <span onClick="deleteCreation('rumour', '` + creation._id + `')" class="action-button action-button-danger oi oi-trash" title="Supprimer." aria-hidden="true"></span></td>`;
+    html += getCreationActions("rumour", creation._id)
     html += "</tr>";
     $('#rumours > tbody').append(html);
   }

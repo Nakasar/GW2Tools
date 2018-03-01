@@ -183,7 +183,7 @@
     // retrieves 5 next events and displays them in a list.
     $.ajax({
       method: "GET",
-      url: 'https://gw2rp-tools.ovh/api/events?next=5',
+      url: `${api_url}/events?next=5`,
       dataType: 'json',
       success: function(json) {
         if (json.success) {
@@ -199,7 +199,7 @@
     // retrieves 5 latest rumours and displays them in a list.
     $.ajax({
       method: "GET",
-      url: 'https://gw2rp-tools.ovh/api/rumours?latest=5',
+      url: `${api_url}/rumours?latest=5`,
       dataType: 'json',
       success: function(json) {
         if (json.success) {
@@ -230,7 +230,7 @@
     function showEventModal(eventId) {
       $.ajax({
         method: "GET",
-        url: 'https://gw2rp-tools.ovh/api/events/' + eventId,
+        url: `${api_url}/events/` + eventId,
         dataType: 'json',
         success: function(json) {
           if (json.success) {
@@ -270,7 +270,7 @@
     function showRumourModal(rumourId) {
       $.ajax({
         method: "GET",
-        url: 'https://gw2rp-tools.ovh/api/rumours/' + rumourId,
+        url: `${api_url}/rumours/` + rumourId,
         dataType: 'json',
         success: function(json) {
           if (json.success) {

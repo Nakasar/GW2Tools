@@ -398,7 +398,7 @@
 
       $.ajax({
         method: "PUT",
-        url: 'https://gw2rp-tools.ovh/api/characters/' + thisCharacter.id,
+        url: `${api_url}/characters/` + thisCharacter.id,
         data: { token: thisUser.token, name: name, description: description, appearance: appearance, image_url: image_url, caracteristics: caracteristics, skills: skills, tags: tags },
         dataType: 'json',
         success: function(json) {
@@ -443,7 +443,7 @@
   function loadCharacter(id) {
     $.ajax({
       method: "GET",
-      url: 'https://gw2rp-tools.ovh/api/characters/' + id,
+      url: `${api_url}/characters/` + id,
       dataType: 'json',
       success: function(json) {
         console.log(json);
@@ -489,7 +489,7 @@
   function loadAll() {
     $.ajax({
       method: "GET",
-      url: 'https://gw2rp-tools.ovh/api/characters',
+      url: `${api_url}/characters/`,
       dataType: 'json',
       success: function(json) {
         if (json.success) {
@@ -512,7 +512,7 @@
       if (signedIn && thisUser.id) {
         $.ajax({
           method: "GET",
-          url: 'https://gw2rp-tools.ovh/api/users/' + thisUser.id + '/characters',
+          url: `${api_url}/users/` + thisUser.id + '/characters',
           dataType: 'json',
           success: function(json) {
             if (json.success) {
@@ -534,7 +534,7 @@
     if (character_name_regex.test(search)) {
       $.ajax({
         method: "GET",
-        url: 'https://gw2rp-tools.ovh/api/characters?search=' + search,
+        url: `${api_url}/characters?search=` + search,
         dataType: 'json',
         success: function(json) {
           if (json.success) {
@@ -558,7 +558,7 @@
     if (character_name_regex.test(search)) {
       $.ajax({
         method: "GET",
-        url: 'https://gw2rp-tools.ovh/api/characters/search',
+        url: `${api_url}/characters/search`,
         data: { tags: tags, search: search },
         dataType: 'json',
         success: function(json) {
@@ -744,7 +744,7 @@
   function confirmDelete() {
     $.ajax({
       method: "DELETE",
-      url: 'https://gw2rp-tools.ovh/api/characters/' + thisCharacter.id,
+      url: `${api_url}/characters/` + thisCharacter.id,
       data: { token: thisUser.token },
       dataType: 'json',
       success: function(json) {
@@ -953,7 +953,7 @@
         var name = $('#name-textarea').val().replace(regex_html, "");
         $.ajax({
           method: "PUT",
-          url: 'https://gw2rp-tools.ovh/api/characters/' + thisCharacter.id,
+          url: `${api_url}/characters/` + thisCharacter.id,
           data: { token: thisUser.token, name: name },
           dataType: 'json',
           success: function(json) {
@@ -985,7 +985,7 @@
 
         $.ajax({
           method: "PUT",
-          url: 'https://gw2rp-tools.ovh/api/characters/' + thisCharacter.id,
+          url: `${api_url}/characters/` + thisCharacter.id,
           data: { token: thisUser.token, tags: validatedTags },
           dataType: 'json',
           success: function(json) {
@@ -1012,7 +1012,7 @@
         var description = $('#description-textarea').val().replace(regex_html, "");
         $.ajax({
           method: "PUT",
-          url: 'https://gw2rp-tools.ovh/api/characters/' + thisCharacter.id,
+          url: `${api_url}/characters/` + thisCharacter.id,
           data: { token: thisUser.token, description: description },
           dataType: 'json',
           success: function(json) {
@@ -1038,7 +1038,7 @@
         var appearance = $('#appearance-textarea').val().replace(regex_html, "");
         $.ajax({
           method: "PUT",
-          url: 'https://gw2rp-tools.ovh/api/characters/' + thisCharacter.id,
+          url: `${api_url}/characters/` + thisCharacter.id,
           data: { token: thisUser.token, appearance: appearance },
           dataType: 'json',
           success: function(json) {
@@ -1108,7 +1108,7 @@
 
     $.ajax({
       method: "POST",
-      url: 'https://gw2rp-tools.ovh/api/characters/',
+      url: `${api_url}/characters/`,
       data: { token: thisUser.token, name: name, caracteristics: defaultCaracteristics, skills: defaultSkills, status: "played" },
       dataType: 'json',
       success: function(json) {

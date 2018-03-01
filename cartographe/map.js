@@ -340,16 +340,20 @@ function displayCommand(loc) {
     if(thisUser.admin) {
       $('#actionDelete').show();
       $('#actionModify').show();
+      $('#actionRefresh').show();
     } else if(thisUser.id === loc.owner_id) {
       $('#actionDelete').show();
       $('#actionModify').show();
+      $('#actionRefresh').show();
     } else {
       $('#actionDelete').hide();
       $('#actionModify').hide();
+      $('#actionRefresh').hide();
     }
   } else {
     $('#actionDelete').hide();
     $('#actionModify').hide();
+    $('#actionRefresh').hide();
   }
   return false;
 }
@@ -523,7 +527,7 @@ function actionDelete() {
     // Request API to remove permanent location...
     $.ajax({
       method: "DELETE",
-      url: 'https://gw2rp-tools.ovh/api/locations/' + thisLoc.id + "?token=" + thisUser.token,
+      url: `${api_url}/locations/` + thisLoc.id + "?token=" + thisUser.token,
       dataType: 'json',
       success: function(json) {
         if (json.success) {
@@ -536,7 +540,7 @@ function actionDelete() {
     // Request API to remove event location...
     $.ajax({
       method: "DELETE",
-      url: 'https://gw2rp-tools.ovh/api/events/' + thisLoc.id + "?token=" + thisUser.token,
+      url: `${api_url}/events/` + thisLoc.id + "?token=" + thisUser.token,
       dataType: 'json',
       success: function(json) {
         if (json.success) {
@@ -549,7 +553,7 @@ function actionDelete() {
     // Request API to remove rumour...
     $.ajax({
       method: "DELETE",
-      url: 'https://gw2rp-tools.ovh/api/rumours/' + thisLoc.id + "?token=" + thisUser.token,
+      url: `${api_url}/rumours/` + thisLoc.id + "?token=" + thisUser.token,
       dataType: 'json',
       success: function(json) {
         if (json.success) {
@@ -561,6 +565,18 @@ function actionDelete() {
       }
     });
   }
+}
+
+function actionRefresh() {
+  var id = thisLoc.id
+  $.ajax({
+    method: "POST",
+    url: `${api_url}/${thisLoc.category}s/${id}/refresh`,
+    data: { token: thisUser.token },
+    success: function(json) {
+      console.log(json)
+    }
+  })
 }
 
 function onMapClick(e) {
@@ -608,7 +624,7 @@ $("#perm-form-submit").click(function() {
     // Request API to add permanent location...
     $.ajax({
       method: "POST",
-      url: 'https://gw2rp-tools.ovh/api/locations',
+      url: `${api_url}/locations`,
       data: { name: name, description: description, contact: contact, types: type, coord: coord, icon: icon, category: category, hours: hours, site: site, token: thisUser.token },
       dataType: 'json',
       success: function(json) {
@@ -626,7 +642,7 @@ $("#perm-form-submit").click(function() {
     // Request API to add permanent location...
     $.ajax({
       method: "PUT",
-      url: 'https://gw2rp-tools.ovh/api/locations/' + thisLoc.id,
+      url: `${api_url}/locations/` + thisLoc.id,
       data: { name: name, description: description, contact: contact, types: type, coord: coord, icon: icon, category: category, hours: hours, site: site, token: thisUser.token },
       dataType: 'json',
       success: function(json) {
@@ -679,7 +695,7 @@ $("#event-form-submit").click(function() {
     // Request API to add permanent location...
     $.ajax({
       method: "POST",
-      url: 'https://gw2rp-tools.ovh/api/events',
+      url: `${api_url}/events`,
       data: { name: name, description: description, contact: contact, types: type, coord: coord, icon: icon, category: category, end_date: end_date, site: site, difficulty: difficulty, token: thisUser.token },
       dataType: 'json',
       success: function(json) {
@@ -699,7 +715,7 @@ $("#event-form-submit").click(function() {
     // Request API to add permanent location...
     $.ajax({
       method: "PUT",
-      url: 'https://gw2rp-tools.ovh/api/events/' + thisLoc.id,
+      url: `${api_url}/events/` + thisLoc.id,
       data: { name: name, description: description, contact: contact, types: type, coord: coord, icon: icon, category: category, end_date: end_date, site: site, difficulty: difficulty, token: thisUser.token },
       dataType: 'json',
       success: function(json) {
@@ -736,7 +752,7 @@ $("#rumour-form-submit").click(function() {
     // Request API to add rumour...
     $.ajax({
       method: "POST",
-      url: 'https://gw2rp-tools.ovh/api/rumours',
+      url: `${api_url}/rumours`,
       data: { name: title, text: text, contact: contact, coord: coord, category: category, site: site, token: thisUser.token },
       dataType: 'json',
       success: function(json) {
@@ -756,7 +772,7 @@ $("#rumour-form-submit").click(function() {
     // Request API to add permanent location...
     $.ajax({
       method: "PUT",
-      url: 'https://gw2rp-tools.ovh/api/rumours/' + thisLoc.id,
+      url: `${api_url}/rumours/` + thisLoc.id,
       data: { name: title, text: text, contact: contact, coord: coord, category: category, site: site, token: thisUser.token },
       dataType: 'json',
       success: function(json) {

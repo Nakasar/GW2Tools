@@ -55,6 +55,7 @@
                 <h5 class="list-group-item-heading">Actions</h5>
                 <button type="button" class="btn btn-danger" onclick="actionDelete()" id="actionDelete">Supprimer</button>
                 <button type="button" class="btn btn-warning" onclick="actionModify()" id="actionModify">Modifier</button>
+                <button type="button" class="btn btn-info" onclick="actionRefresh()" id="actionRefresh">Prolonger</button>
               </li>
           </ul>
         </div>
@@ -288,7 +289,9 @@
   <script>
   $('#navigation').load("/components/header.html", function() {
     $('#nav-cartograph').addClass('active');
-    establishConnection();
+    establishConnectionCallback((success) => {
+      endLoad()
+    });
   });
   </script>
   <script>
@@ -320,7 +323,7 @@
   $(function() {
     $.ajax({
       method: "GET",
-      url: 'https://gw2rp-tools.ovh/api/locations',
+      url: `${api_url}/locations`,
       dataType: 'json',
       success: function(json) {
         if (json.success) {
@@ -336,7 +339,7 @@
 
     $.ajax({
       method: "GET",
-      url: 'https://gw2rp-tools.ovh/api/events',
+      url: `${api_url}/events`,
       dataType: 'json',
       success: function(json) {
         console.log(json);
@@ -353,7 +356,7 @@
 
     $.ajax({
       method: "GET",
-      url: 'https://gw2rp-tools.ovh/api/rumours',
+      url:`${api_url}/rumours`,
       dataType: 'json',
       success: function(json) {
         console.log(json);

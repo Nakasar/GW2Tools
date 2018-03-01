@@ -39,7 +39,7 @@ function establishConnectionCallback(callback) {
         // Request API to check validity of stored token.
         $.ajax({
           method: "POST",
-          url: 'https://gw2rp-tools.ovh/api/me',
+          url: `${api_url}/me`,
           data: { id: id, token: token },
           dataType: 'json',
           success: function(json) {
@@ -62,6 +62,7 @@ function establishConnectionCallback(callback) {
             }
           },
           error: function(json) {
+            console.log(json)
             displayAPIAlert();
             callback(false);
           }
@@ -94,7 +95,7 @@ function establishConnection() {
         // Request API to check validity of stored token.
         $.ajax({
           method: "POST",
-          url: 'https://gw2rp-tools.ovh/api/me',
+          url: `${api_url}/me`,
           data: { id: id, token: token },
           dataType: 'json',
           success: function(json) {
@@ -157,7 +158,7 @@ function signIn() {
   if ($('#login-password').val() != "" && $('#login-username').val() != "") {
     $.ajax({
       method: "POST",
-      url: 'https://gw2rp-tools.ovh/api/login',
+      url: `${api_url}/login`,
       data: { nick_name: $('#login-username').val(), password: $('#login-password').val()},
       dataType: 'json',
       success: onSignInResponse,
@@ -288,7 +289,7 @@ function signUp() {
 
     $.ajax({
       method: "POST",
-      url: 'https://gw2rp-tools.ovh/api/signup',
+      url: `${api_url}/signup`,
       data: { nick_name: $('#signup-username').val(), password: $('#signup-password').val(), email: $('#signup-email').val(), gw2_account: gw2_name, gw2_id: gw2_account_id },
       dataType: 'json',
       success: onSignUpResponse,
@@ -318,7 +319,7 @@ function askForValidation() {
   if ($('#login-password').val() != "" && $('#login-username').val() != "") {
     $.ajax({
       method: "POST",
-      url: 'https://gw2rp-tools.ovh/api/validate',
+      url: `${api_url}/validate`,
       data: { nick_name: $('#login-username').val(), password: $('#login-password').val() },
       dataType: 'json',
       success: function(json) {

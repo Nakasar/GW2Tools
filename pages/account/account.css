@@ -10,3 +10,7 @@ body {
 .action-button-danger {
   color: red;
 }
+
+.action-button-success {
+  color: green;
+}
