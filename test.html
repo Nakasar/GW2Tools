@@ -1,8 +1,28 @@
 <!doctype html>
 <html>
 <head>
+  <meta charset="utf-8" />
 </head>
 <body>
-  <iframe style="width: 500px; height: 400px;" src="https://gw2rp-tools.ovh/cartographe/frame?id=5a0197b2c0742e5bb9ac1795"></iframe>
+  <h1>NOTIFICATIONS<h1>
+
+  <script>
+  window.addEventListener('load', function () {
+    Notification.requestPermission(function (status) {
+      // Cela permet d'utiliser Notification.permission avec Chrome/Safari
+      if (Notification.permission !== status) {
+        Notification.permission = status;
+      }
+
+      if (window.Notification && Notification.permission === "granted") {
+        var n = new Notification("Coucou !", {
+          lang: "fr",
+          icon  : "./src/img/icons/20px-map-explorers.png",
+          body: "Un nouvel évènement est disponible."
+        });
+      }
+    });
+  });
+  </script>
 </body>
 </html>
