@@ -9,9 +9,18 @@
       <div id="navbar" class="collapse navbar-collapse">
         <ul class="navbar-nav mr-auto">
           <li class="nav-item" id="nav-cartograph"><a href="/cartographe" class="nav-link"><span class="glyphicon glyphicon-globe"></span> Cartographe</a></li>
+          <li class="nav-item" id="nav-guilds"><a href="/pages/guilds" class="nav-link">Guildes</a></li>
           <li class="nav-item" id="nav-characters"><a href="/pages/characters" class="nav-link">Personnages</a></li>
-          <li class="nav-item" id="nav-about" ><a href="#" class="nav-link" data-toggle="modal" data-target="#about-modal">A propos</a></li>
-          <li class="nav-item" id="nav-documentation"><a href="/pages/documentation" class="nav-link">Documentation</a></li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              A propos
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+              <a id="nav-about" href="#" class="dropdown-item" data-toggle="modal" data-target="#about-modal">A propos</a>
+              <a id="nav-documentation" href="/pages/documentation" class="dropdown-item">Documentation</a>
+            </div>
+          </li>
+
           <li class="nav-item" id="nav-connect"><a href="#" class="nav-link" onClick="showLoginModal()">Se connecter</a></li>
           <li class="nav-item" id="nav-account"><a href="/pages/account" class="nav-link">Mon Compte</a></li>
           <li class="nav-item" id="nav-disconnet"><a href="#" class="nav-link" onClick="askForDisconnect()">Se déconnecter</a></li>

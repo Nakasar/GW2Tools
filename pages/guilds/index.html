@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <meta name="theme-color" content="#000000">
+  <meta name="description" content="">
+  <meta name="author" content="Kavin 'Nakasar' Thizy">
+
+  <title>Guildes - Outils RP</title>
+
+  <link rel="icon" href="/src/favicon.ico" />
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+  <link rel="stylesheet" href="/src/open-iconic/font/css/open-iconic-bootstrap.css">
+  <link rel="stylesheet" href="/src/tagEditor/jquery.tag-editor.css">
+  <link rel="stylesheet" href="/components/style_global.css">
+  <link rel="stylesheet" href="guilds.css">
+
+</head>
+<body>
+  <header>
+    <div id="navigation">
+    </div>
+  </header>
+
+  <!-- Modals -->
+  <div id="modals">
+    <!-- Create Guild Modal -->
+    <div class="modal fade" id="guild-modal-create" tabindex="-1" role="dialog" aria-labelledby="guild-modal-create-label" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="guild-modal-create-label">Nouvelle guilde</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <form>
+              <div class="form-group">
+                <label for="guild-modal-create-name" class="col-form-label">Nom de guilde :</label>
+                <input type="text" class="form-control" id="guild-modal-create-name" placeholder="Ma Super Guilde">
+              </div>
+              <div class="form-group">
+                <label for="guild-modal-create-summary" class="col-form-label">Résumé :</label>
+                <textarea class="form-control" id="guild-modal-create-summary" placeholder="Résumé de la guilde en quatre-cinq lignes."></textarea>
+              </div>
+            </form>
+            <div class="alert alert-danger alert-dismissible fade show" style="display: none" role="alert" id="guild-modal-create-alert">
+              <span>Impossible de créer la guilde.</span>
+              <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+            <button type="button" class="btn btn-success" onclick="Guild.createGuild()">Créer</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="container">
+      <div class="alert alert-danger alert-dismissible" role="alert" id="main-alert" style="display: none;">
+        <div id="text">Nous avons détecté une erreur inconnue. Le problème vient probablement de notre côté des Brumes :/</div>
+        <button type="button" class="close" data-dismiss="alert" aria-label="Fermer">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="container loader" id="loader">
+      <!-- By Sam Herbert (@sherb), for everyone. More @ http://goo.gl/7AJzbL -->
+      <svg width="88" height="88" viewBox="0 0 44 44" xmlns="http://www.w3.org/2000/svg" stroke="#fff">
+          <g fill="none" fill-rule="evenodd" stroke-width="2">
+              <circle cx="22" cy="22" r="1">
+                  <animate attributeName="r"
+                      begin="0s" dur="1.8s"
+                      values="1; 20"
+                      calcMode="spline"
+                      keyTimes="0; 1"
+                      keySplines="0.165, 0.84, 0.44, 1"
+                      repeatCount="indefinite" />
+                  <animate attributeName="stroke-opacity"
+                      begin="0s" dur="1.8s"
+                      values="1; 0"
+                      calcMode="spline"
+                      keyTimes="0; 1"
+                      keySplines="0.3, 0.61, 0.355, 1"
+                      repeatCount="indefinite" />
+              </circle>
+              <circle cx="22" cy="22" r="1">
+                  <animate attributeName="r"
+                      begin="-0.9s" dur="1.8s"
+                      values="1; 20"
+                      calcMode="spline"
+                      keyTimes="0; 1"
+                      keySplines="0.165, 0.84, 0.44, 1"
+                      repeatCount="indefinite" />
+                  <animate attributeName="stroke-opacity"
+                      begin="-0.9s" dur="1.8s"
+                      values="1; 0"
+                      calcMode="spline"
+                      keyTimes="0; 1"
+                      keySplines="0.3, 0.61, 0.355, 1"
+                      repeatCount="indefinite" />
+              </circle>
+          </g>
+      </svg>
+    </div>
+
+    <div class="container" id="guild-list-container" style="display: none;">
+      <div id="guild-search-box">
+        <form id="guild-search-form">
+          <div class="form-group">
+            <div class="input-group">
+              <input id="guild-search-input" type="text" class="form-control" placeholder="Que cherchez-vous ?" aria-label="Rechercher une guilde.">
+              <div class="input-group-btn">
+                  <button id="guild-search-search" type="button" class="btn btn-secondary float-right"><span class="oi oi-magnifying-glass"></span></button>
+                  <button id="guild-search-create" type="button" class="btn btn-success float-right">Créer</button>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <div class="card-columns" id="guild-list">
+      </div>
+    </div>
+
+    <div class="container" id="guild-detail" style="display: none;">
+      <button class="btn btn-secondary" role="button" onclick="returnToList()">Retour à la liste</button>
+
+      <h1>
+        <span id="guild-name">Guilde</span> <span id="guild-name-modify" class="action-button oi oi-pencil" onclick="guildModify('name')" title="Modifier le nom de la guilde." style="display: none; font-size: 1rem;"></span>
+      </h1>
+
+      <p id="guild-tags-p">
+        <span id="guild-tags">Tags</span>
+        <br/>
+        <a id="guild-tags-modify" href="#" style="display: none" onclick="guildModify('tags')">Modifier les tags</a>
+      </p>
+
+      <p id="guild-summary-p">
+        <span id="guild-summary">Résumé</span>
+        <br/>
+        <a id="guild-summary-modify" href="#" style="display: none" onclick="guildModify('summary')">Modifier le résumé</a>
+      </p>
+
+      <div class="row">
+        <div class="col-md-4" id="guild-infos">
+          <div class="card">
+            <h2 class="card-header">Informations</h2>
+            <div class="card-body">
+              <a id="guild-site" href="http://example.com" target="_blank">Site web</a>
+              <span id="guild-site-modify" class="action-button oi oi-pencil" onclick="guildModify('site')" title="Modifier le site web."></span>
+
+              <h3>Membres</h3>
+              <div class="list-group" id="guild-members">
+                <div class="list-group-item d-flex justify-content-between align-items-center">
+                  Nakasar
+                  <span class="badge badge-secondary">Chef</span>
+                </div>
+                <div class="list-group-item d-flex justify-content-between align-items-center">
+                  Naliia
+                  <span class="badge badge-secondary">Officier</span>
+                </div>
+                <div class="list-group-item d-flex justify-content-between align-items-center">
+                  Gifter
+                  <span class="badge badge-secondary">Membre</span>
+                </div>
+              </div>
+              <a href="#">Tous les membres...</a>
+              <a id="guild-members-modify" href="#" style="display: none; float: right;" onclick="guildModify('members')">Modifier</a>
+
+              <hr>
+
+              <h3>Lieux habituels</h3>
+              <div class="list-group" id="guild-locations">
+                <a href="#" class="list-group-item list-group-item-action">Pavillon de Chasse</a>
+                <a href="#" class="list-group-item list-group-item-action">Bettletun</a>
+              </div>
+              <a id="guild-locations-modify" href="#" style="display: none; float: right;" onclick="guildModify('locations')">Modifier</a>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-8">
+          <p id="guild-description-p">
+            <span id="guild-description">description</span>
+            <br/>
+            <a id="guild-description-modify" href="#" style="display: none" onclick="guildModify('description')">Modifier la description</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- jQuery library -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.js"></script>
+  <!-- Latest compiled JavaScript -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+  <script src="/src/jquery.caret.js"></script>
+  <script src="/src/tagEditor/jquery.tag-editor.js"></script>
+
+  <script src="/components/base.js"></script>
+  <script src="/components/connect.js"></script>
+
+  <script>
+  $('#navigation').load("/components/header.html", function() {
+    $('#nav-guilds').addClass('active');
+    establishConnectionCallback(function(success) {
+      var url = new URL(window.location.href)
+      if (url.searchParams.has("id")) {
+        // Url has a given ID, search for the matching location and zoom to it.
+        var id = url.searchParams.get("id")
+        Guild.loadGuild(id)
+      } else {
+        Guild.loadAllGuilds()
+      }
+    });
+  });
+
+  function displayAPIAlert() {
+    $('#main-alert #text').text("Le GOLEM M4554G3R n'a pas pu contacter le serveur dans les Brumes, le problème vient certainement de notre côté.");
+    $('#main-alert').show();
+  }
+  </script>
+
+  <script>
+  var thisGuild
+  var guilds = new Map()
+
+  class Guild {
+    constructor(id, name) {
+      this.id = id
+      this.name = name
+      this.image = ''
+      this.summary = ''
+      this.description = ''
+      this.tags = []
+      this.site = ''
+      this.members = []
+      this.locations = []
+    }
+
+    static parse(json) {
+      var guild = new Guild(json._id, json.name)
+
+      if (json.image) {
+        guild.image = json.image
+      }
+
+      if (json.summary) {
+        guild.summary = json.summary
+      }
+      if (json.description) {
+        guild.description = json.description
+      }
+      if (json.tags) {
+        guild.tags = json.tags
+      }
+      if (json.site) {
+        guild.site = json.site
+      }
+      if (json.members) {
+        guild.members = json.members
+      }
+      if (json.locations) {
+        guild.locations = json.locations
+      }
+
+      return guild
+    }
+
+    display(elementId) {
+      $(`${elementId} #guild-name`).text(this.name)
+
+      $(`${elementId} #guild-tags`).empty()
+      for (var tag of this.tags) {
+        $(`${elementId} #guild-tags`).append(`<span class="badge badge-dark">${tag}</span> `)
+      }
+
+      if (this.summary) {
+        $(`${elementId} #guild-summary`).text(this.summary)
+      } else {
+        $(`${elementId} #guild-summary`).text("")
+      }
+
+      if (this.site) {
+        $(`${elementId} #guild-site`).attr("href", this.site)
+        $(`${elementId} #guild-site`).attr("target", "_blank")
+        $(`${elementId} #guild-site`).text(this.site)
+      } else {
+        $(`${elementId} #guild-site`).attr("href", "#")
+        $(`${elementId} #guild-site`).attr("target", "")
+        $(`${elementId} #guild-site`).text("Aucun site")
+      }
+
+      if (this.description) {
+        $(`${elementId} #guild-description`).text(this.description)
+      } else {
+        $(`${elementId} #guild-description`).text("")
+      }
+
+      if (this.members.length > 0) {
+        $(`${elementId} #guild-members`).empty()
+        for (var member of this.members) {
+          var memberHtml = `
+          <div class="list-group-item d-flex justify-content-between align-items-center">
+            ${member.nick_name}
+            <span class="badge badge-secondary">${translate("fr", member.role)}</span>
+          </div>`.trim()
+          $(`${elementId} #guild-members`).append(memberHtml)
+        }
+      } else {
+        $(`${elementId} #guild-members`).empty()
+      }
+
+      $(`${elementId} #guild-locations`).empty()
+      for (var location of this.locations) {
+        var link = "#"
+        if (location.gw2_location) {
+
+        } else {
+          link = `http://localhost:8080/cartographe?id=${location._id}`
+        }
+        $(`${elementId} #guild-locations`).append(`<a href="${link}" class="list-group-item list-group-item-action">${location.name}</a>`)
+      }
+
+      var showCommand = this.displayCommand().then(() => {
+        $("#loader").hide()
+        $("#guild-detail").show()
+        window.history.pushState("", "", "/pages/guilds?id=" + this.id)
+      })
+    }
+
+    displayCommand() {
+      return new Promise((resolve, reject) => {
+        // Hide All
+        $("#guild-name-modify").hide()
+        $("#guild-tags-modify").hide()
+        $("#guild-site-modify").hide()
+        $("#guild-members-modify").hide()
+        $("#guild-locations-modify").hide()
+        $("#guild-summary-modify").hide()
+        $("#guild-description-modify").hide()
+
+        if (!thisUser) {
+          // hide all commands
+          resolve()
+        }
+
+        if (thisUser.id === this.owner) {
+          $("#guild-name-modify").show()
+          $("#guild-tags-modify").show()
+          $("#guild-site-modify").show()
+          $("#guild-members-modify").show()
+          $("#guild-locations-modify").show()
+          $("#guild-summary-modify").show()
+          $("#guild-description-modify").show()
+          resolve()
+        }
+
+        var userFound
+        for (var member of this.members) {
+          if (member._id === thisUser.id) {
+            userFound = member
+          }
+        }
+
+        if (thisUser.admin) {
+          // show all actions
+          $("#guild-name-modify").show()
+          $("#guild-tags-modify").show()
+          $("#guild-site-modify").show()
+          $("#guild-members-modify").show()
+          $("#guild-locations-modify").show()
+          $("#guild-summary-modify").show()
+          $("#guild-description-modify").show()
+          resolve()
+        }
+
+        if (!userFound) {
+          // Hide all actions
+          resolve()
+        } else if (member.role === "officer") {
+          // show all officier actions
+          $("#guild-name-modify").show()
+          $("#guild-tags-modify").show()
+          $("#guild-site-modify").show()
+          $("#guild-members-modify").show()
+          $("#guild-locations-modify").show()
+          $("#guild-summary-modify").show()
+          $("#guild-description-modify").show()
+          resolve()
+        } else if (member.role === "master") {
+          // show all actions
+          $("#guild-name-modify").show()
+          $("#guild-tags-modify").show()
+          $("#guild-site-modify").show()
+          $("#guild-members-modify").show()
+          $("#guild-locations-modify").show()
+          $("#guild-summary-modify").show()
+          $("#guild-description-modify").show()
+          resolve()
+        }
+      });
+    }
+
+    static displayGuildList(elementId) {
+      $(`${elementId} #guild-list`).empty()
+      $("#loader").hide();
+      $(elementId).show();
+
+      for (let guild of guilds.values()) {
+        var imageUrl = guild.image || "/src/img/guild_placeholder.png"
+        var image = new Image()
+        image.onerror = () => {
+          $(`#guild-${guild.id} #guild-cover`).attr("src", "/src/img/guild_placeholder.png")
+        }
+        image.src = imageUrl
+
+        var guildHtml = `
+        <div class="card guild-card" id="guild-${guild.id}">
+          <a class="btn-link" role="button" onclick="Guild.loadGuild('${guild.id}')"><img id="guild-cover" class="card-img-top" src="${imageUrl}" alt="Card image cap"></a>
+          <div class="card-body">
+            <h5 class="card-title"><a role="button" onclick="Guild.loadGuild('${guild.id}')">${guild.name}</a></h5>
+            <p class="card-text">${guild.summary}</p>
+          </div>
+          <div class="card-footer">
+            <p class="card-text">${guild.guildTagsString()}</p>
+          </div>
+        </div>`
+        $(`${elementId} #guild-list`).append(guildHtml)
+      }
+    }
+
+    static loadAllGuilds() {
+      $.ajax({
+        method: "GET",
+        url: `${api_url}/guilds`,
+        success: function(json) {
+          if (json.success) {
+            for (var guildJson of json.guilds) {
+              var guild = Guild.parse(guildJson)
+              guilds.set(guild.id, guild)
+            }
+
+            var guildSearchAutocomplete = new Set()
+            for (let guild of guilds.values()) {
+              guildSearchAutocomplete.add(guild.name)
+              for (let tag of guild.tags) {
+                guildSearchAutocomplete.add(tag)
+              }
+            }
+
+            $("#guild-list-container #guild-search-input").autocomplete({
+              source: [...guildSearchAutocomplete],
+              delay: 500,
+              minLength: 3,
+              select: Guild.searchGuild()
+            })
+            $("#guild-list-container #guild-search-form").submit(Guild.searchGuild())
+
+            Guild.displayGuildList("#guild-list-container")
+          } else {
+            console.log(json)
+          }
+        }
+      })
+    }
+
+    static loadGuild(id) {
+      $("#loader").show()
+      $("#guild-list-container").hide()
+
+      $.ajax({
+        method: "GET",
+        url: `${api_url}/guilds/${id}`,
+        success: function(json) {
+          if (json.success) {
+            var guild = Guild.parse(json.guild)
+            guilds.set(id, guild)
+            thisGuild = guild
+
+            guild.display("#guild-detail")
+          } else {
+            console.log(json)
+          }
+        }
+      })
+    }
+
+    static searchGuild() {
+      var search = $("#guild-search-input").val()
+      if (search.length > 0) {
+        // Search in API
+      }
+    }
+
+    guildTagsString() {
+      var tags = ""
+      for (var tag of this.tags) {
+        tags += `<span class="badge badge-dark">${tag}</span> `
+      }
+      return tags
+    }
+
+    static createGuild() {
+      var guildName = $("#guild-modal-create-name").val();
+      var guildSummary = $("#guild-modal-create-summary").val();
+
+      if (guildName.length > 0 && guild_name_regex.test(guildName)) {
+        $.ajax({
+          method: "POST",
+          url: `${api_url}/guilds`,
+          data: { token: thisUser.token, guild_name: guildName, summary: guildSummary },
+          success: function(json) {
+            console.log(json)
+            if (json.success) {
+              $("#guild-modal-create").modal('hide')
+              Guild.loadGuild(json.guild._id)
+            } else {
+              switch (json.code) {
+                case "GUI-02" :
+                  $("#guild-modal-create-alert > span").text("Le nom de guilde est déjà utilisé.")
+                  break;
+                default:
+                  $("#guild-modal-create-alert > span").text("Impossible de créer la guilde.")
+                  break;
+              }
+              $("#guild-modal-create-alert").show()
+            }
+          }
+        })
+      } else {
+        $("#guild-modal-create-alert > span").text("Le nom de guilde ne peut contenir que des lettres, majuscules, chiffres, et les caractères l, ' et -.")
+        $("#guild-modal-create-alert").show()
+      }
+    }
+  }
+
+  function returnToList() {
+    $("#guild-detail").hide()
+    Guild.loadAllGuilds()
+    window.history.pushState("", "", "/pages/guilds");
+  }
+
+  $('#guild-search-search').click(function() {
+    Guild.searchGuild()
+  })
+
+  $('#guild-search-create').click(function() {
+    if (!thisUser || ! thisUser.signedIn) {
+      showLoginModal()
+    } else {
+      $("#guild-modal-create").modal('show')
+    }
+  })
+  </script>
+
+  <script>
+  function deleteAllGuilds() {
+    $.ajax({
+      method: "DELETE",
+      url: `${api_url}/guilds`,
+      data: { token: thisUser.token },
+      success: function(json) {
+        console.log(json)
+      }
+    })
+  }
+  </script>
+
+</body>
+</html>

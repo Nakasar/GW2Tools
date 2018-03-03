@@ -1,7 +1,8 @@
-//const api_url = 'http://localhost:3000/api'
-const api_url = 'https://gw2rp-tools.ovh/api'
+const api_url = 'http://localhost:3000/api'
+//const api_url = 'https://gw2rp-tools.ovh/api'
 
 const regex_html = /<(.|\n)*?>/;
+const guild_name_regex = /^([a-zA-Z \-'0-9\u00C0-\u017F]{1,40})$/;
 
 class User {
   constructor(id, name, admin, email, token) {
@@ -57,3 +58,24 @@ $(window).resize(function() {
     resizeHandler(deviceCategory());
   }
 });
+
+
+/**
+  TRANSLATIONS
+*/
+const strings = {
+  fr: {
+    master: "Chef",
+    officer: "Officier",
+    member: "Membre",
+    recruit: "Recrue"
+  }
+}
+function translate(lang, field) {
+  try {
+    var translation = strings[lang][field]
+    return translation
+  } catch {
+    return ""
+  }
+}
