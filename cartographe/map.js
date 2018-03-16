@@ -257,10 +257,11 @@ class PermanentLocation extends Location {
 
 class EventLocation extends Location {
   constructor(id, owner_id, name, coord, contact, type, description, site, end_date, icon, difficulty) {
-    super(id, owner_id, name, coord, contact, type, description, site, icon);
-    this.end_date = end_date;
-    this.category = "event";
-    this.difficulty = difficulty;
+    super(id, owner_id, name, coord, contact, type, description, site, icon)
+    this.end_date = end_date
+    this.category = "event"
+    this.difficulty = difficulty
+    this.participants = []
   }
 
   static parse(json) {
@@ -278,7 +279,11 @@ class EventLocation extends Location {
       j_id = json._id,
       j_difficulty = json.difficulty;
 
-      return new EventLocation(j_id, j_owner_id, j_name, Point.unpackCoord(j_coord), j_contact, j_type, j_description, j_site, j_end_date, j_icon, j_difficulty);
+      var loc = new EventLocation(j_id, j_owner_id, j_name, Point.unpackCoord(j_coord), j_contact, j_type, j_description, j_site, j_end_date, j_icon, j_difficulty);
+      if (json.participants) {
+        loc.participants = json.participants
+      }
+      return loc
   }
 
   createMarker() {
@@ -314,6 +319,33 @@ class EventLocation extends Location {
     });
     this.marker.addTo(map);
     this.hidden = false;
+  }
+
+  userParticipation(userId) {
+    for (var participant of this.participants) {
+      if (participant.user === userId) {
+        return participant.status
+      }
+    }
+    return "none"
+  }
+
+  get participantsPretty() {
+    var pretty = { yes: [], maybe: [], no: [] }
+    for (var participant of this.participants) {
+      switch (participant.status) {
+        case "yes":
+          pretty.yes.push({ name: participant.name, id: participant.user, status: "yes" })
+          break;
+        case "maybe":
+          pretty.maybe.push({ name: participant.name, id: participant.user, status: "maybe" })
+          break;
+        default:
+          pretty.no.push({ name: participant.name, id: participant.user, status: "no" })
+          break;
+      }
+    }
+    return pretty
   }
 }
 
@@ -373,12 +405,41 @@ function formatText(text) {
   return formatted;
 }
 
+function setParticipation(participation) {
+  $('#sidebar-participants-yes-button').removeClass()
+  $('#sidebar-participants-maybe-button').removeClass()
+  $('#sidebar-participants-no-button').removeClass()
+  switch (participation) {
+    case "none":
+      $('#sidebar-participants-yes-button').addClass("btn btn-outline text-success action-btn")
+      $('#sidebar-participants-maybe-button').addClass("btn btn-outline text-warning action-btn")
+      $('#sidebar-participants-no-button').addClass("btn btn-outline text-danger action-btn")
+      break
+    case "yes":
+      $('#sidebar-participants-yes-button').addClass("btn btn-success action-btn")
+      $('#sidebar-participants-maybe-button').addClass("btn btn-outline text-warning action-btn")
+      $('#sidebar-participants-no-button').addClass("btn btn-outline text-danger action-btn")
+      break
+    case "maybe":
+      $('#sidebar-participants-yes-button').addClass("btn btn-outline text-success action-btn")
+      $('#sidebar-participants-maybe-button').addClass("btn btn-warning action-btn")
+      $('#sidebar-participants-no-button').addClass("btn btn-outline text-danger action-btn")
+      break
+    default:
+      $('#sidebar-participants-yes-button').addClass("btn btn-outline text-success action-btn")
+      $('#sidebar-participants-maybe-button').addClass("btn btn-outline text-warning action-btn")
+      $('#sidebar-participants-no-button').addClass("btn btn-danger action-btn")
+      break
+  }
+}
+
 function sideBarDisplayLocation(location) {
   switch (location.category) {
     case "rumour":
 
       $('#sidebar #sidebar-title-box').removeClass('list-group-item-info list-group-item-danger').addClass('list-group-item-success');
       $('#sidebar #sidebar-title').text(location.title);
+      $('#sidebar #sidebar-participants').hide();
       $('.contact').text(location.contact);
 
       $('.site').text(location.site).attr('href', location.site).removeClass("list-group-item-info list-group-item-danger").addClass("list-group-item-success");
@@ -391,6 +452,18 @@ function sideBarDisplayLocation(location) {
 
       $('#sidebar #sidebar-title-box').removeClass('list-group-item-info list-group-item-success').addClass('list-group-item-danger');
       $('#sidebar #sidebar-title').text(location.name);
+      var participation = location.participantsPretty;
+      $('#sidebar-participants-yes').text(participation.yes.length);
+      $('#sidebar-participants-maybe').text(participation.maybe.length);
+      $('#sidebar-participants-no').text(participation.no.length);
+      if (thisUser && thisUser.signedIn) {
+        let userParticipation = location.userParticipation(thisUser.id)
+        console.log(userParticipation)
+        setParticipation(userParticipation)
+      } else {
+        setParticipation("none")
+      }
+      $('#sidebar #sidebar-participants').show();
       $('.contact').text(location.contact);
 
       $('#hours-heading').text("Date");
@@ -413,6 +486,7 @@ function sideBarDisplayLocation(location) {
 
       $('#sidebar #sidebar-title-box').removeClass("list-group-item-danger list-group-item-success").addClass("list-group-item-info");
       $('#sidebar #sidebar-title').text(location.name);
+      $('#sidebar #sidebar-participants').hide();
       $('.contact').text(location.contact);
 
       $('#hours-heading').text("Horaires");
@@ -577,6 +651,46 @@ function actionRefresh() {
       console.log(json)
     }
   })
+}
+
+$("#sidebar-participants-yes-button").click(function() {
+  actionParticipate(thisLoc.id, "yes")
+})
+$("#sidebar-participants-maybe-button").click(function() {
+  actionParticipate(thisLoc.id, "maybe")
+})
+$("#sidebar-participants-no-button").click(function() {
+  actionParticipate(thisLoc.id, "no")
+})
+
+function actionParticipate(eventId, participation) {
+  if (thisUser && thisUser.signedIn) {
+    $.ajax({
+      method: "POST",
+      url: `${api_url}/events/${eventId}/participate`,
+      data: { token: thisUser.token, status: participation },
+      dataType: "json",
+      success: function(json) {
+        console.log(json)
+        if (json.success) {
+          if (locationsById.has(json.event._id)) {
+            locationsById.get(json.event._id).participants = json.event.participants
+
+            if (thisLoc.id === json.event._id) {
+              // Update sidebar participants
+              var participationPretty = thisLoc.participantsPretty;
+              $('#sidebar #sidebar-participants-yes').text(participationPretty.yes.length);
+              $('#sidebar #sidebar-participants-maybe').text(participationPretty.maybe.length);
+              $('#sidebar #sidebar-participants-no').text(participationPretty.no.length);
+              setParticipation(participation)
+            }
+          }
+        }
+      }
+    })
+  } else {
+    showLoginModal()
+  }
 }
 
 function onMapClick(e) {

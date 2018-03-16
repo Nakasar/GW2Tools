@@ -7,9 +7,10 @@
   <title>Outils GW2RP - Cartographe</title>
 
   <link rel="icon" href="/src/favicon.ico" />
-  
+
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" />
+  <link rel="stylesheet" href="/src/open-iconic/font/css/open-iconic-bootstrap.css">
   <link rel="stylesheet" href="/components/style_global.css">
   <link rel="stylesheet" href="style.css">
 
@@ -31,6 +32,14 @@
                   <span aria-hidden="true">&times;</span>
                 </button>
                 <h4 id="sidebar-title" class="list-group-item-heading">Détails</h4>
+              </li>
+              <li class="list-group-item" id="sidebar-participants">
+                <h5 class="list-group-item-heading">Participants</h5>
+                <div class="btn-group" role="group" aria-label="Basic example">
+                  <button type="button" class="btn btn-outline text-success action-btn" title="Oui !" id="sidebar-participants-yes-button"><span id="sidebar-participants-yes">0</span> <span class="oi oi-check"></span></button>
+                  <button type="button" class="btn btn-outline text-warning action-btn" title="Peut-être ?" id="sidebar-participants-maybe-button"><span id="sidebar-participants-maybe">0</span> <span class="oi oi-question-mark"></span></button>
+                  <button type="button" class="btn btn-outline text-danger action-btn" title="Non." id="sidebar-participants-no-button"><span id="sidebar-participants-no">0</span> <span class="oi oi-x"></span></button>
+                </div>
               </li>
               <li class="list-group-item">
                 <h5 class="list-group-item-heading">Type</h5>

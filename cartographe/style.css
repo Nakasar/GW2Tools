@@ -44,6 +44,9 @@ html, body, #container {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+#sidebar .action-btn {
+  cursor: pointer;
+}
 
 #permloc-detail-modal-description {
   white-space: pre-wrap;
