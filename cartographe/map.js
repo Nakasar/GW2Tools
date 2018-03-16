@@ -458,7 +458,6 @@ function sideBarDisplayLocation(location) {
       $('#sidebar-participants-no').text(participation.no.length);
       if (thisUser && thisUser.signedIn) {
         let userParticipation = location.userParticipation(thisUser.id)
-        console.log(userParticipation)
         setParticipation(userParticipation)
       } else {
         setParticipation("none")

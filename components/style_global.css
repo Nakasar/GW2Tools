@@ -26,3 +26,7 @@ body {
 .btn-link {
   cursor: pointer;
 }
+
+.action-btn {
+  cursor: pointer;
+}

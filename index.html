@@ -13,6 +13,7 @@
   <link rel="icon" href="/src/favicon.ico" />
 
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+  <link rel="stylesheet" href="/src/open-iconic/font/css/open-iconic-bootstrap.css">
   <link rel="stylesheet" href="components/style_global.css">
   <link rel="stylesheet" href="style.css">
 
@@ -71,6 +72,15 @@
                 <div class="col-sm">
                   <label for="event-details-modal-contact">Contact :</label>
                   <p id="event-details-modal-contact"></p>
+                </div>
+                <div class="col-sm">
+                  <label for="event-details-modal-contact">Participants :</label>
+                  <br/>
+                  <div class="btn-group" role="group" aria-label="Basic example">
+                    <button type="button" class="btn btn-outline text-success action-btn" title="Oui !" id="participants-yes-button"><span id="participants-yes">0</span> <span class="oi oi-check"></span></button>
+                    <button type="button" class="btn btn-outline text-warning action-btn" title="Peut-être ?" id="participants-maybe-button"><span id="participants-maybe">0</span> <span class="oi oi-question-mark"></span></button>
+                    <button type="button" class="btn btn-outline text-danger action-btn" title="Non." id="participants-no-button"><span id="participants-no">0</span> <span class="oi oi-x"></span></button>
+                  </div>
                 </div>
               </div>
               <div class="row">
@@ -229,6 +239,7 @@
       return formatted;
     }
 
+    var displayedLocation = {}
     function showEventModal(eventId) {
       $.ajax({
         method: "GET",
@@ -237,6 +248,7 @@
         success: function(json) {
           if (json.success) {
             var event = json.event;
+            displayedLocation = event
             $('#event-details-modal-title').text(event.name);
             $('#event-details-modal-description').html(formatText(event.description));
             var date = new Date(event.end_date);
@@ -251,6 +263,54 @@
             $('#event-details-modal-contact').text(event.contact);
             $('#event-details-modal-site').html("<a href='" + event.site + "' target='_blank'>" + event.site + "</a>");
             $('#event-details-modal #tomap-btn').attr('href', '/cartographe?id=' + event._id);
+
+            var pretty = { yes: [], maybe: [], no: [] }
+            var thisUserParticipation = "none"
+            for (var participant of event.participants) {
+              if (thisUser && thisUser.signedIn && participant.user === thisUser.id) {
+                thisUserParticipation = participant.status
+              }
+              switch (participant.status) {
+                case "yes":
+                  pretty.yes.push({ name: participant.name, id: participant.user, status: "yes" })
+                  break;
+                case "maybe":
+                  pretty.maybe.push({ name: participant.name, id: participant.user, status: "maybe" })
+                  break;
+                default:
+                  pretty.no.push({ name: participant.name, id: participant.user, status: "no" })
+                  break;
+              }
+            }
+            $('#participants-yes').text(pretty.yes.length);
+            $('#participants-maybe').text(pretty.maybe.length);
+            $('#participants-no').text(pretty.no.length);
+            $('#participants-yes-button').removeClass()
+            $('#participants-maybe-button').removeClass()
+            $('#participants-no-button').removeClass()
+            switch (thisUserParticipation) {
+              case "none":
+                $('#participants-yes-button').addClass("btn btn-outline text-success action-btn")
+                $('#participants-maybe-button').addClass("btn btn-outline text-warning action-btn")
+                $('#participants-no-button').addClass("btn btn-outline text-danger action-btn")
+                break
+              case "yes":
+                $('#participants-yes-button').addClass("btn btn-success action-btn")
+                $('#participants-maybe-button').addClass("btn btn-outline text-warning action-btn")
+                $('#participants-no-button').addClass("btn btn-outline text-danger action-btn")
+                break
+              case "maybe":
+                $('#participants-yes-button').addClass("btn btn-outline text-success action-btn")
+                $('#participants-maybe-button').addClass("btn btn-warning action-btn")
+                $('#participants-no-button').addClass("btn btn-outline text-danger action-btn")
+                break
+              default:
+                $('#participants-yes-button').addClass("btn btn-outline text-success action-btn")
+                $('#participants-maybe-button').addClass("btn btn-outline text-warning action-btn")
+                $('#participants-no-button').addClass("btn btn-danger action-btn")
+                break
+            }
+
             $('#event-details-modal').modal('show');
           }
         }
@@ -267,6 +327,83 @@
       var thisEventHtml = '<div href="#" class="list-group-item flex-column align-items-start"><div class="d-flex w-100 justify-content-between"><h5 class="mb-1">' + event.name + '</h5><small>' + dateString + '</small></div><p class="mb-1" style="white-space: pre-wrap; overflow: hidden; text-overflow: ellipsis; max-height: 100px;">' + formatText(event.description) + '</p><a href="#" onclick="showEventModal(\'' +  event._id + '\')"><small>En lire plus...</small></a> ou <a href="/cartographe?id=' + event._id + '"><small>Voir sur la carte.</small></a></div>';
       currentHtml += thisEventHtml;
       $(idList).html(currentHtml);
+    }
+
+    $("#participants-yes-button").click(function() {
+      actionParticipate(displayedLocation._id, "yes")
+    })
+    $("#participants-maybe-button").click(function() {
+      actionParticipate(displayedLocation._id, "maybe")
+    })
+    $("#participants-no-button").click(function() {
+      actionParticipate(displayedLocation._id, "no")
+    })
+
+    function actionParticipate(eventId, participation) {
+      if (thisUser && thisUser.signedIn) {
+        $.ajax({
+          method: "POST",
+          url: `${api_url}/events/${eventId}/participate`,
+          data: { token: thisUser.token, status: participation },
+          dataType: "json",
+          success: function(json) {
+            console.log(json)
+            if (json.success) {
+              if (displayedLocation._id === json.event._id) {
+                // Update sidebar participants
+                var pretty = { yes: [], maybe: [], no: [] }
+                var thisUserParticipation = "none"
+                for (var participant of json.event.participants) {
+                  if (thisUser && thisUser.signedIn && participant.user === thisUser.id) {
+                    thisUserParticipation = participant.status
+                  }
+                  switch (participant.status) {
+                    case "yes":
+                      pretty.yes.push({ name: participant.name, id: participant.user, status: "yes" })
+                      break;
+                    case "maybe":
+                      pretty.maybe.push({ name: participant.name, id: participant.user, status: "maybe" })
+                      break;
+                    default:
+                      pretty.no.push({ name: participant.name, id: participant.user, status: "no" })
+                      break;
+                  }
+                }
+                $('#participants-yes').text(pretty.yes.length);
+                $('#participants-maybe').text(pretty.maybe.length);
+                $('#participants-no').text(pretty.no.length);
+                $('#participants-yes-button').removeClass()
+                $('#participants-maybe-button').removeClass()
+                $('#participants-no-button').removeClass()
+                switch (thisUserParticipation) {
+                  case "none":
+                    $('#participants-yes-button').addClass("btn btn-outline text-success action-btn")
+                    $('#participants-maybe-button').addClass("btn btn-outline text-warning action-btn")
+                    $('#participants-no-button').addClass("btn btn-outline text-danger action-btn")
+                    break
+                  case "yes":
+                    $('#participants-yes-button').addClass("btn btn-success action-btn")
+                    $('#participants-maybe-button').addClass("btn btn-outline text-warning action-btn")
+                    $('#participants-no-button').addClass("btn btn-outline text-danger action-btn")
+                    break
+                  case "maybe":
+                    $('#participants-yes-button').addClass("btn btn-outline text-success action-btn")
+                    $('#participants-maybe-button').addClass("btn btn-warning action-btn")
+                    $('#participants-no-button').addClass("btn btn-outline text-danger action-btn")
+                    break
+                  default:
+                    $('#participants-yes-button').addClass("btn btn-outline text-success action-btn")
+                    $('#participants-maybe-button').addClass("btn btn-outline text-warning action-btn")
+                    $('#participants-no-button').addClass("btn btn-danger action-btn")
+                    break
+                }
+              }
+            }
+          }
+        })
+      } else {
+        showLoginModal()
+      }
     }
 
     function showRumourModal(rumourId) {
