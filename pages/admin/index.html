@@ -90,8 +90,6 @@
     </div>
   </div>
 
-
-
   <div class="container">
     <div class="container">
       <div class="alert alert-danger alert-dismissible" role="alert" id="main-alert" style="display: none;">
@@ -134,7 +132,7 @@
   <script>
   $('#navigation').load("/components/header.html", function() {
     establishConnectionCallback(function(success) {
-      if (success) {
+      if (success && thisUser.admin) {
         $('#nav-admin').addClass('active');
 
         loadUsersList();
