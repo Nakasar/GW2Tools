@@ -31,9 +31,48 @@
       <p>La <strong>Boîte à Outils GW2RP</strong> est un ensemble d'outils conçus pour Guild Wars 2 et la pratique du jeu de rôle sur MMORPG.</p>
       <p>Pour les petits curieux et férus de l'informatique, l'interface sur laquelle vous vous trouvez utilise Bootstrap pour l'architecture et Leaflet pour la carte. L'API tourne sous Node.js (express) avec une base MongoDB (mongoose).</p>
 
+      <h2>Utilisation de la boîte à Outil</h2>
+      <h3>Création de compte</h3>
+      <p>
+        Pour accéder à l'ensemble des fonctionnalités, vous devez vous enregistrer sur la boîte à outils à partir de l'onglet "Se connecter".
+        <br>
+        Le pseudo et le nom de compte gw2 doivent être uniques, et votre adresse mail doit être valide pour confirmer votre compte.
+      </p>
+
+      <h3>Le Cartographe</h3>
+      <p>
+        Le cartographe est situé à l'adresse <code>https://gw2rp-tools.ovh/cartographe</code>.
+        <br>
+        Clic droit sur la carte permet d'ajouter un nouveau marqueur (vous devez être connecté). Les marqueurs peuvent être une rumeur, un évènement, ou un lieu permanent.
+        <br>
+        Les rumeurs sont supprimées au bout d'une semaine, les évènements le lendemain de leur date de fin, et les lieux permanent au bout de trois mois. Pour prolonger un marqueur, il suffit de le modifier, ou d'utiliser le bouton "rafraîchir" dans la barre lattérale gauche.
+        <br>
+        Un clic gauche sur un marqueur ouvre la barre lattérale qui contient les informations à son sujet. Vous pouvez modifier, supprimer le marqueur s'il vous appartient. Pour les évènements, vous pouvez indiquer votre éventuelle participation.
+        <br>
+        Le panneau à droite permet de cacher certains marqueurs de la carte à l'aide de filtres.
+      </p>
+
+      <h3>Les Personnages<h3>
+      <p>
+        L'index des personnages est situé à l'adresse <code>https://gw2rp-tools.ovh/pages/characters</code>.
+        <br>
+        Vous pouvez consulter la liste des personnages, effectuer des recherches sur les noms ou une recherche avancée par tags. Vous pouvez ajouter un personnage si son nom n'existe pas déjà.
+        <br>
+        Vous pouvez modifier la description de votre personnage, les détails de son apparence, ainsi que ses compétences et caractéristiques.
+        <br>
+        Il n'y a pas de système de jeu défini, vous êtes libre d'indiquer les valeurs que vous souhaitez. L'ensemble des tables de caractéristiques et de compétences sont accessibles par le bot discord pour des jets de dés automatiques.
+      </p>
+
+      <h3>Mon Compte</h3>
+      <p>
+        Modifiez les paramètres de votre comptre (mot de passe, mail, pseudo, compte gw2) à l'adresse <code>https://gw2rp-tools.ovh/pages/account</code>.
+        <br>
+        Vous pouvez également consulter la liste de toutes vos créations, les prolonger, et une liste des évènements auxquels vous participez.
+      </p>
+
       <h2>Utilisation de l'API</h2>
       <p>La Boîte à Outils récupère ses données et gère ses utilisateur à l'aide d'une API. La documentation ci-dessous présente les différentes adresses qui permettent de récupérer et modifier ces données.</p>
-      <p>La racine de l'api est accessible à <code>http://gw2rp-tools.ovh/api</code>.</p>
+      <p>La racine de l'api est accessible à <code>https://gw2rp-tools.ovh/api</code>.</p>
 
       <h3>Liste des endpoints</h3>
       <table class="table">

@@ -30,3 +30,9 @@ body {
 .action-btn {
   cursor: pointer;
 }
+
+#loader {
+  text-align: center;
+  margin: auto;
+  padding-top: 30%;
+}
