@@ -62,6 +62,32 @@
         </div>
       </div>
     </div>
+
+    <!-- Modify Guild website Modal -->
+    <div class="modal fade" id="guild-modal-modify-site" tabindex="-1" role="dialog" aria-labelledby="guild-modal-modify-site-label" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="guild-modal-modify-site-label">Modifier le site web</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <form>
+              <div class="form-group">
+                <label for="guild-modal-create-name" class="col-form-label">Addresse (incluant http://) :</label>
+                <input type="text" class="form-control" id="guild-modal-modify-site-input" placeholder="https://gw2rp-tools.ovh">
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary site-action" data-dismiss="modal">Annuler</button>
+            <button type="button" class="btn btn-success site-action" onclick="guildSave('site')">Modifier</button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <div class="container">
@@ -138,18 +164,41 @@
 
       <h1>
         <span id="guild-name">Guilde</span> <span id="guild-name-modify" class="action-button oi oi-pencil" onclick="guildModify('name')" title="Modifier le nom de la guilde." style="display: none; font-size: 1rem;"></span>
+        <form id="guild-name-form" style="display: none">
+          <div class="form-group">
+            <input type="text" class="form-control" id="name-textarea"/>
+            <span id="name-modify" onClick="guildSave('name')" class="action-button oi oi-check" title="Enregistrer" aria-hidden="true" style="font-size: 1rem;"></span>
+            <span id="name-cancel" onClick="guildModify('')" class="action-button oi oi-x" title="Annuler" aria-hidden="true" style="font-size: 1rem;"></span>
+          </div>
+        </form>
       </h1>
 
       <p id="guild-tags-p">
-        <span id="guild-tags">Tags</span>
+        <span id="guild-tags">Aucun tag</span>
         <br/>
         <a id="guild-tags-modify" href="#" style="display: none" onclick="guildModify('tags')">Modifier les tags</a>
+        <form id="guild-tags-form" style="display: none">
+          <div class="form-group">
+            <textarea id="tags-textarea"></textarea>
+            <span id="tags-modify" onClick="guildSave('tags')" class="action-button oi oi-check" title="éditer" aria-hidden="true" style="font-size: 1rem;"></span>
+            <span id="tags-cancel" onClick="guildModify('')" class="action-button oi oi-x" title="annuler" aria-hidden="true" style="font-size: 1rem;"></span>
+          </div>
+        </form>
       </p>
 
       <p id="guild-summary-p">
-        <span id="guild-summary">Résumé</span>
+        <span style="white-space: pre-wrap;" id="guild-summary">Résumé</span>
         <br/>
         <a id="guild-summary-modify" href="#" style="display: none" onclick="guildModify('summary')">Modifier le résumé</a>
+        <form id="guild-summary-form" style="display:none">
+          <div class="btn-group" role="group" aria-label="Actions">
+            <button type="button" class="btn btn-secondary" onClick="guildModify('')" id="cancel-button">Annuler</button>
+            <button type="button" class="btn btn-success" onClick="guildSave('summary')" id="save-button">Enregistrer</button>
+          </div>
+          <div class="form-group">
+            <textarea style="white-space: pre-wrap;" class="form-control" id="summary-textarea" rows="5"></textarea>
+          </div>
+        </form>
       </p>
 
       <div class="row">
@@ -160,40 +209,51 @@
               <a id="guild-site" href="http://example.com" target="_blank">Site web</a>
               <span id="guild-site-modify" class="action-button oi oi-pencil" onclick="guildModify('site')" title="Modifier le site web."></span>
 
-              <h3>Membres</h3>
-              <div class="list-group" id="guild-members">
-                <div class="list-group-item d-flex justify-content-between align-items-center">
-                  Nakasar
-                  <span class="badge badge-secondary">Chef</span>
+              <div style="display: none;">
+                <h3>Membres</h3>
+                <div class="list-group" id="guild-members">
+                  <div class="list-group-item d-flex justify-content-between align-items-center">
+                    Nakasar
+                    <span class="badge badge-secondary">Chef</span>
+                  </div>
+                  <div class="list-group-item d-flex justify-content-between align-items-center">
+                    Naliia
+                    <span class="badge badge-secondary">Officier</span>
+                  </div>
+                  <div class="list-group-item d-flex justify-content-between align-items-center">
+                    Gifter
+                    <span class="badge badge-secondary">Membre</span>
+                  </div>
                 </div>
-                <div class="list-group-item d-flex justify-content-between align-items-center">
-                  Naliia
-                  <span class="badge badge-secondary">Officier</span>
-                </div>
-                <div class="list-group-item d-flex justify-content-between align-items-center">
-                  Gifter
-                  <span class="badge badge-secondary">Membre</span>
-                </div>
-              </div>
-              <a href="#">Tous les membres...</a>
-              <a id="guild-members-modify" href="#" style="display: none; float: right;" onclick="guildModify('members')">Modifier</a>
+                <a href="#">Tous les membres...</a>
+                <a id="guild-members-modify" href="#" style="display: none; float: right;" onclick="guildModify('members')">Modifier</a>
 
-              <hr>
+                <hr>
 
-              <h3>Lieux habituels</h3>
-              <div class="list-group" id="guild-locations">
-                <a href="#" class="list-group-item list-group-item-action">Pavillon de Chasse</a>
-                <a href="#" class="list-group-item list-group-item-action">Bettletun</a>
+                <h3>Lieux habituels</h3>
+                <div class="list-group" id="guild-locations">
+                  <a href="#" class="list-group-item list-group-item-action">Pavillon de Chasse</a>
+                  <a href="#" class="list-group-item list-group-item-action">Bettletun</a>
+                </div>
+                <a id="guild-locations-modify" href="#" style="display: none; float: right;" onclick="guildModify('locations')">Modifier</a>
               </div>
-              <a id="guild-locations-modify" href="#" style="display: none; float: right;" onclick="guildModify('locations')">Modifier</a>
             </div>
           </div>
         </div>
         <div class="col-md-8">
           <p id="guild-description-p">
-            <span id="guild-description">description</span>
+            <span style="white-space: pre-wrap;" id="guild-description">description</span>
             <br/>
             <a id="guild-description-modify" href="#" style="display: none" onclick="guildModify('description')">Modifier la description</a>
+            <form id="guild-description-form" style="display:none">
+              <div class="btn-group" role="group" aria-label="Actions">
+                <button type="button" class="btn btn-secondary" onClick="guildModify('')" id="cancel-button">Annuler</button>
+                <button type="button" class="btn btn-success" onClick="guildSave('description')" id="save-button">Enregistrer</button>
+              </div>
+              <div class="form-group">
+                <textarea style="white-space: pre-wrap;" class="form-control" id="description-textarea" rows="20"></textarea>
+              </div>
+            </form>
           </p>
         </div>
       </div>
@@ -241,6 +301,7 @@
   class Guild {
     constructor(id, name) {
       this.id = id
+      this.owner = ''
       this.name = name
       this.image = ''
       this.summary = ''
@@ -253,6 +314,10 @@
 
     static parse(json) {
       var guild = new Guild(json._id, json.name)
+
+      if (json.owner) {
+        guild.owner = json.owner
+      }
 
       if (json.image) {
         guild.image = json.image
@@ -289,7 +354,7 @@
       }
 
       if (this.summary) {
-        $(`${elementId} #guild-summary`).text(this.summary)
+        $(`${elementId} #guild-summary`).html(formatText(this.summary))
       } else {
         $(`${elementId} #guild-summary`).text("")
       }
@@ -305,7 +370,7 @@
       }
 
       if (this.description) {
-        $(`${elementId} #guild-description`).text(this.description)
+        $(`${elementId} #guild-description`).html(formatText(this.description))
       } else {
         $(`${elementId} #guild-description`).text("")
       }
@@ -345,13 +410,22 @@
     displayCommand() {
       return new Promise((resolve, reject) => {
         // Hide All
+        $('#guild-name').show()
         $("#guild-name-modify").hide()
+        $('#guild-name-form').hide()
+        $('#guild-tags').show()
         $("#guild-tags-modify").hide()
+        $('#guild-tags-form').hide()
+        $('#tags-textarea').tagEditor('destroy')
         $("#guild-site-modify").hide()
         $("#guild-members-modify").hide()
         $("#guild-locations-modify").hide()
+        $('#guild-summary').show()
         $("#guild-summary-modify").hide()
+        $('#guild-summary-form').hide()
+        $('#guild-description').show()
         $("#guild-description-modify").hide()
+        $('#guild-description-form').hide()
 
         if (!thisUser) {
           // hide all commands
@@ -433,7 +507,7 @@
           <a class="btn-link" role="button" onclick="Guild.loadGuild('${guild.id}')"><img id="guild-cover" class="card-img-top" src="${imageUrl}" alt="Card image cap"></a>
           <div class="card-body">
             <h5 class="card-title"><a role="button" onclick="Guild.loadGuild('${guild.id}')">${guild.name}</a></h5>
-            <p class="card-text">${guild.summary}</p>
+            <p class="card-text">${formatText(guild.summary)}</p>
           </div>
           <div class="card-footer">
             <p class="card-text">${guild.guildTagsString()}</p>
@@ -565,6 +639,223 @@
       $("#guild-modal-create").modal('show')
     }
   })
+
+  function guildModify(field) {
+    $('#guild-name').show()
+    $('#guild-name-form').hide()
+    $('#guild-tags').show()
+    $('#guild-tags-form').hide()
+    $('#tags-textarea').tagEditor('destroy')
+    $('#guild-summary').show()
+    $('#guild-summary-form').hide()
+    $('#guild-description').show()
+    $('#guild-description-form').hide()
+
+    if (thisUser && (thisUser.id === thisGuild.owner || thisUser.admin)) {
+      $("#guild-name-modify").show()
+      $("#guild-summary-modify").show()
+      $("#guild-description-modify").show()
+      $('#guild-tags-modify').show()
+      $("#guild-site-modify").show()
+    }
+
+    switch (field) {
+      case "name":
+        $("#guild-name").hide()
+        $("#guild-name-modify").hide()
+        $("#name-textarea").val(thisGuild.name)
+        $("#guild-name-form").show()
+        break;
+      case "tags":
+        $("#guild-tags").hide()
+        $("#guild-tags-modify").hide()
+        $("#tags-textarea").tagEditor('destroy')
+        if (thisGuild.tags.length > 0) {
+          $("#tags-textarea").tagEditor({
+            initialTags: thisGuild.tags
+          })
+        } else {
+          $("#tags-textarea").tagEditor({
+            initialTags: ['']
+          })
+        }
+        $("#guild-tags-form").show()
+        break;
+      case "summary":
+        $('#guild-summary').hide()
+        $("#guild-summary-modify").hide()
+        $("#summary-textarea").val(thisGuild.summary)
+        $("#guild-summary-form").show()
+        break;
+      case "site":
+        $("#guild-modal-modify-site-input").val(thisGuild.site)
+        $('#guild-modal-modify-site').modal('show')
+        break;
+      case "description":
+        $('#guild-description').hide()
+        $("#guild-description-modify").hide()
+        $("#description-textarea").val(thisGuild.description)
+        $("#guild-description-form").show()
+        break;
+      default:
+        break;
+    }
+  }
+
+  function guildSave(field) {
+    /*
+      {
+        name:
+        summary:
+        description:
+        image:
+        site:
+      }
+    }
+    */
+    switch (field) {
+      case "name":
+        $('#guild-name-form #name-modify').addClass("disabled");
+        $('#guild-name-form #name-cancel').addClass("disabled");
+        var name = $('#name-textarea').val().replace(regex_html, "")
+        $.ajax({
+          method: "PUT",
+          url: `${api_url}/guilds/${thisGuild.id}`,
+          data: { token: thisUser.token, name: name },
+          dataType: "json",
+          success: function(json) {
+            if (json.success) {
+              $("#guild-name").text(json.guild.name)
+              thisGuild.name = thisGuild.name
+              guildModify('')
+            }
+            $('#guild-name-form #name-modify').removeClass("disabled");
+            $('#guild-name-form #name-cancel').removeClass("disabled");
+          },
+          error: function(json) {
+            displayAPIAlert();
+            $('#guild-name-form #name-modify').removeClass("disabled");
+            $('#guild-name-form #name-cancel').removeClass("disabled");
+          }
+        })
+        break;
+      case "tags":
+        $("#tags-modify").hide()
+        $("#tags-cancel").hide()
+        var tags = $("#tags-textarea").tagEditor('getTags')[0].tags
+        var validatedTags = []
+        tags.forEach(tag => validatedTags.push(tag.replace(regex_html, "")))
+        $.ajax({
+          method: "PUT",
+          url: `${api_url}/guilds/${thisGuild.id}`,
+          data: { token: thisUser.token, tags: validatedTags },
+          dataType: "json",
+          success: function(json) {
+            if (json.success) {
+              thisGuild.tags = json.guild.tags
+              $("#guild-tags").html(thisGuild.guildTagsString())
+              guildModify('')
+            }
+            $('#tags-modify').show()
+            $('#tags-cancel').show()
+          },
+          error: function(json) {
+            displayAPIAlert();
+            $('#tags-modify').show()
+            $('#tags-cancel').show()
+          }
+        })
+        break;
+      case "summary":
+        $('#guild-summary-form #save-button').addClass("disabled");
+        $('#guild-summary-form #cancel-button').addClass("disabled");
+        var summary = $('#summary-textarea').val().replace(regex_html, "")
+        $.ajax({
+          method: "PUT",
+          url: `${api_url}/guilds/${thisGuild.id}`,
+          data: { token: thisUser.token, summary: summary },
+          dataType: "json",
+          success: function(json) {
+            if (json.success) {
+              $("#guild-summary").html(formatText(json.guild.summary))
+              thisGuild.summary = thisGuild.summary.replace(regex_html, "")
+              guildModify('')
+            }
+            $('#guild-summary-form #save-button').removeClass("disabled");
+            $('#guild-summary-form #cancel-button').removeClass("disabled");
+          },
+          error: function(json) {
+            displayAPIAlert();
+            $('#guild-summary-form #save-button').removeClass("disabled");
+            $('#guild-summary-form #cancel-button').removeClass("disabled");
+          }
+        })
+        break;
+      case "site":
+        $(".site-action").addClass("disabled")
+        var site = $('#guild-modal-modify-site-input').val().replace(regex_html, "")
+        if (site.length == 0) {
+          site = "remove"
+        }
+        $.ajax({
+          method: "PUT",
+          url: `${api_url}/guilds/${thisGuild.id}`,
+          data: { token: thisUser.token, site: site },
+          dataType: "json",
+          success: function(json) {
+            if (json.success) {
+              thisGuild.site = json.guild.site.replace(regex_html, "")
+              if (thisGuild.site.length > 0) {
+                $("#guild-site").attr("href", thisGuild.site)
+                $("#guild-site").attr("target", "_blank")
+                $("#guild-site").text(thisGuild.site)
+              } else {
+                $(`#guild-site`).attr("href", "#")
+                $(`#guild-site`).attr("target", "")
+                $(`#guild-site`).text("Aucun site")
+              }
+
+              guildModify('')
+              $('#guild-modal-modify-site').modal('hide')
+            }
+            $(".site-action").removeClass("disabled")
+          },
+          error: function(json) {
+            $(".site-action").removeClass("disabled")
+            $('#guild-modal-modify-site').modal('hide')
+            displayAPIAlert();
+          }
+        })
+        break;
+      case "description":
+        $('#guild-description-form #save-button').addClass("disabled");
+        $('#guild-description-form #cancel-button').addClass("disabled");
+        var description = $('#description-textarea').val().replace(regex_html, "")
+        $.ajax({
+          method: "PUT",
+          url: `${api_url}/guilds/${thisGuild.id}`,
+          data: { token: thisUser.token, description: description },
+          dataType: "json",
+          success: function(json) {
+            if (json.success) {
+              $("#guild-description").html(formatText(json.guild.description))
+              thisGuild.description = thisGuild.description.replace(regex_html, "")
+              guildModify('')
+            }
+            $('#guild-description-form #save-button').removeClass("disabled");
+            $('#guild-description-form #cancel-button').removeClass("disabled");
+          },
+          error: function(json) {
+            displayAPIAlert();
+            $('#guild-description-form #save-button').removeClass("disabled");
+            $('#guild-description-form #cancel-button').removeClass("disabled");
+          }
+        })
+        break;
+      default:
+        break;
+    }
+  }
   </script>
 
   <script>
