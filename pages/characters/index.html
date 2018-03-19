@@ -58,7 +58,48 @@
         </button>
       </div>
     </div>
-    <div class="row">
+
+    <div class="container loader" id="loader">
+      <!-- By Sam Herbert (@sherb), for everyone. More @ http://goo.gl/7AJzbL -->
+      <svg width="88" height="88" viewBox="0 0 44 44" xmlns="http://www.w3.org/2000/svg" stroke="#fff">
+          <g fill="none" fill-rule="evenodd" stroke-width="2">
+              <circle cx="22" cy="22" r="1">
+                  <animate attributeName="r"
+                      begin="0s" dur="1.8s"
+                      values="1; 20"
+                      calcMode="spline"
+                      keyTimes="0; 1"
+                      keySplines="0.165, 0.84, 0.44, 1"
+                      repeatCount="indefinite" />
+                  <animate attributeName="stroke-opacity"
+                      begin="0s" dur="1.8s"
+                      values="1; 0"
+                      calcMode="spline"
+                      keyTimes="0; 1"
+                      keySplines="0.3, 0.61, 0.355, 1"
+                      repeatCount="indefinite" />
+              </circle>
+              <circle cx="22" cy="22" r="1">
+                  <animate attributeName="r"
+                      begin="-0.9s" dur="1.8s"
+                      values="1; 20"
+                      calcMode="spline"
+                      keyTimes="0; 1"
+                      keySplines="0.165, 0.84, 0.44, 1"
+                      repeatCount="indefinite" />
+                  <animate attributeName="stroke-opacity"
+                      begin="-0.9s" dur="1.8s"
+                      values="1; 0"
+                      calcMode="spline"
+                      keyTimes="0; 1"
+                      keySplines="0.3, 0.61, 0.355, 1"
+                      repeatCount="indefinite" />
+              </circle>
+          </g>
+      </svg>
+    </div>
+
+    <div class="row" id="characters-page" style="display: none;">
 
       <div class="container col-lg-4" id="characters-list">
         <form id="form-character" style="display: none;">
@@ -266,6 +307,8 @@
   });
 
   function displayAPIAlert() {
+    $("#loader").hide()
+    $("#characters-page").hide()
     $('#main-alert #text').text("Le GOLEM M4554G3R n'a pas pu contacter le serveur dans les Brumes, le problème vient certainement de notre côté.");
     $('#main-alert').show();
   }
@@ -451,6 +494,8 @@
         console.log(json);
         if (json.success) {
           parseCharacter(json.character);
+          $("#loader").hide()
+          $("#characters-page").show()
           stateToSync();
         } else {
           $('#character-alert').show();
@@ -500,6 +545,8 @@
           loadedAll = true;
           $('#search-character-text').val("");
         }
+        $("#loader").hide()
+        $("#characters-page").show()
       },
       error: function(json) {
         displayAPIAlert();
@@ -521,6 +568,8 @@
               parseCharactersToTable(json.characters);
               setListMode("mines");
             }
+            $("#loader").hide()
+            $("#characters-page").show()
           },
           error: function(json) {
             displayAPIAlert();
@@ -543,6 +592,8 @@
             parseCharactersToTable(json.characters);
             setListMode("search");
           }
+          $("#loader").hide()
+          $("#characters-page").show()
         },
         error: function(json) {
           displayAPIAlert();
@@ -564,11 +615,12 @@
         data: { tags: tags, search: search },
         dataType: 'json',
         success: function(json) {
-          console.log(json);
           if (json.success) {
             parseCharactersToTable(json.characters);
             setListMode("search");
           }
+          $("#loader").hide()
+          $("#characters-page").show()
         },
         error: function(json) {
           displayAPIAlert();
@@ -959,7 +1011,6 @@
           data: { token: thisUser.token, name: name },
           dataType: 'json',
           success: function(json) {
-            console.log(json);
             if (json.success) {
               $("#character-detail #character-name").text(json.character.name);
               thisCharacter.name = json.character.name;
