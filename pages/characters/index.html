@@ -291,9 +291,9 @@
       // Display specific character if in url, full list otherwise.
       // Search for URL parameters (location, coord...)
       var url = new URL(window.location.href);
-      if (url.searchParams.has("id")) {
+      if ((url.searchParams && url.searchParams.has("id")) || (url.search && url.search.split("?id=").length > 1)) {
         // Url has a given ID, search for the matching location and zoom to it.
-        var id = url.searchParams.get("id");
+        var id = url.searchParams ? url.searchParams.get("id") : url.search.split("?id=")[1]
         loadCharacter(id);
         if (deviceCategory() === "lg") {
           loadAll()
