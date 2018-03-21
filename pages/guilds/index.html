@@ -147,7 +147,7 @@
             <div class="input-group">
               <input id="guild-search-input" type="text" class="form-control" placeholder="Que cherchez-vous ?" aria-label="Rechercher une guilde.">
               <div class="input-group-btn">
-                  <button id="guild-search-search" type="button" class="btn btn-secondary float-right"><span class="oi oi-magnifying-glass"></span></button>
+                  <button id="guild-search-search" type="submit" form="guild-search-form" class="btn btn-secondary float-right"><span class="oi oi-magnifying-glass"></span></button>
                   <button id="guild-search-create" type="button" class="btn btn-success float-right">Créer</button>
               </div>
             </div>
@@ -528,22 +528,6 @@
               guilds.set(guild.id, guild)
             }
 
-            var guildSearchAutocomplete = new Set()
-            for (let guild of guilds.values()) {
-              guildSearchAutocomplete.add(guild.name)
-              for (let tag of guild.tags) {
-                guildSearchAutocomplete.add(tag)
-              }
-            }
-
-            $("#guild-list-container #guild-search-input").autocomplete({
-              source: [...guildSearchAutocomplete],
-              delay: 500,
-              minLength: 3,
-              select: Guild.searchGuild()
-            })
-            $("#guild-list-container #guild-search-form").submit(Guild.searchGuild())
-
             Guild.displayGuildList("#guild-list-container")
           } else {
             console.log(json)
@@ -573,10 +557,46 @@
       })
     }
 
-    static searchGuild() {
-      var search = $("#guild-search-input").val()
-      if (search.length > 0) {
+    static searchGuild(search = "", tags = []) {
+      if (search.length > 0 || tags.length > 0) {
+
         // Search in API
+        $.ajax({
+          method: "GET",
+          url: `${api_url}/guilds/search`,
+          data: { search: search, tags: tags },
+          dataType: 'json',
+          success: function(json) {
+            $(`#guild-list`).empty()
+
+            for (let guild of json.guilds) {
+              var imageUrl = guild.image || "/src/img/guild_placeholder.png"
+              var image = new Image()
+              image.onerror = () => {
+                $(`#guild-${guild._id} #guild-cover`).attr("src", "/src/img/guild_placeholder.png")
+              }
+              image.src = imageUrl
+
+              var tags = ""
+              for (var tag of guild.tags) {
+                tags += `<span class="badge badge-dark">${tag}</span> `
+              }
+
+              var guildHtml = `
+              <div class="card guild-card" id="guild-${guild._id}">
+                <a class="btn-link" role="button" onclick="Guild.loadGuild('${guild._id}')"><img id="guild-cover" class="card-img-top" src="${imageUrl}" alt="Card image cap"></a>
+                <div class="card-body">
+                  <h5 class="card-title"><a role="button" onclick="Guild.loadGuild('${guild._id}')">${guild.name}</a></h5>
+                  <p class="card-text">${formatText(guild.summary)}</p>
+                </div>
+                <div class="card-footer">
+                  <p class="card-text">${tags}</p>
+                </div>
+              </div>`
+              $(`#guild-list`).append(guildHtml)
+            }
+          }
+        })
       }
     }
 
@@ -627,10 +647,6 @@
     Guild.loadAllGuilds()
     window.history.pushState("", "", "/pages/guilds");
   }
-
-  $('#guild-search-search').click(function() {
-    Guild.searchGuild()
-  })
 
   $('#guild-search-create').click(function() {
     if (!thisUser || ! thisUser.signedIn) {
@@ -856,6 +872,12 @@
         break;
     }
   }
+
+  $("#guild-search-form").submit(function (event) {
+    let tags = $("#guild-search-input").val().split(', ')
+    Guild.searchGuild("", tags)
+    event.preventDefault();
+  })
   </script>
 
   <script>
