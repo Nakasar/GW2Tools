@@ -87,33 +87,46 @@
       </div>
       <div class="modal-body">
         <form id="signup-form">
-          <fieldset>
-            <div class="form-group">
-              <label for="signup-username">Nom d'utilisateur :</label>
-              <input type="text" class="form-control" id="signup-username" aria-describedby="signup-username-Help">
-              <small id="signup-username-Help" class="form-text text-muted">Nom affiché publiquement.</small>
+          <div class="form-group">
+            <label for="signup-username">Nom d'utilisateur :</label>
+            <input type="text" class="form-control" id="signup-username" aria-describedby="signup-username-Help">
+            <small id="signup-username-Help" class="form-text text-muted">Nom affiché publiquement.</small>
+          </div>
+          <div class="form-group    ">
+            <label for="signup-email">Email :</label>
+            <input type="email" class="form-control" id="signup-email" aria-describedby="signup-email-Help">
+            <small id="signup-email-Help" class="form-text text-muted">Votre adresse ne sera pas affichée.</small>
+          </div>
+          <div class="form-group">
+            <label for="signup-password">Mot de passe :</label>
+            <input type="password" class="form-control" id="signup-password">
+          </div>
+          <div class="form-group">
+            <label for="signup-password-confirm">Confirmation :</label>
+            <input type="password" class="form-control" id="signup-password-confirm">
+          </div>
+
+          <div class="form-group">
+            <label for="signup-gw2account">Nom de compte GW2 (Nakasar.5192) :</label>
+            <input type="text" class="form-control" id="signup-gw2account" aria-describedby="signup-gw2account-help">
+            <small id="signup-gw2account-help" class="form-text text-muted">Votre nom de compte est affiché en haut de la liste de contacts en jeu.</small>
+          </div>
+
+          <div class="form-group">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" value="" id="mail-accept" disabled checked>
+              <label class="form-check-label" for="mail-accept">
+                J'accepte que mon addresse mail soit conservée.
+              </label>
             </div>
-            <div class="form-group">
-              <label for="signup-email">Email :</label>
-              <input type="email" class="form-control" id="signup-email" aria-describedby="signup-email-Help">
-              <small id="signup-email-Help" class="form-text text-muted">Votre adresse ne sera pas affichée.</small>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" value="" id="newsletter-accept" checked>
+              <label class="form-check-label" for="newsletter-accept">
+                J'accepte de recevoir des mails de rappel aux évènements, la newsletter... (Paramétrable ultérieurement)
+              </label>
             </div>
-            <div class="form-group">
-              <label for="signup-password">Mot de passe :</label>
-              <input type="password" class="form-control" id="signup-password">
-            </div>
-            <div class="form-group">
-              <label for="signup-password-confirm">Confirmation :</label>
-              <input type="password" class="form-control" id="signup-password-confirm">
-            </div>
-          </fieldset>
-          <fieldset>
-            <div class="form-group">
-              <label for="signup-gw2account">Nom de compte GW2 (Nakasar.5192) :</label>
-              <input type="text" class="form-control" id="signup-gw2account" aria-describedby="signup-gw2account-help">
-              <small id="signup-gw2account-help" class="form-text text-muted">Votre nom de compte est affiché en haut de la liste de contacts en jeu.</small>
-            </div>
-          </fieldset>
+          </div>
+
           <div class="alert alert-danger alert-dismissible" role="alert" id="signup-alert">
             <div id="text">Vous devez valider l'ensemble des champs.</div>
             <button type="button" class="close" data-dismiss="alert" aria-label="Fermer">
