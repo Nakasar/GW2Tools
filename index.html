@@ -74,6 +74,9 @@
       </div>
     </div>
     <div class="container">
+      <div class="row text-center">
+        <h4 class="w-100" id="today-date"></h4>
+      </div>
       <div class="row">
         <div class="col-md-6" id="next-events">
           <h4>Prochains évènements</h4>
@@ -212,6 +215,25 @@
   </script>
 
   <script>
+    const today = getGW2Date(new Date());
+    $('#today-date').text(`Nous sommes le ${today.day} du ${today.season}, ${today.year} AE.`);
+
+    function getGW2Date(today) {  
+      if (today.getDay() == 29 && today.getMonth() == 2) {
+        return { day: 60, season: "Zéphyr", year: today.getUTCFullYear() - 687 };
+      }
+      else {
+        const thisYear = new Date(`January 1, ${today.getUTCFullYear()} 00:00:00`);
+        const dayOfYear = 1 + Math.floor((today.getTime() - thisYear.getTime()) / (24 * 60 * 60 * 1000));
+        return { 
+          day: dayOfYear % 91,
+          season: ["Zéphyr", "Phénix", "Scion", "Colosse"][Math.floor(dayOfYear / 91)],
+          year: today.getUTCFullYear() - 687
+          };
+      }
+    };
+
+
     var difficulty_table = new Map();
     difficulty_table.set("peaceful", "Promenade");
     difficulty_table.set("easy", "Facile");
